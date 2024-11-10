@@ -1,0 +1,597 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E8EB2A672CE063A7000E4B67 /* AegisApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A662CE063A7000E4B67 /* AegisApp.swift */; };
+		E8EB2A692CE063A7000E4B67 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A682CE063A7000E4B67 /* ContentView.swift */; };
+		E8EB2A6B2CE063A7000E4B67 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A6A2CE063A7000E4B67 /* Item.swift */; };
+		E8EB2A6D2CE063A9000E4B67 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */; };
+		E8EB2A702CE063A9000E4B67 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8EB2A6F2CE063A9000E4B67 /* Preview Assets.xcassets */; };
+		E8EB2A7A2CE063A9000E4B67 /* AegisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A792CE063A9000E4B67 /* AegisTests.swift */; };
+		E8EB2A842CE063A9000E4B67 /* AegisUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A832CE063A9000E4B67 /* AegisUITests.swift */; };
+		E8EB2A862CE063A9000E4B67 /* AegisUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A852CE063A9000E4B67 /* AegisUITestsLaunchTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E8EB2A762CE063A9000E4B67 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E8EB2A5B2CE063A7000E4B67 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E8EB2A622CE063A7000E4B67;
+			remoteInfo = Aegis;
+		};
+		E8EB2A802CE063A9000E4B67 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E8EB2A5B2CE063A7000E4B67 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E8EB2A622CE063A7000E4B67;
+			remoteInfo = Aegis;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		E8EB2A632CE063A7000E4B67 /* Aegis.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aegis.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8EB2A662CE063A7000E4B67 /* AegisApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisApp.swift; sourceTree = "<group>"; };
+		E8EB2A682CE063A7000E4B67 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E8EB2A6A2CE063A7000E4B67 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
+		E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		E8EB2A6F2CE063A9000E4B67 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		E8EB2A752CE063A9000E4B67 /* AegisTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AegisTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8EB2A792CE063A9000E4B67 /* AegisTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisTests.swift; sourceTree = "<group>"; };
+		E8EB2A7F2CE063A9000E4B67 /* AegisUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AegisUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8EB2A832CE063A9000E4B67 /* AegisUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisUITests.swift; sourceTree = "<group>"; };
+		E8EB2A852CE063A9000E4B67 /* AegisUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisUITestsLaunchTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E8EB2A602CE063A7000E4B67 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E8EB2A722CE063A9000E4B67 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E8EB2A7C2CE063A9000E4B67 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E8EB2A5A2CE063A7000E4B67 = {
+			isa = PBXGroup;
+			children = (
+				E8EB2A652CE063A7000E4B67 /* Aegis */,
+				E8EB2A782CE063A9000E4B67 /* AegisTests */,
+				E8EB2A822CE063A9000E4B67 /* AegisUITests */,
+				E8EB2A642CE063A7000E4B67 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E8EB2A642CE063A7000E4B67 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E8EB2A632CE063A7000E4B67 /* Aegis.app */,
+				E8EB2A752CE063A9000E4B67 /* AegisTests.xctest */,
+				E8EB2A7F2CE063A9000E4B67 /* AegisUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E8EB2A652CE063A7000E4B67 /* Aegis */ = {
+			isa = PBXGroup;
+			children = (
+				E8EB2A662CE063A7000E4B67 /* AegisApp.swift */,
+				E8EB2A682CE063A7000E4B67 /* ContentView.swift */,
+				E8EB2A6A2CE063A7000E4B67 /* Item.swift */,
+				E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */,
+				E8EB2A6E2CE063A9000E4B67 /* Preview Content */,
+			);
+			path = Aegis;
+			sourceTree = "<group>";
+		};
+		E8EB2A6E2CE063A9000E4B67 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				E8EB2A6F2CE063A9000E4B67 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		E8EB2A782CE063A9000E4B67 /* AegisTests */ = {
+			isa = PBXGroup;
+			children = (
+				E8EB2A792CE063A9000E4B67 /* AegisTests.swift */,
+			);
+			path = AegisTests;
+			sourceTree = "<group>";
+		};
+		E8EB2A822CE063A9000E4B67 /* AegisUITests */ = {
+			isa = PBXGroup;
+			children = (
+				E8EB2A832CE063A9000E4B67 /* AegisUITests.swift */,
+				E8EB2A852CE063A9000E4B67 /* AegisUITestsLaunchTests.swift */,
+			);
+			path = AegisUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E8EB2A622CE063A7000E4B67 /* Aegis */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E8EB2A892CE063A9000E4B67 /* Build configuration list for PBXNativeTarget "Aegis" */;
+			buildPhases = (
+				E8EB2A5F2CE063A7000E4B67 /* Sources */,
+				E8EB2A602CE063A7000E4B67 /* Frameworks */,
+				E8EB2A612CE063A7000E4B67 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Aegis;
+			productName = Aegis;
+			productReference = E8EB2A632CE063A7000E4B67 /* Aegis.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E8EB2A742CE063A9000E4B67 /* AegisTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E8EB2A8C2CE063A9000E4B67 /* Build configuration list for PBXNativeTarget "AegisTests" */;
+			buildPhases = (
+				E8EB2A712CE063A9000E4B67 /* Sources */,
+				E8EB2A722CE063A9000E4B67 /* Frameworks */,
+				E8EB2A732CE063A9000E4B67 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E8EB2A772CE063A9000E4B67 /* PBXTargetDependency */,
+			);
+			name = AegisTests;
+			productName = AegisTests;
+			productReference = E8EB2A752CE063A9000E4B67 /* AegisTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		E8EB2A7E2CE063A9000E4B67 /* AegisUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E8EB2A8F2CE063A9000E4B67 /* Build configuration list for PBXNativeTarget "AegisUITests" */;
+			buildPhases = (
+				E8EB2A7B2CE063A9000E4B67 /* Sources */,
+				E8EB2A7C2CE063A9000E4B67 /* Frameworks */,
+				E8EB2A7D2CE063A9000E4B67 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E8EB2A812CE063A9000E4B67 /* PBXTargetDependency */,
+			);
+			name = AegisUITests;
+			productName = AegisUITests;
+			productReference = E8EB2A7F2CE063A9000E4B67 /* AegisUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E8EB2A5B2CE063A7000E4B67 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
+				TargetAttributes = {
+					E8EB2A622CE063A7000E4B67 = {
+						CreatedOnToolsVersion = 15.4;
+					};
+					E8EB2A742CE063A9000E4B67 = {
+						CreatedOnToolsVersion = 15.4;
+						TestTargetID = E8EB2A622CE063A7000E4B67;
+					};
+					E8EB2A7E2CE063A9000E4B67 = {
+						CreatedOnToolsVersion = 15.4;
+						TestTargetID = E8EB2A622CE063A7000E4B67;
+					};
+				};
+			};
+			buildConfigurationList = E8EB2A5E2CE063A7000E4B67 /* Build configuration list for PBXProject "Aegis" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = E8EB2A5A2CE063A7000E4B67;
+			productRefGroup = E8EB2A642CE063A7000E4B67 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E8EB2A622CE063A7000E4B67 /* Aegis */,
+				E8EB2A742CE063A9000E4B67 /* AegisTests */,
+				E8EB2A7E2CE063A9000E4B67 /* AegisUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E8EB2A612CE063A7000E4B67 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E8EB2A702CE063A9000E4B67 /* Preview Assets.xcassets in Resources */,
+				E8EB2A6D2CE063A9000E4B67 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E8EB2A732CE063A9000E4B67 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E8EB2A7D2CE063A9000E4B67 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E8EB2A5F2CE063A7000E4B67 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E8EB2A692CE063A7000E4B67 /* ContentView.swift in Sources */,
+				E8EB2A6B2CE063A7000E4B67 /* Item.swift in Sources */,
+				E8EB2A672CE063A7000E4B67 /* AegisApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E8EB2A712CE063A9000E4B67 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E8EB2A7A2CE063A9000E4B67 /* AegisTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E8EB2A7B2CE063A9000E4B67 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E8EB2A862CE063A9000E4B67 /* AegisUITestsLaunchTests.swift in Sources */,
+				E8EB2A842CE063A9000E4B67 /* AegisUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E8EB2A772CE063A9000E4B67 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E8EB2A622CE063A7000E4B67 /* Aegis */;
+			targetProxy = E8EB2A762CE063A9000E4B67 /* PBXContainerItemProxy */;
+		};
+		E8EB2A812CE063A9000E4B67 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E8EB2A622CE063A7000E4B67 /* Aegis */;
+			targetProxy = E8EB2A802CE063A9000E4B67 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		E8EB2A872CE063A9000E4B67 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		E8EB2A882CE063A9000E4B67 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		E8EB2A8A2CE063A9000E4B67 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Aegis/Preview Content\"";
+				DEVELOPMENT_TEAM = FU2B76F7PF;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wassynger.Aegis;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E8EB2A8B2CE063A9000E4B67 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Aegis/Preview Content\"";
+				DEVELOPMENT_TEAM = FU2B76F7PF;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wassynger.Aegis;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		E8EB2A8D2CE063A9000E4B67 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FU2B76F7PF;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wassynger.AegisTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Aegis.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Aegis";
+			};
+			name = Debug;
+		};
+		E8EB2A8E2CE063A9000E4B67 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FU2B76F7PF;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wassynger.AegisTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Aegis.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Aegis";
+			};
+			name = Release;
+		};
+		E8EB2A902CE063A9000E4B67 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FU2B76F7PF;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wassynger.AegisUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Aegis;
+			};
+			name = Debug;
+		};
+		E8EB2A912CE063A9000E4B67 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FU2B76F7PF;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wassynger.AegisUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Aegis;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E8EB2A5E2CE063A7000E4B67 /* Build configuration list for PBXProject "Aegis" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E8EB2A872CE063A9000E4B67 /* Debug */,
+				E8EB2A882CE063A9000E4B67 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E8EB2A892CE063A9000E4B67 /* Build configuration list for PBXNativeTarget "Aegis" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E8EB2A8A2CE063A9000E4B67 /* Debug */,
+				E8EB2A8B2CE063A9000E4B67 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E8EB2A8C2CE063A9000E4B67 /* Build configuration list for PBXNativeTarget "AegisTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E8EB2A8D2CE063A9000E4B67 /* Debug */,
+				E8EB2A8E2CE063A9000E4B67 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E8EB2A8F2CE063A9000E4B67 /* Build configuration list for PBXNativeTarget "AegisUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E8EB2A902CE063A9000E4B67 /* Debug */,
+				E8EB2A912CE063A9000E4B67 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E8EB2A5B2CE063A7000E4B67 /* Project object */;
+}
