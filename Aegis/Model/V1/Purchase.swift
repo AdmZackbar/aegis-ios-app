@@ -28,7 +28,7 @@ extension SchemaV1 {
         enum Category: Codable {
             case Basic(name: String, details: String)
             case Gas(numGallons: Double, costPerGallon: Price, octane: Int)
-            case Groceries(items: [Food])
+            case Groceries(list: FoodList)
             case Restaurant(details: String, tip: Price)
             case Clothing(name: String, type: String, size: String)
             case Shoes(name: String, brand: String, size: String)
@@ -64,6 +64,10 @@ extension SchemaV1 {
                     return "Computer Hardware"
                 }
             }
+        }
+        
+        struct FoodList: Codable {
+            var foods: [Food]
         }
         
         struct Food: Codable, Hashable, Equatable {
