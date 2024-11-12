@@ -9,6 +9,7 @@ import SwiftData
 import SwiftUI
 
 struct PurchaseListView: View {
+    @Environment(\.modelContext) var modelContext
     @Query(sort: \Purchase.date, order: .reverse) var purchases: [Purchase]
     
     @Binding private var path: [ViewType]
@@ -52,6 +53,11 @@ struct PurchaseListView: View {
                     } label: {
                         Label("Edit", systemImage: "pencil.circle")
                     }
+                    Button(role: .destructive) {
+                        modelContext.delete(purchase)
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
                 }
         }
     }
@@ -82,7 +88,7 @@ struct PurchaseListView: View {
                     Text("\(formatter.string(for: numGallons)!) gal (\(formatter.string(for: octane)!)) @ \(costPerGallon.toString())")
                         .font(.subheadline).italic()
                 }
-            case .Groceries(let items):
+            case .Groceries(_):
                 DisclosureGroup {
                     Text("Test")
                 } label: {
@@ -112,12 +118,8 @@ struct PurchaseListView: View {
     container.mainContext.insert(Purchase(date: Date(), category: .Software(name: "Photoshop"), seller: "Adobe", price: .Cents(999)))
     container.mainContext.insert(Purchase(date: Date(), category: .Restaurant(details: "Day trip to Rocktown", tip: .Cents(250)), seller: "Mentone Cafe", price: .Cents(980)))
     container.mainContext.insert(Purchase(date: Date(), category: .Basic(name: "Other", details: "Testing the other category"), seller: "Amazon", price: .Cents(1391)))
+//    container.mainContext.insert(Purchase(date: Date(), category: .Groceries(items: []), seller: "Costco", price: .Cents(35723)))
     return NavigationStack {
         PurchaseListView(path: .constant([]))
     }.modelContainer(container)
 }
-
-//.Groceries(items: [
-//    .init(name: "Frozen Chicken Breasts", category: .Meat, price: .Cents(2399), quantity: 2),
-//    .init(name: "Mission Tortilla", category: .Carbs, price: .Cents(599), quantity: 1)
-//])
