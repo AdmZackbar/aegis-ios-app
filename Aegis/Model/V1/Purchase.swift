@@ -29,16 +29,41 @@ extension SchemaV1 {
             case Basic(name: String, details: String)
             case Gas(numGallons: Double, costPerGallon: Price, octane: Int)
             case Groceries(items: [Food])
-            case Restaurant(info: String, tip: Price)
+            case Restaurant(details: String, tip: Price)
             case Clothing(name: String, type: String, size: String)
             case Shoes(name: String, brand: String, size: String)
-            case ElectricBill(usageKw: Double, costPerKw: Double)
-            case WaterBill(usageGal: Double, costPerGal: Double)
+            case UtilityBill(name: String, unit: String, usage: Double, rate: Price)
             case Charity(recipient: String, details: String)
             case Gift(recipient: String, details: String)
             case Software(name: String)
             case Hardware(name: String)
-            case VideoGame(name: String, platform: String)
+            
+            func getName() -> String {
+                switch self {
+                case .Basic(let name, _):
+                    return name
+                case .Gas(_, _, _):
+                    return "Gas"
+                case .Groceries(_):
+                    return "Groceries"
+                case .Restaurant(_, _):
+                    return "Restaurant"
+                case .Clothing(_, _, _):
+                    return "Clothing"
+                case .Shoes(_, _, _):
+                    return "Shoes"
+                case .UtilityBill(let name, _, _, _):
+                    return "\(name) Bill"
+                case .Charity(_, _):
+                    return "Charity"
+                case .Gift(_, _):
+                    return "Gift"
+                case .Software(_):
+                    return "Computer Software"
+                case .Hardware(_):
+                    return "Computer Hardware"
+                }
+            }
         }
         
         struct Food: Codable, Hashable, Equatable {

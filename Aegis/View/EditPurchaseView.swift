@@ -27,9 +27,10 @@ struct EditPurchaseView: View {
     @State private var seller: String = ""
     @State private var price: Int = 0
     @State private var details: String = ""
-    @State private var gasAmount: Double = 0.0
-    @State private var gasPrice: Int = 0
-    @State private var gasOctane: Int = 87
+    @State private var gasDetails: GasDetails = GasDetails()
+    @State private var restaurantDetails: RestaurantDetails = RestaurantDetails()
+    @State private var billDetails: BillDetails = BillDetails()
+    @State private var computerDetails: ComputerDetails = ComputerDetails()
     
     init(path: Binding<[ViewType]>, purchase: Purchase? = nil) {
         self._path = path
@@ -80,22 +81,29 @@ struct EditPurchaseView: View {
             case .Cents(let amount):
                 price = amount
             }
-            switch purchase.category {
-            case .Basic(let name, let details):
-                category = Category(name)
-                self.details = details
-            case .Gas(let numGallons, let costPerGallon, let octane):
-                gasAmount = numGallons
-                switch costPerGallon {
-                case .Cents(let p):
-                    gasPrice = p
-                }
-                gasOctane = octane
-            default:
-                break
-            }
+            category = Category(purchase.category.getName())
+            details = computeDetails(purchase.category)
+            gasDetails = GasDetails.fromCategory(purchase.category)
+            restaurantDetails = RestaurantDetails.fromCategory(purchase.category)
+            billDetails = BillDetails.fromCategory(purchase.category)
+            computerDetails = ComputerDetails.fromCategory(purchase.category)
         default:
             break
+        }
+    }
+    
+    private func computeDetails(_ category: Purchase.Category) -> String {
+        switch category {
+        case .Basic(_, let details):
+            return details
+        case .Restaurant(let details, _):
+            return details
+        case .Charity(_, let details):
+            return details
+        case .Gift(_, let details):
+            return details
+        default:
+            return ""
         }
     }
     
@@ -106,7 +114,19 @@ struct EditPurchaseView: View {
         if let category = category {
             switch category.name {
             case "Gas":
-                purchase.category = .Gas(numGallons: gasAmount, costPerGallon: .Cents(gasPrice), octane: gasOctane)
+                purchase.category = gasDetails.toCategory()
+            case "Restaurant":
+                purchase.category = restaurantDetails.toCategory()
+            case "Electric Bill":
+                purchase.category = billDetails.toCategory()
+            case "Water Bill":
+                purchase.category = billDetails.toCategory()
+            case "Other Utility Bill":
+                purchase.category = billDetails.toCategory()
+            case "Computer Hardware":
+                purchase.category = computerDetails.toHardware()
+            case "Computer Software":
+                purchase.category = computerDetails.toSoftware()
             default:
                 purchase.category = .Basic(name: category.name, details: details)
             }
@@ -134,7 +154,7 @@ struct EditPurchaseView: View {
             OutlineGroup(EditPurchaseView.Categories, id: \.name, children: \.children) { c in
                 Button(c.name) {
                     category = c
-                }.tint(.black)
+                }.tint(.primary)
             }
         }
     }
@@ -144,6 +164,18 @@ struct EditPurchaseView: View {
         switch categoryName {
         case "Gas":
             gasEditor()
+        case "Restaurant":
+            restaurantEditor()
+        case "Electric Bill":
+            billEditor()
+        case "Water Bill":
+            billEditor()
+        case "Other Utility Bill":
+            billEditor()
+        case "Computer Hardware":
+            computerEditor()
+        case "Computer Software":
+            computerEditor()
         default:
             HStack {
                 Text("Seller:")
@@ -172,22 +204,82 @@ struct EditPurchaseView: View {
         }
         HStack {
             Text("Amount (Gallons):")
-            TextField("required", value: $gasAmount, formatter: formatter)
+            TextField("required", value: $gasDetails.gallons, formatter: formatter)
                 .keyboardType(.decimalPad)
         }
         HStack {
             Text("Cost per Gallon:")
-            CurrencyTextField(numberFormatter: currencyFormatter, value: $gasPrice)
+            CurrencyTextField(numberFormatter: currencyFormatter, value: $gasDetails.price)
         }
         HStack {
             Text("Octane:")
             Spacer()
-            Picker("", selection: $gasOctane) {
+            Picker("", selection: $gasDetails.octane) {
                 Text("87").tag(87)
                 Text("89").tag(89)
                 Text("91").tag(91)
                 Text("93").tag(93)
             }.pickerStyle(.segmented)
+        }
+    }
+    
+    @ViewBuilder
+    private func restaurantEditor() -> some View {
+        HStack {
+            Text("Restaurant:")
+            TextField("required", text: $seller)
+        }
+        HStack {
+            Text("Total Bill:")
+            CurrencyTextField(numberFormatter: currencyFormatter, value: $price)
+        }
+        HStack {
+            Text("Tip:")
+            CurrencyTextField(numberFormatter: currencyFormatter, value: $restaurantDetails.tip)
+        }
+        TextField("Details", text: $restaurantDetails.details, axis: .vertical).lineLimit(3...5)
+    }
+    
+    @ViewBuilder
+    private func billEditor() -> some View {
+        let formatter = {
+            let formatter = NumberFormatter()
+            formatter.maximumFractionDigits = 3
+            formatter.zeroSymbol = ""
+            return formatter
+        }()
+        Picker("Utility:", selection: $billDetails.name) {
+            Text("Electric").tag("Electric")
+            Text("Water").tag("Water")
+        }
+        HStack {
+            Text("Total:")
+            CurrencyTextField(numberFormatter: currencyFormatter, value: $price)
+        }
+        HStack {
+            Text("Usage \(billDetails.unit):")
+            TextField("required", value: $billDetails.usage, formatter: formatter)
+                .keyboardType(.decimalPad)
+        }
+        HStack {
+            Text("Rate:")
+            CurrencyTextField(numberFormatter: currencyFormatter, value: $billDetails.rate)
+        }
+    }
+    
+    @ViewBuilder
+    private func computerEditor() -> some View {
+        HStack {
+            Text("Manufacturer:")
+            TextField("required", text: $seller)
+        }
+        HStack {
+            Text("Name:")
+            TextField("required", text: $computerDetails.name)
+        }
+        HStack {
+            Text("Price:")
+            CurrencyTextField(numberFormatter: currencyFormatter, value: $price)
         }
     }
     
@@ -230,7 +322,7 @@ struct EditPurchaseView: View {
     static let Categories: [Category] = [
         .init("Housing", children: [
             .init("Mortgage Bill"),
-            .init("Additional Mortgage Payment"),
+            .init("Mortgage Payment"),
             .init("Housing Maintenance"),
             .init("Housing Improvements"),
             .init("Housing Utilities", children: [
@@ -238,7 +330,8 @@ struct EditPurchaseView: View {
                 .init("Water Bill"),
                 .init("Other Utility Bill"),
                 .init("Internet Bill")
-            ])
+            ]),
+            .init("Rent")
         ]),
         .init("Food", children: [
             .init("Groceries"),
@@ -247,13 +340,15 @@ struct EditPurchaseView: View {
         ]),
         .init("Car", children: [
             .init("Gas"),
-            .init("Maintenance"),
-            .init("Car Fees")
+            .init("Car Maintenance"),
+            .init("Car Insurance"),
+            .init("Car Tags")
         ]),
         .init("Sports", children: [
             .init("Gym"),
             .init("Equipment"),
-            .init("Events")
+            .init("Events"),
+            .init("Outdoor Access")
         ]),
         .init("Charity"),
         .init("Gift"),
@@ -269,10 +364,100 @@ struct EditPurchaseView: View {
         ]),
         .init("Self Care", children: [
             .init("Eyes"),
+            .init("Haircut"),
             .init("Medicine"),
             .init("Healthcare")
         ])
     ]
+    
+    private struct GasDetails {
+        var gallons: Double = 0.0
+        var price: Int = 0
+        var octane: Int = 87
+        
+        static func fromCategory(_ category: Purchase.Category) -> GasDetails {
+            switch category {
+            case .Gas(let gallons, let price, let octane):
+                switch price {
+                case .Cents(let cents):
+                    return GasDetails(gallons: gallons, price: cents, octane: octane)
+                }
+            default:
+                return GasDetails()
+            }
+        }
+        
+        func toCategory() -> Purchase.Category {
+            .Gas(numGallons: gallons, costPerGallon: .Cents(price), octane: octane)
+        }
+    }
+    
+    private struct RestaurantDetails {
+        var details: String = ""
+        var tip: Int = 0
+        
+        static func fromCategory(_ category: Purchase.Category) -> RestaurantDetails {
+            switch category {
+            case .Restaurant(let details, let tip):
+                switch tip {
+                case .Cents(let cents):
+                    return RestaurantDetails(details: details, tip: cents)
+                }
+            default:
+                return RestaurantDetails()
+            }
+        }
+        
+        func toCategory() -> Purchase.Category {
+            .Restaurant(details: details, tip: .Cents(tip))
+        }
+    }
+    
+    private struct BillDetails {
+        var name: String = ""
+        var unit: String = ""
+        var usage: Double = 0.0
+        var rate: Int = 0
+        
+        static func fromCategory(_ category: Purchase.Category) -> BillDetails {
+            switch category {
+            case .UtilityBill(let name, let unit, let usage, let rate):
+                switch rate {
+                case .Cents(let cents):
+                    return BillDetails(name: name, unit: unit, usage: usage, rate: cents)
+                }
+            default:
+                return BillDetails()
+            }
+        }
+        
+        func toCategory() -> Purchase.Category {
+            .UtilityBill(name: name, unit: unit, usage: usage, rate: .Cents(rate))
+        }
+    }
+    
+    private struct ComputerDetails {
+        var name: String = ""
+        
+        static func fromCategory(_ category: Purchase.Category) -> ComputerDetails {
+            switch category {
+            case .Software(let name):
+                return ComputerDetails(name: name)
+            case .Hardware(let name):
+                return ComputerDetails(name: name)
+            default:
+                return ComputerDetails()
+            }
+        }
+        
+        func toSoftware() -> Purchase.Category {
+            .Software(name: name)
+        }
+        
+        func toHardware() -> Purchase.Category {
+            .Hardware(name: name)
+        }
+    }
 }
 
 #Preview {

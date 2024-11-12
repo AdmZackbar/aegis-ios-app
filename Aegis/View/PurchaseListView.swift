@@ -48,7 +48,7 @@ struct PurchaseListView: View {
             purchaseItem(purchase)
                 .contextMenu {
                     Button {
-                        
+                        path.append(.EditPurchase(purchase: purchase))
                     } label: {
                         Label("Edit", systemImage: "pencil.circle")
                     }
@@ -58,82 +58,60 @@ struct PurchaseListView: View {
     
     @ViewBuilder
     private func purchaseItem(_ purchase: Purchase) -> some View {
-        switch purchase.category {
-        case .Basic(let name, _):
-            HStack(alignment: .top) {
-                nameInfoView(category: name, seller: purchase.seller)
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(purchase.category.getName()).bold()
                 Spacer()
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text(purchase.price.toString()).bold()
+                Text(purchase.price.toString()).bold()
+            }
+            switch purchase.category {
+            case .Basic(_, let details):
+                Text(purchase.seller).font(.subheadline).italic()
+                if !details.isEmpty {
+                    Text(details).font(.caption)
                 }
-            }
-        case .Gas(let numGallons, let costPerGallon, let octane):
-            let formatter: NumberFormatter = {
-                let formatter = NumberFormatter()
-                formatter.maximumFractionDigits = 1
-                return formatter
-            }()
-            HStack(alignment: .top) {
-                nameInfoView(category: "Gas", seller: purchase.seller)
-                Spacer()
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text(purchase.price.toString()).bold()
-                    Text("\(formatter.string(for: numGallons)!) gal (\(formatter.string(for: octane)!)) @ \(costPerGallon.toString())").font(.subheadline).italic()
+            case .Gas(let numGallons, let costPerGallon, let octane):
+                let formatter: NumberFormatter = {
+                    let formatter = NumberFormatter()
+                    formatter.maximumFractionDigits = 1
+                    return formatter
+                }()
+                HStack(alignment: .top) {
+                    Text(purchase.seller).font(.subheadline).italic()
+                    Spacer()
+                    Text("\(formatter.string(for: numGallons)!) gal (\(formatter.string(for: octane)!)) @ \(costPerGallon.toString())")
+                        .font(.subheadline).italic()
                 }
-            }
-        case .Groceries(let items):
-            DisclosureGroup {
-                Text("Test")
-            } label: {
-                Text("Temp")
-            }
-        case .Restaurant(_, let tip):
-            HStack(alignment: .top) {
-                nameInfoView(category: "Restaurant", seller: purchase.seller)
-                Spacer()
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text(purchase.price.toString()).bold()
+            case .Groceries(let items):
+                DisclosureGroup {
+                    Text("Test")
+                } label: {
+                    Text("Temp")
+                }
+            case .Restaurant(_, let tip):
+                HStack(alignment: .top) {
+                    Text(purchase.seller).font(.subheadline).italic()
+                    Spacer()
                     Text("\(tip.toString()) tip").font(.subheadline).italic()
                 }
+            case .Hardware(let name):
+                Text("\(purchase.seller) | \(name)").font(.subheadline).italic()
+            case .Software(let name):
+                Text("\(purchase.seller) | \(name)").font(.subheadline).italic()
+            default:
+                Text(purchase.seller).font(.subheadline).italic()
             }
-        case .Software(let name):
-            HStack(alignment: .top) {
-                nameInfoView(category: "Computer Software", seller: "\(purchase.seller) | \(name)")
-                Spacer()
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text(purchase.price.toString()).bold()
-                }
-            }
-        case .Hardware(let name):
-            HStack(alignment: .top) {
-                nameInfoView(category: "Computer Hardware", seller: "\(name) @ \(purchase.seller)")
-                Spacer()
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text(purchase.price.toString()).bold()
-                }
-            }
-        default:
-            HStack(alignment: .top) {
-                nameInfoView(category: "Unknown", seller: purchase.seller)
-                Spacer()
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text(purchase.price.toString()).bold()
-                }
-            }
-        }
-    }
-    
-    @ViewBuilder
-    private func nameInfoView(category: String, seller: String) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(category).bold()
-            Text(seller).font(.subheadline).italic()
         }
     }
 }
 
 #Preview {
     let container = createTestModelContainer()
+    container.mainContext.insert(Purchase(date: Date(), category: .Gas(numGallons: 9.1, costPerGallon: .Cents(254), octane: 87), seller: "Costco", price: .Cents(3591)))
+    container.mainContext.insert(Purchase(date: Date(), category: .Hardware(name: "4 TB M.2 SSD"), seller: "Amazon", price: .Cents(39127)))
+    container.mainContext.insert(Purchase(date: Date(), category: .Software(name: "Photoshop"), seller: "Adobe", price: .Cents(999)))
+    container.mainContext.insert(Purchase(date: Date(), category: .Restaurant(details: "Day trip to Rocktown", tip: .Cents(250)), seller: "Mentone Cafe", price: .Cents(980)))
+    container.mainContext.insert(Purchase(date: Date(), category: .Basic(name: "Other", details: "Testing the other category"), seller: "Amazon", price: .Cents(1391)))
     return NavigationStack {
         PurchaseListView(path: .constant([]))
     }.modelContainer(container)
