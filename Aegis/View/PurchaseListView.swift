@@ -36,11 +36,65 @@ struct PurchaseListView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    NavigationLink(value: ViewType.AddPurchase) {
+                    Button {
+                        path.append(.AddPurchase)
+                    } label: {
                         Label("Add", systemImage: "plus")
                     }
                 }
+                ToolbarItem(placement: .secondaryAction) {
+                    Button("Transfer") {
+                        for purchase in purchases {
+                            let expense = Expense(date: purchase.date, payee: purchase.seller, amount: purchase.price, category: purchase.category.getName(), details: toExpenseDetails(purchase))
+                            modelContext.insert(expense)
+                        }
+                    }
+                }
             }
+    }
+    
+    private func toExpenseDetails(_ purchase: Purchase) -> Expense.Details {
+        switch purchase.category {
+        case .Basic(_, let details):
+            return .Generic(details: details)
+        case .Charity(_, let details):
+            return .Generic(details: details)
+        case .Clothing(let name, let type, let size):
+            return .Clothing(name: name, brand: type, size: size)
+        case .Gas(let numGallons, let costPerGallon, let octane):
+            return .Gas(numGallons: numGallons, costPerGallon: costPerGallon, octane: octane)
+        case .Gift(_, let details):
+            return .Generic(details: details)
+        case .Groceries(let list):
+            return .Groceries(list: Expense.GroceryList(foods: list.foods.map({ Expense.GroceryList.Food(name: $0.name, totalPrice: $0.price, quantity: $0.quantity, category: toExpenseFoodCategory($0.category)) })))
+        case .Hardware(let name):
+            return .Generic(details: name)
+        case .Software(let name):
+            return .Generic(details: name)
+        case .Restaurant(let details, let tip):
+            return .Tip(details: details, tip: tip)
+        case .Shoes(let name, let brand, let size):
+            return .Clothing(name: name, brand: brand, size: size)
+        case .UtilityBill(let name, let unit, let usage, let rate):
+            return .UtilityBill(name: name, unit: unit, usage: usage, rate: rate)
+        }
+    }
+    
+    private func toExpenseFoodCategory(_ category: Purchase.Food.Category) -> Expense.GroceryList.Food.Category {
+        switch category {
+        case .Carbs:
+            return .Carbs
+        case .Fruits:
+            return .Fruits
+        case .Meal:
+            return .Meal
+        case .Meat:
+            return .Meat
+        case .Sweets:
+            return .Sweets
+        case .Vegetables:
+            return .Vegetables
+        }
     }
     
     @ViewBuilder

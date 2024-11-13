@@ -8,12 +8,23 @@
 import SwiftUI
 
 struct MainView: View {
+    @State private var legacyPath: [ViewType] = []
     @State private var path: [ViewType] = []
     
     var body: some View {
-        NavigationStack(path: $path) {
-            PurchaseListView(path: $path)
-                .navigationDestination(for: ViewType.self, destination: computeDestination)
+        TabView {
+            NavigationStack(path: $legacyPath) {
+                PurchaseListView(path: $legacyPath)
+                    .navigationDestination(for: ViewType.self, destination: computeDestination)
+            }.tabItem {
+                Label("Legacy", systemImage: "trash")
+            }
+            NavigationStack(path: $path) {
+                DateListView(path: $path)
+                    .navigationDestination(for: ViewType.self, destination: computeDestination)
+            }.tabItem {
+                Label("New", systemImage: "cloud")
+            }
         }
     }
     
@@ -26,6 +37,10 @@ struct MainView: View {
             EditPurchaseView(path: $path)
         case .EditPurchase(let purchase):
             EditPurchaseView(path: $path, purchase: purchase)
+        case .AddExpense:
+            EditExpenseView(path: $path)
+        case .EditExpense(let expense):
+            EditExpenseView(path: $path, expense: expense)
         }
     }
 }
@@ -34,6 +49,8 @@ enum ViewType: Hashable {
     case PurchaseListView
     case AddPurchase
     case EditPurchase(purchase: Purchase)
+    case AddExpense
+    case EditExpense(expense: Expense)
 }
 
 #Preview {

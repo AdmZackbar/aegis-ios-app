@@ -11,6 +11,10 @@
 		E887696E2CE1876C00D989E1 /* CurrencyUITextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887696C2CE1876C00D989E1 /* CurrencyUITextField.swift */; };
 		E887696F2CE1876C00D989E1 /* CurrencyTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887696D2CE1876C00D989E1 /* CurrencyTextField.swift */; };
 		E88769712CE1878B00D989E1 /* NumberFormatterProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769702CE1878B00D989E1 /* NumberFormatterProtocol.swift */; };
+		E88769772CE3FF4600D989E1 /* Expense.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769762CE3FF4600D989E1 /* Expense.swift */; };
+		E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769782CE3FF7400D989E1 /* Revenue.swift */; };
+		E887697B2CE4323600D989E1 /* EditExpenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887697A2CE4323600D989E1 /* EditExpenseView.swift */; };
+		E887697D2CE4672F00D989E1 /* DateListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887697C2CE4672F00D989E1 /* DateListView.swift */; };
 		E8EB2A672CE063A7000E4B67 /* AegisApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A662CE063A7000E4B67 /* AegisApp.swift */; };
 		E8EB2A6D2CE063A9000E4B67 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */; };
 		E8EB2A702CE063A9000E4B67 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8EB2A6F2CE063A9000E4B67 /* Preview Assets.xcassets */; };
@@ -46,6 +50,10 @@
 		E887696C2CE1876C00D989E1 /* CurrencyUITextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrencyUITextField.swift; sourceTree = "<group>"; };
 		E887696D2CE1876C00D989E1 /* CurrencyTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrencyTextField.swift; sourceTree = "<group>"; };
 		E88769702CE1878B00D989E1 /* NumberFormatterProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NumberFormatterProtocol.swift; sourceTree = "<group>"; };
+		E88769762CE3FF4600D989E1 /* Expense.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Expense.swift; sourceTree = "<group>"; };
+		E88769782CE3FF7400D989E1 /* Revenue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Revenue.swift; sourceTree = "<group>"; };
+		E887697A2CE4323600D989E1 /* EditExpenseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditExpenseView.swift; sourceTree = "<group>"; };
+		E887697C2CE4672F00D989E1 /* DateListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateListView.swift; sourceTree = "<group>"; };
 		E8EB2A632CE063A7000E4B67 /* Aegis.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aegis.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8EB2A662CE063A7000E4B67 /* AegisApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisApp.swift; sourceTree = "<group>"; };
 		E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -101,6 +109,8 @@
 			isa = PBXGroup;
 			children = (
 				E8EB2A932CE0649D000E4B67 /* Purchase.swift */,
+				E88769762CE3FF4600D989E1 /* Expense.swift */,
+				E88769782CE3FF7400D989E1 /* Revenue.swift */,
 			);
 			path = V1;
 			sourceTree = "<group>";
@@ -179,6 +189,8 @@
 			children = (
 				E8EB2A982CE10685000E4B67 /* PurchaseListView.swift */,
 				E88769692CE1852F00D989E1 /* EditPurchaseView.swift */,
+				E887697A2CE4323600D989E1 /* EditExpenseView.swift */,
+				E887697C2CE4672F00D989E1 /* DateListView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -313,11 +325,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E88769772CE3FF4600D989E1 /* Expense.swift in Sources */,
+				E887697B2CE4323600D989E1 /* EditExpenseView.swift in Sources */,
 				E8EB2A9D2CE11D39000E4B67 /* PreviewHelpers.swift in Sources */,
+				E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */,
 				E88769712CE1878B00D989E1 /* NumberFormatterProtocol.swift in Sources */,
 				E8EB2A942CE0649D000E4B67 /* Purchase.swift in Sources */,
 				E8EB2A992CE10685000E4B67 /* PurchaseListView.swift in Sources */,
 				E8EB2A672CE063A7000E4B67 /* AegisApp.swift in Sources */,
+				E887697D2CE4672F00D989E1 /* DateListView.swift in Sources */,
 				E8EB2A9B2CE1074F000E4B67 /* MainView.swift in Sources */,
 				E8EB2A962CE06617000E4B67 /* Schema.swift in Sources */,
 				E887696F2CE1876C00D989E1 /* CurrencyTextField.swift in Sources */,
