@@ -91,7 +91,16 @@ struct DateListView: View {
                 if !details.isEmpty {
                     Text(details).font(.caption)
                 }
-            case .Gas(let numGallons, let costPerGallon, let octane):
+            case .Tag(let tag, let details):
+                HStack {
+                    Text(expense.payee).font(.subheadline).italic()
+                    Spacer()
+                    Text(tag).font(.subheadline).italic()
+                }
+                if !details.isEmpty {
+                    Text(details).font(.caption)
+                }
+            case .Gas(let numGallons, let costPerGallon, let octane, let user):
                 let formatter: NumberFormatter = {
                     let formatter = NumberFormatter()
                     formatter.maximumFractionDigits = 1
@@ -118,7 +127,7 @@ struct DateListView: View {
                 } label: {
                     Text("\(list.foods.count) items").font(.subheadline).italic()
                 }
-            case .Tip(let details, let tip):
+            case .Tip(let tip, let details):
                 HStack(alignment: .top) {
                     Text(expense.payee).font(.subheadline).italic()
                     Spacer()
@@ -129,18 +138,14 @@ struct DateListView: View {
                 if !details.isEmpty {
                     Text(details).font(.caption)
                 }
-            case .UtilityBill(let name, let unit, let usage, let rate):
-                HStack {
-                    Text("\(expense.payee) (\(name)").font(.subheadline).italic()
-                    Spacer()
-                    Text("\(usage) \(unit) @ \(rate.toString())").font(.subheadline)
-                }
-            case .Clothing(let name, let brand, let size):
-                HStack {
-                    Text(expense.payee).font(.subheadline).italic()
-                    Spacer()
-                    Text("\(brand )\(name) (\(size)").font(.subheadline)
-                }
+            case .Bill(let type, let details):
+                // TODO
+//                HStack {
+//                    Text("\(expense.payee) (\(name)").font(.subheadline).italic()
+//                    Spacer()
+//                    Text("\(usage) \(unit) @ \(rate.toString())").font(.subheadline)
+//                }
+                Text("TODO")
             }
         }
     }

@@ -29,11 +29,48 @@ extension SchemaV1 {
         
         enum Details: Codable {
             case Generic(details: String)
-            case Gas(numGallons: Double, costPerGallon: Price, octane: Int)
-            case Tip(details: String, tip: Price)
-            case Clothing(name: String, brand: String, size: String)
-            case UtilityBill(name: String, unit: String, usage: Double, rate: Price)
+            case Tag(tag: String, details: String)
+            case Gas(amount: Double, rate: Price, octane: Int, user: String)
+            case Tip(tip: Price, details: String)
+            case Bill(type: BillType, details: String)
             case Groceries(list: GroceryList)
+        }
+        
+        enum BillType: Codable {
+            case Electric(amount: Double, rate: Price)
+            case Water(amount: Double, rate: Price)
+            case Sewer
+            case Trash
+            case Internet
+            case Other(name: String)
+            
+            func getName() -> String {
+                switch self {
+                case .Electric(_, _):
+                    return "Electric"
+                case .Water(_, _):
+                    return "Water"
+                case .Sewer:
+                    return "Sewer"
+                case .Trash:
+                    return "Trash"
+                case .Internet:
+                    return "Internet"
+                case .Other(let name):
+                    return name
+                }
+            }
+            
+            func getUnit() -> String? {
+                switch self {
+                case .Electric(_, _):
+                    return "kWH"
+                case .Water(_, _):
+                    return "gal"
+                default:
+                    return nil
+                }
+            }
         }
         
         // Need to wrap the list in a struct
@@ -42,16 +79,16 @@ extension SchemaV1 {
             
             struct Food: Codable, Hashable, Equatable {
                 var name: String
-                var totalPrice: Price
+                var unitPrice: Price
                 var quantity: Int
-                var unitPrice: Price {
+                var totalPrice: Price {
                     get {
-                        return totalPrice / Double(quantity)
+                        return unitPrice * Double(quantity)
                     }
                 }
                 var category: Category
                 
-                enum Category: Codable {
+                enum Category: String, Codable, Hashable, Equatable {
                     case Meat
                     case Carbs
                     case Meal

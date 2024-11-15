@@ -22,20 +22,88 @@ private struct CategoryInfo {
     let payee: String
     let amount: String
     let type: CategoryType
+    
+    init(payee: String = "Payee", amount: String = "Amount", type: CategoryType = .Generic()) {
+        self.payee = payee
+        self.amount = amount
+        self.type = type
+    }
 }
 
 private enum CategoryType {
-    case Generic(detailName: String, required: Bool = false)
+    case Generic(detail: String = "Details")
+    case Tag(tag: String, detail: String = "Details")
     case Gas
+    case Tip
+    case Bill
+    case Grocery
 }
 
 private let categoryInfo: [String : CategoryInfo] = {
     var map: [String : CategoryInfo] = [:]
-    map["Gas"] = CategoryInfo(payee: "Gas Station", amount: "Total Cost", type: .Gas)
-    map["Computer Hardware"] = CategoryInfo(payee: "Manufacturer", amount: "Price", type: .Generic(detailName: "Name", required: true))
-    map["Computer Software"] = CategoryInfo(payee: "Company", amount: "Price", type: .Generic(detailName: "Name", required: true))
-    map["Mortgage Bill"] = CategoryInfo(payee: "Lender", amount: "Amount", type: .Generic(detailName: "Billing Month"))
-    map["Mortgage Payment"] = CategoryInfo(payee: "Lender", amount: "Amount", type: .Generic(detailName: "Details"))
+    // Car
+    map["Gas"] = .init(payee: "Gas Station", amount: "Total Cost", type: .Gas)
+    map["Car Maintenance"] = .init(payee: "Seller", amount: "Price")
+    map["Car Insurance"] = .init(payee: "Company", amount: "Bill", type: .Generic(detail: "Time Period"))
+    map["Car Payment"] = .init(payee: "Seller")
+    map["Parking"] = .init(payee: "Location")
+    // Food
+    map["Groceries"] = .init(payee: "Store", amount: "Total Cost", type: .Grocery)
+    map["Snacks"] = .init(payee: "Store", amount: "Total Cost", type: .Grocery)
+    map["Restaurants"] = .init(payee: "Restaurant", amount: "Bill", type: .Tip)
+    map["Fast Food"] = .init(payee: "Restaurant", amount: "Cost")
+    map["Cookware"] = .init(payee: "Seller", amount: "Total Cost")
+    map["Grocery Membership"] = .init(payee: "Store", amount: "Price", type: .Generic(detail: "Time Period"))
+    // Housing
+    map["Rent"] = .init(payee: "Landlord", type: .Generic(detail: "Time Period"))
+    map["Mortgage Bill"] = .init(payee: "Lender", type: .Generic(detail: "Time Period"))
+    map["Housing Payment"] = .init(payee: "Recipient")
+    map["Utility Bill"] = .init(payee: "Company", amount: "Total Cost", type: .Bill)
+    map["Housing Maintenance"] = .init(payee: "Seller", amount: "Cost")
+    map["Appliances"] = .init(payee: "Seller", amount: "Total Cost")
+    map["Furniture"] = .init(payee: "Seller", amount: "Total Cost")
+    map["Decor"] = .init(payee: "Seller", amount: "Total Cost")
+    // Media
+    map["Video Games"] = .init(payee: "Platform", amount: "Price")
+    map["Music"] = .init(payee: "Platform", amount: "Price")
+    map["TV"] = .init(payee: "Platform", amount: "Price")
+    map["Books"] = .init(payee: "Seller", amount: "Price")
+    map["Games"] = .init(payee: "Seller", amount: "Price")
+    map["Other Media"] = .init(payee: "Seller", amount: "Price")
+    // Medical
+    map["Dental"] = .init(amount: "Total Cost")
+    map["Vision"] = .init(amount: "Total Cost")
+    map["Medicine"] = .init(payee: "Seller", amount: "Total Cost")
+    map["Clinic"] = .init(payee: "Clinic", amount: "Total Cost")
+    map["Physical Therapy"] = .init(payee: "Clinic", amount: "Total Cost")
+    map["Hospital"] = .init(payee: "Hospital", amount: "Total Cost")
+    // Personal
+    map["Apparel"] = .init(payee: "Seller", amount: "Price")
+    map["Hygiene"] = .init(payee: "Seller", amount: "Price")
+    map["Haircut"] = .init(payee: "Barbershop", amount: "Total Cost", type: .Tip)
+    // Recreation
+    map["Sports Facility"] = .init(amount: "Total Cost", type: .Tag(tag: "Sport"))
+    map["Sports Gear"] = .init(payee: "Seller", amount: "Price", type: .Tag(tag: "Sport"))
+    map["Sports Event"] = .init(payee: "Organization", amount: "Price", type: .Tag(tag: "Sport"))
+    map["Recreation Event"] = .init(payee: "Organization", amount: "Price")
+    // Technology
+    map["Tech Devices"] = .init(payee: "Seller", amount: "Price")
+    map["Device Accessories"] = .init(payee: "Seller", amount: "Price")
+    map["Computer Parts"] = .init(payee: "Seller", amount: "Price")
+    map["Peripherals"] = .init(payee: "Seller", amount: "Price")
+    map["Software"] = .init(payee: "Seller", amount: "Price")
+    map["Tech Service"] = .init(payee: "Seller", amount: "Price")
+    map["Digital Assets"] = .init(payee: "Seller", amount: "Price")
+    // Travel
+    map["Accommodations"] = .init(payee: "Company", amount: "Total Cost")
+    map["Rental Car"] = .init(payee: "Company", amount: "Total Cost")
+    map["Airfare"] = .init(payee: "Company", amount: "Total Cost")
+    map["Rideshare"] = .init(payee: "Company", amount: "Total Cost", type: .Tip)
+    // Other
+    map["Gift"] = .init(payee: "Recipient")
+    map["Charity"] = .init(payee: "Organization")
+    map["Taxes"] = .init(payee: "Type", amount: "Total Amount", type: .Generic(detail: "Time Period"))
+    map["Contributions"] = .init(payee: "Bank")
     return map
 }()
 
@@ -56,6 +124,7 @@ struct EditExpenseView: View {
     
     @State private var info: ExpenseInfo = ExpenseInfo()
     @State private var genericDetails: GenericExpenseView.Details = GenericExpenseView.Details()
+    @State private var tagDetails: TagExpenseView.Details = TagExpenseView.Details()
     @State private var gasDetails: GasExpenseView.Details = GasExpenseView.Details()
     
     init(path: Binding<[ViewType]>, expense: Expense? = nil) {
@@ -71,15 +140,10 @@ struct EditExpenseView: View {
             } else {
                 Section {
                     DatePicker("Date:", selection: $info.date, displayedComponents: .date)
-                    let info = categoryInfo[info.category, default: CategoryInfo(payee: "Seller", amount: "Amount", type: .Generic(detailName: "Details"))]
+                    let info = categoryInfo[info.category, default: .init()]
                     payeeTextField(info.payee)
                     amountTextField(info.amount)
-                    switch info.type {
-                    case .Generic(let detailName, let required):
-                        GenericExpenseView(details: $genericDetails, placeholder: detailName, required: required)
-                    case .Gas:
-                        GasExpenseView(details: $gasDetails)
-                    }
+                    detailsView(info.type)
                 } header: {
                     HStack {
                         Text(info.category)
@@ -120,6 +184,21 @@ struct EditExpenseView: View {
         }
     }
     
+    @ViewBuilder
+    private func detailsView(_ type: CategoryType) -> some View {
+        switch type {
+        case .Generic(let detail):
+            GenericExpenseView(details: $genericDetails, placeholder: detail)
+        case .Tag(let tag, let detail):
+            TagExpenseView(details: $tagDetails, tagPlaceholder: tag, detailPlaceholder: detail)
+        case .Gas:
+            GasExpenseView(details: $gasDetails)
+        // TODO
+        default:
+            GenericExpenseView(details: $genericDetails, placeholder: "Details")
+        }
+    }
+    
     private func back() {
         if info.category.isEmpty && !expense.category.isEmpty {
             info.category = expense.category
@@ -155,32 +234,48 @@ struct EditExpenseView: View {
     }
     
     private func computeDetails() -> Expense.Details {
-        switch categoryInfo[info.category]?.type ?? .Generic(detailName: "") {
-        case .Generic(_, _):
+        switch categoryInfo[info.category]?.type ?? .Generic(detail: "") {
+        case .Generic(_):
             return genericDetails.toExpense()
+        case .Tag(_, _):
+            return tagDetails.toExpense()
         case .Gas:
             return gasDetails.toExpense()
+        // TODO
+        default:
+            return genericDetails.toExpense()
         }
     }
     
     private let categories: [String : [String]] = {
         var map: [String : [String]] = [:]
-        map["Food"] = ["Groceries", "Fast Food", "Restaurant"]
-        map["Housing"] = ["Mortgage Bill", "Mortgage Payment", "Housing Maintenance", "Housing Utilities"]
-        map["Car"] = ["Gas", "Car Maintenance", "Car Fees"]
-        map["Media"] = ["Video Games", "Music", "Movies", "Games"]
-        map["Technology"] = ["Computer Hardware", "Computer Software"]
-        map["Other"] = ["Charity", "Gift"]
+        map["Car"] = ["Gas", "Car Maintenance", "Car Insurance", "Car Payment", "Parking"]
+        map["Food"] = ["Groceries", "Snacks", "Restaurant", "Fast Food", "Cookware", "Grocery Membership"]
+        map["Housing"] = ["Rent", "Mortgage Bill", "Housing Payment", "Utility Bill", "Housing Maintenance", "Appliances", "Furniture", "Decor"]
+        map["Media"] = ["Video Games", "Music", "TV", "Books", "Games", "Other Media"]
+        map["Medicine"] = ["Dental", "Vision", "Medicine", "Clinic", "Physical Therapy", "Hospital"]
+        map["Personal"] = ["Apparel", "Hygiene", "Haircut"]
+        map["Recreation"] = ["Sports Facility", "Sports Gear", "Sports Event", "Recreation Event"]
+        map["Technology"] = ["Tech Devices", "Device Accessories", "Computer Parts", "Peripherals", "Software", "Tech Service", "Digital Assets"]
+        map["Travel"] = ["Accomodations", "Rental Car", "Airfare", "Rideshare"]
+        map["Other"] = ["Gift", "Charity", "Taxes", "Contributions"]
         return map
     }()
     
     private func categoryView() -> some View {
-        ForEach(categories.sorted(by: { $0.key < $1.key }), id: \.key.hashValue) { header, children in
-            Section(header) {
-                ForEach(children, id: \.hashValue) { child in
-                    Button(child) {
-                        info.category = child
-                    }.tint(.primary)
+        Section("Select Category") {
+            ForEach(categories.sorted(by: { $0.key < $1.key }), id: \.key.hashValue) { header, children in
+                Menu {
+                    ForEach(children, id: \.hashValue) { child in
+                        Button(child) {
+                            info.category = child
+                        }
+                    }
+                } label: {
+                    HStack {
+                        Text(header).tint(.primary)
+                        Spacer()
+                    }.clipShape(Rectangle())
                 }
             }
         }
@@ -189,22 +284,17 @@ struct EditExpenseView: View {
 
 private struct GenericExpenseView: View {
     let placeholder: String
-    let required: Bool
     
     @Binding private var details: Details
     
-    init(details: Binding<Details>, placeholder: String, required: Bool = false) {
+    init(details: Binding<Details>, placeholder: String) {
         self._details = details
         self.placeholder = placeholder
-        self.required = required
     }
     
     var body: some View {
-        HStack(alignment: .top) {
-            Text("\(placeholder):")
-            TextField(required ? "required" : "optional", text: $details.details, axis: .vertical)
-                .lineLimit(2...8)
-        }
+        TextField(placeholder, text: $details.details, axis: .vertical)
+            .lineLimit(3...9)
     }
     
     struct Details {
@@ -221,6 +311,43 @@ private struct GenericExpenseView: View {
         
         func toExpense() -> Expense.Details {
             .Generic(details: details)
+        }
+    }
+}
+
+private struct TagExpenseView: View {
+    let tagPlaceholder: String
+    let detailPlaceholder: String
+    
+    @Binding private var details: Details
+    
+    init(details: Binding<Details>, tagPlaceholder: String, detailPlaceholder: String) {
+        self._details = details
+        self.tagPlaceholder = tagPlaceholder
+        self.detailPlaceholder = detailPlaceholder
+    }
+    
+    var body: some View {
+        TextField(tagPlaceholder, text: $details.tag)
+        TextField(detailPlaceholder, text: $details.details, axis: .vertical)
+            .lineLimit(3...9)
+    }
+    
+    struct Details {
+        var tag: String = ""
+        var details: String = ""
+        
+        static func fromExpense(_ details: Expense.Details) -> Details {
+            switch details {
+            case .Tag(let tag, let str):
+                return Details(tag: tag, details: str)
+            default:
+                return Details()
+            }
+        }
+        
+        func toExpense() -> Expense.Details {
+            .Tag(tag: tag, details: details)
         }
     }
 }
@@ -271,13 +398,14 @@ private struct GasExpenseView: View {
         var gallons: Double = 0.0
         var price: Int = 0
         var octane: Int = 87
+        var user: String = ""
         
         static func fromExpense(_ details: Expense.Details) -> Details {
             switch details {
-            case .Gas(let gallons, let price, let octane):
+            case .Gas(let gallons, let price, let octane, let user):
                 switch price {
                 case .Cents(let cents):
-                    return Details(gallons: gallons, price: cents, octane: octane)
+                    return Details(gallons: gallons, price: cents, octane: octane, user: user)
                 }
             default:
                 return Details()
@@ -285,7 +413,7 @@ private struct GasExpenseView: View {
         }
         
         func toExpense() -> Expense.Details {
-            .Gas(numGallons: gallons, costPerGallon: .Cents(price), octane: octane)
+            .Gas(amount: gallons, rate: .Cents(price), octane: octane, user: user)
         }
     }
 }

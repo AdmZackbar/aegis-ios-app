@@ -60,23 +60,23 @@ struct PurchaseListView: View {
         case .Charity(_, let details):
             return .Generic(details: details)
         case .Clothing(let name, let type, let size):
-            return .Clothing(name: name, brand: type, size: size)
+            return .Generic(details: "\(name) \(type) \(size)")
         case .Gas(let numGallons, let costPerGallon, let octane):
-            return .Gas(numGallons: numGallons, costPerGallon: costPerGallon, octane: octane)
+            return .Gas(amount: numGallons, rate: costPerGallon, octane: octane, user: "Personal Car")
         case .Gift(_, let details):
             return .Generic(details: details)
         case .Groceries(let list):
-            return .Groceries(list: Expense.GroceryList(foods: list.foods.map({ Expense.GroceryList.Food(name: $0.name, totalPrice: $0.price, quantity: $0.quantity, category: toExpenseFoodCategory($0.category)) })))
+            return .Groceries(list: Expense.GroceryList(foods: list.foods.map({ Expense.GroceryList.Food(name: $0.name, unitPrice: $0.price, quantity: $0.quantity, category: toExpenseFoodCategory($0.category)) })))
         case .Hardware(let name):
             return .Generic(details: name)
         case .Software(let name):
             return .Generic(details: name)
         case .Restaurant(let details, let tip):
-            return .Tip(details: details, tip: tip)
+            return .Tip(tip: tip, details: details)
         case .Shoes(let name, let brand, let size):
-            return .Clothing(name: name, brand: brand, size: size)
+            return .Generic(details: "\(brand) \(name) \(size)")
         case .UtilityBill(let name, let unit, let usage, let rate):
-            return .UtilityBill(name: name, unit: unit, usage: usage, rate: rate)
+            return .Bill(type: .Other(name: name), details: "")
         }
     }
     
