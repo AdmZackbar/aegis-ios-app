@@ -30,7 +30,7 @@ extension SchemaV1 {
         enum Details: Codable {
             case Generic(details: String)
             case Tag(tag: String, details: String)
-            case Gas(amount: Double, rate: Price, octane: Int, user: String)
+            case Fuel(amount: Double, rate: Double, type: String, user: String)
             case Tip(tip: Price, details: String)
             case Bill(details: BillDetails)
             case Groceries(list: GroceryList)
@@ -48,18 +48,18 @@ extension SchemaV1 {
             
             func getName() -> String {
                 switch self {
-                case .Flat(let name, let base):
+                case .Flat(let name, _):
                     return name
-                case .Variable(let name, let base, let amount, let rate):
+                case .Variable(let name, _, _, _):
                     return name
                 }
             }
             
             func getTotal() -> Price {
                 switch self {
-                case .Flat(let name, let base):
+                case .Flat(_, let base):
                     return base
-                case .Variable(let name, let base, let amount, let rate):
+                case .Variable(_, let base, let amount, let rate):
                     return base + .Cents(Int(round(amount * rate * 100.0)))
                 }
             }

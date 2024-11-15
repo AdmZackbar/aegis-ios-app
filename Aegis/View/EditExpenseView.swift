@@ -33,7 +33,7 @@ private struct CategoryInfo {
 private enum CategoryType {
     case Generic(detail: String = "Details")
     case Tag(tag: String, detail: String = "Details")
-    case Gas
+    case Fuel(validTypes: [String] = ["Gas", "Propane"])
     case Tip
     case Bill
     case Grocery
@@ -42,7 +42,7 @@ private enum CategoryType {
 private let categoryInfo: [String : CategoryInfo] = {
     var map: [String : CategoryInfo] = [:]
     // Car
-    map["Gas"] = .init(payee: "Gas Station", amount: "Total Cost", type: .Gas)
+    map["Gas"] = .init(payee: "Gas Station", amount: "Total Cost", type: .Fuel(validTypes: ["Gas"]))
     map["Car Maintenance"] = .init(payee: "Seller", amount: "Price")
     map["Car Insurance"] = .init(payee: "Company", amount: "Bill", type: .Generic(detail: "Time Period"))
     map["Car Payment"] = .init(payee: "Seller")
@@ -63,6 +63,7 @@ private let categoryInfo: [String : CategoryInfo] = {
     map["Appliances"] = .init(payee: "Seller", amount: "Total Cost")
     map["Furniture"] = .init(payee: "Seller", amount: "Total Cost")
     map["Decor"] = .init(payee: "Seller", amount: "Total Cost")
+    map["Fuel"] = .init(payee: "Station", amount: "Total Cost", type: .Fuel())
     // Media
     map["Video Games"] = .init(payee: "Platform", amount: "Price")
     map["Music"] = .init(payee: "Platform", amount: "Price")
@@ -125,7 +126,7 @@ struct EditExpenseView: View {
     @State private var info: ExpenseInfo = ExpenseInfo()
     @State private var genericDetails: GenericExpenseView.Details = GenericExpenseView.Details()
     @State private var tagDetails: TagExpenseView.Details = TagExpenseView.Details()
-    @State private var gasDetails: GasExpenseView.Details = GasExpenseView.Details()
+    @State private var fuelDetails: FuelExpenseView.Details = FuelExpenseView.Details()
     @State private var tipDetails: TipExpenseView.Details = TipExpenseView.Details()
     @State private var billDetails: BillExpenseView.Details = BillExpenseView.Details()
     
@@ -193,8 +194,8 @@ struct EditExpenseView: View {
             GenericExpenseView(details: $genericDetails, placeholder: detail)
         case .Tag(let tag, let detail):
             TagExpenseView(details: $tagDetails, tagPlaceholder: tag, detailPlaceholder: detail)
-        case .Gas:
-            GasExpenseView(details: $gasDetails)
+        case .Fuel(let validTypes):
+            FuelExpenseView(details: $fuelDetails, validTypes: validTypes)
         case .Tip:
             TipExpenseView(details: $tipDetails, detailPlaceholder: "Details")
         case .Bill:
@@ -224,7 +225,7 @@ struct EditExpenseView: View {
             info.category = expense.category
             genericDetails = GenericExpenseView.Details.fromExpense(expense.details)
             tagDetails = TagExpenseView.Details.fromExpense(expense.details)
-            gasDetails = GasExpenseView.Details.fromExpense(expense.details)
+            fuelDetails = FuelExpenseView.Details.fromExpense(expense.details)
             tipDetails = TipExpenseView.Details.fromExpense(expense.details)
             billDetails = BillExpenseView.Details.fromExpense(expense.details)
         }
@@ -248,8 +249,8 @@ struct EditExpenseView: View {
             return genericDetails.toExpense()
         case .Tag(_, _):
             return tagDetails.toExpense()
-        case .Gas:
-            return gasDetails.toExpense()
+        case .Fuel:
+            return fuelDetails.toExpense()
         case .Tip:
             return tipDetails.toExpense()
         case .Bill:
@@ -264,7 +265,7 @@ struct EditExpenseView: View {
         var map: [String : [String]] = [:]
         map["Car"] = ["Gas", "Car Maintenance", "Car Insurance", "Car Payment", "Parking"]
         map["Food"] = ["Groceries", "Snacks", "Restaurant", "Fast Food", "Cookware", "Grocery Membership"]
-        map["Housing"] = ["Rent", "Mortgage Bill", "Housing Payment", "Utility Bill", "Housing Maintenance", "Appliances", "Furniture", "Decor"]
+        map["Housing"] = ["Rent", "Mortgage Bill", "Housing Payment", "Utility Bill", "Housing Maintenance", "Appliances", "Furniture", "Decor", "Fuel"]
         map["Media"] = ["Video Games", "Music", "TV", "Books", "Games", "Other Media"]
         map["Medicine"] = ["Dental", "Vision", "Medicine", "Clinic", "Physical Therapy", "Hospital"]
         map["Personal"] = ["Apparel", "Hygiene", "Haircut"]
@@ -371,26 +372,27 @@ private struct TagExpenseView: View {
     }
 }
 
-private struct GasExpenseView: View {
-    static let OctaneValues: [Int] = [87, 89, 91, 93]
+private struct FuelExpenseView: View {
+    let validTypes: [String]
+    
+    static let GasUsers: [String] = ["Personal Car", "Tools", "Other"]
+    static let PropaneUsers: [String] = ["Grill", "Other"]
     
     private let formatter = {
         let formatter = NumberFormatter()
-        formatter.maximumFractionDigits = 3
+        formatter.maximumFractionDigits = 6
         formatter.zeroSymbol = ""
-        return formatter
-    }()
-    private let currencyFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.maximumFractionDigits = 2
         return formatter
     }()
     
     @Binding private var details: Details
     
-    init(details: Binding<Details>) {
+    init(details: Binding<Details>, validTypes: [String] = ["Gas", "Propane"]) {
         self._details = details
+        self.validTypes = validTypes
+        if !validTypes.contains(details.wrappedValue.type) {
+            details.wrappedValue.type = validTypes.first ?? ""
+        }
     }
     
     var body: some View {
@@ -401,38 +403,52 @@ private struct GasExpenseView: View {
         }
         HStack {
             Text("Rate:")
-            CurrencyTextField(numberFormatter: currencyFormatter, value: $details.price)
+            TextField("required", value: $details.rate, formatter: formatter)
+                .keyboardType(.decimalPad)
         }
-        HStack {
-            Text("Octane:")
-            Picker("", selection: $details.octane) {
-                ForEach(GasExpenseView.OctaneValues, id: \.hashValue) { value in
-                    Text("\(value)").tag(value)
+        if validTypes.count > 1 {
+            Picker("Type", selection: $details.type) {
+                ForEach(validTypes, id: \.hashValue) { type in
+                    Text(type).tag(type)
                 }
             }.pickerStyle(.segmented)
+        } else if validTypes.isEmpty {
+            TextField("Type", text: $details.type)
+        }
+        if details.type == "Gas" {
+            Picker("", selection: $details.user) {
+                ForEach(FuelExpenseView.GasUsers, id: \.hashValue) { user in
+                    Text(user).tag(user)
+                }
+            }.pickerStyle(.segmented)
+        } else if details.type == "Propane" {
+            Picker("", selection: $details.user) {
+                ForEach(FuelExpenseView.PropaneUsers, id: \.hashValue) { user in
+                    Text(user).tag(user)
+                }
+            }.pickerStyle(.segmented)
+        } else {
+            TextField("User", text: $details.user)
         }
     }
     
     struct Details {
         var gallons: Double = 0.0
-        var price: Int = 0
-        var octane: Int = 87
-        var user: String = ""
+        var rate: Double = 0.0
+        var type: String = "Gas"
+        var user: String = "Personal Car"
         
         static func fromExpense(_ details: Expense.Details) -> Details {
             switch details {
-            case .Gas(let gallons, let price, let octane, let user):
-                switch price {
-                case .Cents(let cents):
-                    return Details(gallons: gallons, price: cents, octane: octane, user: user)
-                }
+            case .Fuel(let gallons, let rate, let type, let user):
+                return Details(gallons: gallons, rate: rate, type: type, user: user)
             default:
                 return Details()
             }
         }
         
         func toExpense() -> Expense.Details {
-            .Gas(amount: gallons, rate: .Cents(price), octane: octane, user: user)
+            .Fuel(amount: gallons, rate: rate, type: type, user: user)
         }
     }
 }
@@ -690,6 +706,6 @@ private struct BillExpenseView: View {
 
 #Preview {
     NavigationStack {
-        EditExpenseView(path: .constant([]), expense: .init(date: .now, payee: "Util Company", amount: .Cents(6010), category: "Utility Bill", details: .Bill(details: .init(types: [.Variable(name: "Electric", base: .Cents(4002), amount: 203.1, rate: 0.000123)], tax: .Cents(30), details: "Test"))))
+        EditExpenseView(path: .constant([]), expense: .init(date: .now, payee: "Util Company", amount: .Cents(6010), category: "Fuel", details: .Fuel(amount: 1.0, rate: 0.1, type: "Gas", user: "Personal Car")))
     }
 }

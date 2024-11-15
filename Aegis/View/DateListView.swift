@@ -100,17 +100,17 @@ struct DateListView: View {
                 if !details.isEmpty {
                     Text(details).font(.caption)
                 }
-            case .Gas(let numGallons, let costPerGallon, let octane, _):
-                let formatter: NumberFormatter = {
-                    let formatter = NumberFormatter()
-                    formatter.maximumFractionDigits = 1
-                    return formatter
-                }()
+            case .Fuel(let numGallons, let costPerGallon, let type, let user):
                 HStack(alignment: .top) {
                     Text(expense.payee).font(.subheadline).italic()
                     Spacer()
-                    Text("\(formatter.string(for: numGallons)!) gal (\(formatter.string(for: octane)!)) @ \(costPerGallon.toString())")
+                    Text("\(numGallons.formatted(.number.precision(.fractionLength(0...1)))) gal @ \(costPerGallon.formatted(.currency(code: "USD")))")
                         .font(.subheadline).italic()
+                }
+                HStack {
+                    Text(user).font(.caption)
+                    Spacer()
+                    Text(type).font(.caption)
                 }
             case .Groceries(let list):
                 DisclosureGroup {

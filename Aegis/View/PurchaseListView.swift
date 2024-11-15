@@ -62,7 +62,7 @@ struct PurchaseListView: View {
         case .Clothing(let name, let type, let size):
             return .Generic(details: "\(name) \(type) \(size)")
         case .Gas(let numGallons, let costPerGallon, let octane):
-            return .Gas(amount: numGallons, rate: costPerGallon, octane: octane, user: "Personal Car")
+            return .Fuel(amount: numGallons, rate: costPerGallon.toUsd(), type: "Gas", user: "Personal Car")
         case .Gift(_, let details):
             return .Generic(details: details)
         case .Groceries(let list):
@@ -75,7 +75,7 @@ struct PurchaseListView: View {
             return .Tip(tip: tip, details: details)
         case .Shoes(let name, let brand, let size):
             return .Generic(details: "\(brand) \(name) \(size)")
-        case .UtilityBill(let name, let unit, let usage, let rate):
+        case .UtilityBill(let name, _, _, _):
             return .Generic(details: name)
         }
     }
