@@ -104,20 +104,15 @@ struct DateListView: View {
                     Text(type).font(.caption)
                 }
             case .Groceries(let list):
-                DisclosureGroup {
-                    Grid {
-                        ForEach(list.foods, id: \.hashValue) { food in
-                            GridRow {
-                                Text(food.name).font(.caption).gridCellAnchor(.leading)
-                                Spacer()
-                                Text("x\(food.quantity)").font(.caption)
-                                Text(food.totalPrice.toString()).font(.caption).bold().gridCellAnchor(.trailing)
-                            }
-                        }
-                    }
+                Button {
+                    path.append(.ViewGroceryListExpense(expense: expense))
                 } label: {
-                    Text("\(list.foods.count) items").font(.subheadline).italic()
-                }
+                    HStack {
+                        Text(expense.payee)
+                        Spacer()
+                        Text("\(list.foods.count) items")
+                    }
+                }.font(.subheadline).italic().tint(.primary)
             case .Tip(let tip, let details):
                 HStack(alignment: .top) {
                     Text(expense.payee).font(.subheadline).italic()
@@ -149,8 +144,7 @@ struct DateListView: View {
 
 #Preview {
     let container = createTestModelContainer()
-    container.mainContext.insert(Expense(date: .now, payee: "Costo", amount: .Cents(3541), category: "Gas", details: .Fuel(amount: 11.123, rate: 2.652, type: "Gas", user: "Personal Vehicle")))
-    container.mainContext.insert(Expense(date: .now, payee: "NBKC Bank", amount: .Cents(600), category: "Housing Payment", details: .Generic(details: "November payment")))
+    addExpenses(container.mainContext)
     return NavigationStack {
         DateListView(path: .constant([]))
     }.modelContainer(container)

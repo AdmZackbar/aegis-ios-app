@@ -48,6 +48,8 @@ struct MainView: View {
             EditExpenseView(path: $path)
         case .EditExpense(let expense):
             EditExpenseView(path: $path, expense: expense)
+        case .ViewGroceryListExpense(let expense):
+            GroceryListExpenseView(path: $path, expense: expense)
         }
     }
 }
@@ -56,11 +58,11 @@ enum ViewType: Hashable {
     case ListByDate
     case AddExpense
     case EditExpense(expense: Expense)
+    case ViewGroceryListExpense(expense: Expense)
 }
 
 #Preview {
     let container = createTestModelContainer()
-    container.mainContext.insert(Expense(date: .now, payee: "Costo", amount: .Cents(3541), category: "Gas", details: .Fuel(amount: 11.123, rate: 2.652, type: "Gas", user: "Personal Vehicle")))
-    container.mainContext.insert(Expense(date: .now, payee: "NBKC Bank", amount: .Cents(600), category: "Housing Payment", details: .Generic(details: "November payment")))
+    addExpenses(container.mainContext)
     return MainView().modelContainer(container)
 }
