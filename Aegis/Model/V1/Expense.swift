@@ -78,16 +78,7 @@ extension SchemaV1 {
                         return unitPrice * Double(quantity)
                     }
                 }
-                var category: Category
-                
-                enum Category: String, Codable, Hashable, Equatable {
-                    case Meat
-                    case Carbs
-                    case Meal
-                    case Vegetables
-                    case Fruits
-                    case Sweets
-                }
+                var category: String
             }
         }
     }

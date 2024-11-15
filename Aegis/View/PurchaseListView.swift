@@ -66,7 +66,7 @@ struct PurchaseListView: View {
         case .Gift(_, let details):
             return .Generic(details: details)
         case .Groceries(let list):
-            return .Groceries(list: Expense.GroceryList(foods: list.foods.map({ Expense.GroceryList.Food(name: $0.name, unitPrice: $0.price, quantity: $0.quantity, category: toExpenseFoodCategory($0.category)) })))
+            return .Groceries(list: Expense.GroceryList(foods: list.foods.map({ Expense.GroceryList.Food(name: $0.name, unitPrice: $0.price, quantity: $0.quantity, category: $0.category.rawValue) })))
         case .Hardware(let name):
             return .Generic(details: name)
         case .Software(let name):
@@ -77,23 +77,6 @@ struct PurchaseListView: View {
             return .Generic(details: "\(brand) \(name) \(size)")
         case .UtilityBill(let name, _, _, _):
             return .Generic(details: name)
-        }
-    }
-    
-    private func toExpenseFoodCategory(_ category: Purchase.Food.Category) -> Expense.GroceryList.Food.Category {
-        switch category {
-        case .Carbs:
-            return .Carbs
-        case .Fruits:
-            return .Fruits
-        case .Meal:
-            return .Meal
-        case .Meat:
-            return .Meat
-        case .Sweets:
-            return .Sweets
-        case .Vegetables:
-            return .Vegetables
         }
     }
     

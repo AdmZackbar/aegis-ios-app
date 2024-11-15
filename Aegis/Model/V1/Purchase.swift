@@ -76,7 +76,7 @@ extension SchemaV1 {
             var price: Price
             var quantity: Int
             
-            enum Category: Codable {
+            enum Category: String, Codable {
                 case Meat
                 case Carbs
                 case Meal
