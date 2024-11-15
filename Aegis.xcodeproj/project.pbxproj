@@ -136,7 +136,6 @@
 			isa = PBXGroup;
 			children = (
 				E8EB2A662CE063A7000E4B67 /* AegisApp.swift */,
-				E8EB2A9A2CE1074F000E4B67 /* MainView.swift */,
 				E8EB2A9C2CE11D39000E4B67 /* PreviewHelpers.swift */,
 				E8EB2A922CE06478000E4B67 /* Model */,
 				E8EB2A972CE10630000E4B67 /* View */,
@@ -185,6 +184,7 @@
 		E8EB2A972CE10630000E4B67 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				E8EB2A9A2CE1074F000E4B67 /* MainView.swift */,
 				E887697C2CE4672F00D989E1 /* DateListView.swift */,
 				E887697A2CE4323600D989E1 /* EditExpenseView.swift */,
 			);
