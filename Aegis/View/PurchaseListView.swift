@@ -76,7 +76,7 @@ struct PurchaseListView: View {
         case .Shoes(let name, let brand, let size):
             return .Generic(details: "\(brand) \(name) \(size)")
         case .UtilityBill(let name, let unit, let usage, let rate):
-            return .Bill(type: .Other(name: name), details: "")
+            return .Generic(details: name)
         }
     }
     

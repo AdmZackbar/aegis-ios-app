@@ -50,7 +50,7 @@ private let categoryInfo: [String : CategoryInfo] = {
     // Food
     map["Groceries"] = .init(payee: "Store", amount: "Total Cost", type: .Grocery)
     map["Snacks"] = .init(payee: "Store", amount: "Total Cost", type: .Grocery)
-    map["Restaurants"] = .init(payee: "Restaurant", amount: "Bill", type: .Tip)
+    map["Restaurant"] = .init(payee: "Restaurant", amount: "Bill", type: .Tip)
     map["Fast Food"] = .init(payee: "Restaurant", amount: "Cost")
     map["Cookware"] = .init(payee: "Seller", amount: "Total Cost")
     map["Grocery Membership"] = .init(payee: "Store", amount: "Price", type: .Generic(detail: "Time Period"))
@@ -126,6 +126,8 @@ struct EditExpenseView: View {
     @State private var genericDetails: GenericExpenseView.Details = GenericExpenseView.Details()
     @State private var tagDetails: TagExpenseView.Details = TagExpenseView.Details()
     @State private var gasDetails: GasExpenseView.Details = GasExpenseView.Details()
+    @State private var tipDetails: TipExpenseView.Details = TipExpenseView.Details()
+    @State private var billDetails: BillExpenseView.Details = BillExpenseView.Details()
     
     init(path: Binding<[ViewType]>, expense: Expense? = nil) {
         self._path = path
@@ -193,6 +195,10 @@ struct EditExpenseView: View {
             TagExpenseView(details: $tagDetails, tagPlaceholder: tag, detailPlaceholder: detail)
         case .Gas:
             GasExpenseView(details: $gasDetails)
+        case .Tip:
+            TipExpenseView(details: $tipDetails, detailPlaceholder: "Details")
+        case .Bill:
+            BillExpenseView(details: $billDetails, detailPlaceholder: "Details")
         // TODO
         default:
             GenericExpenseView(details: $genericDetails, placeholder: "Details")
@@ -217,7 +223,10 @@ struct EditExpenseView: View {
             }
             info.category = expense.category
             genericDetails = GenericExpenseView.Details.fromExpense(expense.details)
+            tagDetails = TagExpenseView.Details.fromExpense(expense.details)
             gasDetails = GasExpenseView.Details.fromExpense(expense.details)
+            tipDetails = TipExpenseView.Details.fromExpense(expense.details)
+            billDetails = BillExpenseView.Details.fromExpense(expense.details)
         }
     }
     
@@ -241,6 +250,10 @@ struct EditExpenseView: View {
             return tagDetails.toExpense()
         case .Gas:
             return gasDetails.toExpense()
+        case .Tip:
+            return tipDetails.toExpense()
+        case .Bill:
+            return billDetails.toExpense()
         // TODO
         default:
             return genericDetails.toExpense()
@@ -273,10 +286,10 @@ struct EditExpenseView: View {
                     }
                 } label: {
                     HStack {
-                        Text(header).tint(.primary)
+                        Text(header)
                         Spacer()
-                    }.clipShape(Rectangle())
-                }
+                    }.frame(height: 36).contentShape(Rectangle())
+                }.buttonStyle(.plain)
             }
         }
     }
@@ -341,6 +354,12 @@ private struct TagExpenseView: View {
             switch details {
             case .Tag(let tag, let str):
                 return Details(tag: tag, details: str)
+            case .Generic(let details):
+                return Details(details: details)
+            case .Tip(_, let details):
+                return Details(details: details)
+            case .Bill(let details):
+                return Details(details: details.details)
             default:
                 return Details()
             }
@@ -418,8 +437,259 @@ private struct GasExpenseView: View {
     }
 }
 
+private struct TipExpenseView: View {
+    let detailPlaceholder: String
+    
+    @Binding private var details: Details
+    
+    private let currencyFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.maximumFractionDigits = 2
+        return formatter
+    }()
+    
+    init(details: Binding<Details>, detailPlaceholder: String) {
+        self._details = details
+        self.detailPlaceholder = detailPlaceholder
+    }
+    
+    var body: some View {
+        HStack {
+            Text("Tip:")
+            CurrencyTextField(numberFormatter: currencyFormatter, value: $details.tip)
+        }
+        TextField(detailPlaceholder, text: $details.details, axis: .vertical)
+            .lineLimit(3...9)
+    }
+    
+    struct Details {
+        var tip: Int = 0
+        var details: String = ""
+        
+        static func fromExpense(_ details: Expense.Details) -> Details {
+            switch details {
+            case .Tip(let tip, let str):
+                switch tip {
+                case .Cents(let amount):
+                    return Details(tip: amount, details: str)
+                }
+            case .Generic(let details):
+                return Details(details: details)
+            case .Tag(_, let details):
+                return Details(details: details)
+            case .Bill(let details):
+                return Details(details: details.details)
+            default:
+                return Details()
+            }
+        }
+        
+        func toExpense() -> Expense.Details {
+            .Tip(tip: .Cents(tip), details: details)
+        }
+    }
+}
+
+private struct BillExpenseView: View {
+    enum BillType: Codable, Equatable, Hashable {
+        case Flat
+        case Variable
+    }
+    
+    let detailPlaceholder: String
+    
+    @Binding private var details: Details
+    @State private var typeDetails: TypeDetails = TypeDetails()
+    @State private var itemIndex: Int = -1
+    @State private var sheetShowing: Bool = false
+    
+    private let formatter = {
+        let formatter = NumberFormatter()
+        formatter.maximumFractionDigits = 3
+        formatter.zeroSymbol = ""
+        return formatter
+    }()
+    private let currencyFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.maximumFractionDigits = 2
+        return formatter
+    }()
+    
+    init(details: Binding<Details>, detailPlaceholder: String) {
+        self._details = details
+        self.detailPlaceholder = detailPlaceholder
+    }
+    
+    var body: some View {
+        HStack {
+            Text("Tax:")
+            CurrencyTextField(numberFormatter: currencyFormatter, value: $details.tax)
+        }
+        TextField(detailPlaceholder, text: $details.details, axis: .vertical)
+            .lineLimit(3...9)
+        ForEach(details.types, id: \.hashValue) { type in
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(type.name).bold()
+                    Text("Base Charge: \(Price.Cents(type.base).toString())")
+                        .font(.subheadline).italic()
+                    if type.type == .Variable {
+                        Text("Amount: \(type.amount.formatted())").font(.caption).italic()
+                        Text("Rate: \(type.rate.formatted())").font(.caption).italic()
+                    }
+                }
+                Spacer()
+                Button("Edit") {
+                    itemIndex = details.types.firstIndex(of: type)!
+                    typeDetails = type
+                    sheetShowing = true
+                }
+            }
+        }
+        Button("Add Charge") {
+            typeDetails = TypeDetails()
+            itemIndex = -1
+            sheetShowing = true
+        }.sheet(isPresented: $sheetShowing) {
+            NavigationStack {
+                Form {
+                    BillTypeView(typeDetails: $typeDetails)
+                }.navigationTitle(itemIndex < 0 ? "Add Bill" : "Edit Bill")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .navigationBarBackButtonHidden()
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel") {
+                                sheetShowing = false
+                            }
+                        }
+                        ToolbarItem(placement: .primaryAction) {
+                            Button("Save") {
+                                if itemIndex >= 0 && itemIndex < details.types.count {
+                                    details.types[itemIndex] = typeDetails
+                                } else {
+                                    details.types.append(typeDetails)
+                                }
+                                sheetShowing = false
+                            }
+                        }
+                    }
+            }.presentationDetents([.height(340)])
+        }
+    }
+    
+    struct BillTypeView: View {
+        @Binding private var typeDetails: TypeDetails
+        
+        private let formatter = {
+            let formatter = NumberFormatter()
+            formatter.maximumFractionDigits = 7
+            formatter.zeroSymbol = ""
+            return formatter
+        }()
+        private let currencyFormatter = {
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .currency
+            formatter.maximumFractionDigits = 2
+            return formatter
+        }()
+        private let names: [String] = ["Electric", "Water", "Sewer", "Trash", "Internet", "Other"]
+        
+        init(typeDetails: Binding<TypeDetails>) {
+            self._typeDetails = typeDetails
+        }
+        
+        var body: some View {
+            HStack {
+                Text("Type:")
+                Picker("", selection: $typeDetails.type) {
+                    Text("Flat").tag(BillType.Flat)
+                    Text("Variable").tag(BillType.Variable)
+                }.pickerStyle(.segmented)
+            }
+            Picker("Name:", selection: $typeDetails.name) {
+                ForEach(names, id: \.hashValue) { name in
+                    Text(name).tag(name)
+                }
+            }
+            HStack {
+                Text("Base Charge:")
+                CurrencyTextField(numberFormatter: currencyFormatter, value: $typeDetails.base)
+            }
+            if typeDetails.type == .Variable {
+                HStack {
+                    Text("Usage:")
+                    TextField("", value: $typeDetails.amount, formatter: formatter)
+                        .keyboardType(.decimalPad)
+                }
+                HStack {
+                    Text("Rate:")
+                    TextField("", value: $typeDetails.rate, formatter: formatter)
+                        .keyboardType(.decimalPad)
+                }
+            }
+        }
+    }
+    
+    struct TypeDetails: Codable, Hashable, Equatable {
+        var type: BillType = .Flat
+        var name: String = "Electric"
+        var base: Int = 0
+        var amount: Double = 0.0
+        var rate: Double = 0.0
+    }
+    
+    struct Details {
+        var types: [TypeDetails] = []
+        var tax: Int = 0
+        var details: String = ""
+        
+        static func fromExpense(_ details: Expense.Details) -> Details {
+            switch details {
+            case .Bill(let details):
+                switch details.tax {
+                case .Cents(let cents):
+                    return Details(types: details.types.map(toType), tax: cents, details: details.details)
+                }
+            default:
+                return Details()
+            }
+        }
+        
+        private static func toType(_ type: Expense.BillType) -> TypeDetails {
+            switch type {
+            case .Flat(let name, let base):
+                switch base {
+                case .Cents(let cents):
+                    return .init(type: .Flat, name: name, base: cents)
+                }
+            case .Variable(let name, let base, let amount, let rate):
+                switch base {
+                case .Cents(let cents):
+                    return .init(type: .Variable, name: name, base: cents, amount: amount, rate: rate)
+                }
+            }
+        }
+        
+        func toExpense() -> Expense.Details {
+            return .Bill(details: .init(types: types.map(toBillType), tax: .Cents(tax), details: details))
+        }
+        
+        private func toBillType(_ type: TypeDetails) -> Expense.BillType {
+            switch type.type {
+            case .Flat:
+                return .Flat(name: type.name, base: .Cents(type.base))
+            case .Variable:
+                return .Variable(name: type.name, base: .Cents(type.base), amount: type.amount, rate: type.rate)
+            }
+        }
+    }
+}
+
 #Preview {
     NavigationStack {
-        EditExpenseView(path: .constant([]))
+        EditExpenseView(path: .constant([]), expense: .init(date: .now, payee: "Util Company", amount: .Cents(6010), category: "Utility Bill", details: .Bill(details: .init(types: [.Variable(name: "Electric", base: .Cents(4002), amount: 203.1, rate: 0.000123)], tax: .Cents(30), details: "Test"))))
     }
 }

@@ -100,7 +100,7 @@ struct DateListView: View {
                 if !details.isEmpty {
                     Text(details).font(.caption)
                 }
-            case .Gas(let numGallons, let costPerGallon, let octane, let user):
+            case .Gas(let numGallons, let costPerGallon, let octane, _):
                 let formatter: NumberFormatter = {
                     let formatter = NumberFormatter()
                     formatter.maximumFractionDigits = 1
@@ -138,14 +138,19 @@ struct DateListView: View {
                 if !details.isEmpty {
                     Text(details).font(.caption)
                 }
-            case .Bill(let type, let details):
-                // TODO
-//                HStack {
-//                    Text("\(expense.payee) (\(name)").font(.subheadline).italic()
-//                    Spacer()
-//                    Text("\(usage) \(unit) @ \(rate.toString())").font(.subheadline)
-//                }
-                Text("TODO")
+            case .Bill(let details):
+                HStack {
+                    Text(expense.payee).font(.subheadline).italic()
+                    Spacer()
+                }
+                ForEach(details.types, id: \.hashValue) { type in
+                    HStack {
+                        Text(type.getName())
+                        Spacer()
+                        Text(type.getTotal().toString())
+                    }.font(.subheadline)
+                }
+                Text(details.details).font(.caption)
             }
         }
     }

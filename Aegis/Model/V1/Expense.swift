@@ -32,43 +32,35 @@ extension SchemaV1 {
             case Tag(tag: String, details: String)
             case Gas(amount: Double, rate: Price, octane: Int, user: String)
             case Tip(tip: Price, details: String)
-            case Bill(type: BillType, details: String)
+            case Bill(details: BillDetails)
             case Groceries(list: GroceryList)
         }
         
-        enum BillType: Codable {
-            case Electric(amount: Double, rate: Price)
-            case Water(amount: Double, rate: Price)
-            case Sewer
-            case Trash
-            case Internet
-            case Other(name: String)
+        struct BillDetails: Codable {
+            var types: [BillType]
+            var tax: Price
+            var details: String
+        }
+        
+        enum BillType: Codable, Hashable, Equatable {
+            case Flat(name: String, base: Price)
+            case Variable(name: String, base: Price, amount: Double, rate: Double)
             
             func getName() -> String {
                 switch self {
-                case .Electric(_, _):
-                    return "Electric"
-                case .Water(_, _):
-                    return "Water"
-                case .Sewer:
-                    return "Sewer"
-                case .Trash:
-                    return "Trash"
-                case .Internet:
-                    return "Internet"
-                case .Other(let name):
+                case .Flat(let name, let base):
+                    return name
+                case .Variable(let name, let base, let amount, let rate):
                     return name
                 }
             }
             
-            func getUnit() -> String? {
+            func getTotal() -> Price {
                 switch self {
-                case .Electric(_, _):
-                    return "kWH"
-                case .Water(_, _):
-                    return "gal"
-                default:
-                    return nil
+                case .Flat(let name, let base):
+                    return base
+                case .Variable(let name, let base, let amount, let rate):
+                    return base + .Cents(Int(round(amount * rate * 100.0)))
                 }
             }
         }
