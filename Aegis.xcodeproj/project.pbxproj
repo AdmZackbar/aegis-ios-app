@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E887696A2CE1852F00D989E1 /* EditPurchaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769692CE1852F00D989E1 /* EditPurchaseView.swift */; };
 		E887696E2CE1876C00D989E1 /* CurrencyUITextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887696C2CE1876C00D989E1 /* CurrencyUITextField.swift */; };
 		E887696F2CE1876C00D989E1 /* CurrencyTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887696D2CE1876C00D989E1 /* CurrencyTextField.swift */; };
 		E88769712CE1878B00D989E1 /* NumberFormatterProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769702CE1878B00D989E1 /* NumberFormatterProtocol.swift */; };
@@ -15,15 +14,14 @@
 		E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769782CE3FF7400D989E1 /* Revenue.swift */; };
 		E887697B2CE4323600D989E1 /* EditExpenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887697A2CE4323600D989E1 /* EditExpenseView.swift */; };
 		E887697D2CE4672F00D989E1 /* DateListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887697C2CE4672F00D989E1 /* DateListView.swift */; };
+		E88769802CE7DD9D00D989E1 /* Price.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887697F2CE7DD9D00D989E1 /* Price.swift */; };
 		E8EB2A672CE063A7000E4B67 /* AegisApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A662CE063A7000E4B67 /* AegisApp.swift */; };
 		E8EB2A6D2CE063A9000E4B67 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */; };
 		E8EB2A702CE063A9000E4B67 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8EB2A6F2CE063A9000E4B67 /* Preview Assets.xcassets */; };
 		E8EB2A7A2CE063A9000E4B67 /* AegisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A792CE063A9000E4B67 /* AegisTests.swift */; };
 		E8EB2A842CE063A9000E4B67 /* AegisUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A832CE063A9000E4B67 /* AegisUITests.swift */; };
 		E8EB2A862CE063A9000E4B67 /* AegisUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A852CE063A9000E4B67 /* AegisUITestsLaunchTests.swift */; };
-		E8EB2A942CE0649D000E4B67 /* Purchase.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A932CE0649D000E4B67 /* Purchase.swift */; };
 		E8EB2A962CE06617000E4B67 /* Schema.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A952CE06617000E4B67 /* Schema.swift */; };
-		E8EB2A992CE10685000E4B67 /* PurchaseListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A982CE10685000E4B67 /* PurchaseListView.swift */; };
 		E8EB2A9B2CE1074F000E4B67 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A9A2CE1074F000E4B67 /* MainView.swift */; };
 		E8EB2A9D2CE11D39000E4B67 /* PreviewHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A9C2CE11D39000E4B67 /* PreviewHelpers.swift */; };
 /* End PBXBuildFile section */
@@ -46,7 +44,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		E88769692CE1852F00D989E1 /* EditPurchaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditPurchaseView.swift; sourceTree = "<group>"; };
 		E887696C2CE1876C00D989E1 /* CurrencyUITextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrencyUITextField.swift; sourceTree = "<group>"; };
 		E887696D2CE1876C00D989E1 /* CurrencyTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrencyTextField.swift; sourceTree = "<group>"; };
 		E88769702CE1878B00D989E1 /* NumberFormatterProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NumberFormatterProtocol.swift; sourceTree = "<group>"; };
@@ -55,6 +52,7 @@
 		E887697A2CE4323600D989E1 /* EditExpenseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditExpenseView.swift; sourceTree = "<group>"; };
 		E887697C2CE4672F00D989E1 /* DateListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateListView.swift; sourceTree = "<group>"; };
 		E887697E2CE6881600D989E1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		E887697F2CE7DD9D00D989E1 /* Price.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Price.swift; sourceTree = "<group>"; };
 		E8EB2A632CE063A7000E4B67 /* Aegis.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aegis.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8EB2A662CE063A7000E4B67 /* AegisApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisApp.swift; sourceTree = "<group>"; };
 		E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -64,9 +62,7 @@
 		E8EB2A7F2CE063A9000E4B67 /* AegisUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AegisUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8EB2A832CE063A9000E4B67 /* AegisUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisUITests.swift; sourceTree = "<group>"; };
 		E8EB2A852CE063A9000E4B67 /* AegisUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		E8EB2A932CE0649D000E4B67 /* Purchase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Purchase.swift; sourceTree = "<group>"; };
 		E8EB2A952CE06617000E4B67 /* Schema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Schema.swift; sourceTree = "<group>"; };
-		E8EB2A982CE10685000E4B67 /* PurchaseListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseListView.swift; sourceTree = "<group>"; };
 		E8EB2A9A2CE1074F000E4B67 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		E8EB2A9C2CE11D39000E4B67 /* PreviewHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewHelpers.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -109,7 +105,6 @@
 		E88769722CE1881A00D989E1 /* V1 */ = {
 			isa = PBXGroup;
 			children = (
-				E8EB2A932CE0649D000E4B67 /* Purchase.swift */,
 				E88769762CE3FF4600D989E1 /* Expense.swift */,
 				E88769782CE3FF7400D989E1 /* Revenue.swift */,
 			);
@@ -181,6 +176,7 @@
 			isa = PBXGroup;
 			children = (
 				E8EB2A952CE06617000E4B67 /* Schema.swift */,
+				E887697F2CE7DD9D00D989E1 /* Price.swift */,
 				E88769722CE1881A00D989E1 /* V1 */,
 			);
 			path = Model;
@@ -189,10 +185,8 @@
 		E8EB2A972CE10630000E4B67 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				E8EB2A982CE10685000E4B67 /* PurchaseListView.swift */,
-				E88769692CE1852F00D989E1 /* EditPurchaseView.swift */,
-				E887697A2CE4323600D989E1 /* EditExpenseView.swift */,
 				E887697C2CE4672F00D989E1 /* DateListView.swift */,
+				E887697A2CE4323600D989E1 /* EditExpenseView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -332,15 +326,13 @@
 				E8EB2A9D2CE11D39000E4B67 /* PreviewHelpers.swift in Sources */,
 				E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */,
 				E88769712CE1878B00D989E1 /* NumberFormatterProtocol.swift in Sources */,
-				E8EB2A942CE0649D000E4B67 /* Purchase.swift in Sources */,
-				E8EB2A992CE10685000E4B67 /* PurchaseListView.swift in Sources */,
 				E8EB2A672CE063A7000E4B67 /* AegisApp.swift in Sources */,
 				E887697D2CE4672F00D989E1 /* DateListView.swift in Sources */,
 				E8EB2A9B2CE1074F000E4B67 /* MainView.swift in Sources */,
+				E88769802CE7DD9D00D989E1 /* Price.swift in Sources */,
 				E8EB2A962CE06617000E4B67 /* Schema.swift in Sources */,
 				E887696F2CE1876C00D989E1 /* CurrencyTextField.swift in Sources */,
 				E887696E2CE1876C00D989E1 /* CurrencyUITextField.swift in Sources */,
-				E887696A2CE1852F00D989E1 /* EditPurchaseView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

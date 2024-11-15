@@ -42,15 +42,6 @@ struct DateListView: View {
                         Label("Add", systemImage: "plus")
                     }
                 }
-                ToolbarItem(placement: .secondaryAction) {
-                    Button("Delete All") {
-                        do {
-                            try modelContext.delete(model: Expense.self)
-                        } catch {
-                            print("Failed to delete expenses.")
-                        }
-                    }
-                }
             }
     }
     
@@ -157,7 +148,10 @@ struct DateListView: View {
 }
 
 #Preview {
-    NavigationStack {
+    let container = createTestModelContainer()
+    container.mainContext.insert(Expense(date: .now, payee: "Costo", amount: .Cents(3541), category: "Gas", details: .Fuel(amount: 11.123, rate: 2.652, type: "Gas", user: "Personal Vehicle")))
+    container.mainContext.insert(Expense(date: .now, payee: "NBKC Bank", amount: .Cents(600), category: "Housing Payment", details: .Generic(details: "November payment")))
+    return NavigationStack {
         DateListView(path: .constant([]))
-    }
+    }.modelContainer(container)
 }
