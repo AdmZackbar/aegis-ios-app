@@ -1,16 +1,16 @@
 //
-//  DateListView.swift
+//  CategoryListView.swift
 //  Aegis
 //
-//  Created by Zach Wassynger on 11/12/24.
+//  Created by Zach Wassynger on 11/15/24.
 //
 
 import SwiftData
 import SwiftUI
 
-struct DateListView: View {
+struct CategoryListView: View {
     @Environment(\.modelContext) var modelContext
-    @Query(sort: \Expense.category) var expenses: [Expense]
+    @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
     
     @Binding private var path: [ViewType]
     
@@ -20,19 +20,19 @@ struct DateListView: View {
     
     var body: some View {
         let map = {
-            var map: [Date: [Expense]] = [:]
+            var map: [String: [Expense]] = [:]
             for expense in expenses {
-                map[Calendar.current.startOfDay(for: expense.date), default: []].append(expense)
+                map[expense.category, default: []].append(expense)
             }
             return map
         }()
         Form {
-            ForEach(map.sorted(by: { $0.key > $1.key }), id: \.key) { date, expenses in
-                Section(date.formatted(date: .long, time: .omitted)) {
+            ForEach(map.sorted(by: { $0.key < $1.key }), id: \.key) { category, expenses in
+                Section(category) {
                     expenseList(expenses)
                 }
             }
-        }.navigationTitle("By Date")
+        }.navigationTitle("By Category")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
@@ -79,7 +79,7 @@ struct DateListView: View {
     private func expenseEntry(_ expense: Expense) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Text(expense.category).bold()
+                Text(expense.date.formatted(date: .abbreviated, time: .omitted)).bold()
                 Spacer()
                 Text(expense.amount.toString()).bold()
             }
@@ -155,6 +155,6 @@ struct DateListView: View {
     let container = createTestModelContainer()
     addExpenses(container.mainContext)
     return NavigationStack {
-        DateListView(path: .constant([]))
+        CategoryListView(path: .constant([]))
     }.modelContainer(container)
 }

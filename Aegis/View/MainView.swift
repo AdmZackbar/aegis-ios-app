@@ -15,6 +15,14 @@ struct MainView: View {
             List {
                 Section("View") {
                     Button {
+                        path.append(.ListByCategory)
+                    } label: {
+                        HStack {
+                            Label("List By Category", systemImage: "folder")
+                            Spacer()
+                        }.frame(height: 36).contentShape(Rectangle())
+                    }.buttonStyle(.plain)
+                    Button {
                         path.append(.ListByDate)
                     } label: {
                         HStack {
@@ -42,6 +50,8 @@ struct MainView: View {
     @ViewBuilder
     private func computeDestination(viewType: ViewType) -> some View {
         switch viewType {
+        case .ListByCategory:
+            CategoryListView(path: $path)
         case .ListByDate:
             DateListView(path: $path)
         case .AddExpense:
@@ -55,6 +65,7 @@ struct MainView: View {
 }
 
 enum ViewType: Hashable {
+    case ListByCategory
     case ListByDate
     case AddExpense
     case EditExpense(expense: Expense)
