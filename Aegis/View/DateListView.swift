@@ -55,6 +55,13 @@ struct DateListView: View {
                     } label: {
                         Label("Edit", systemImage: "pencil.circle")
                     }
+                    Button {
+                        let duplicate = Expense(date: expense.date, payee: expense.payee, amount: expense.amount, category: expense.category, details: expense.details)
+                        modelContext.insert(duplicate)
+                        path.append(.EditExpense(expense: duplicate))
+                    } label: {
+                        Label("Duplicate...", systemImage: "plus.square.on.square")
+                    }
                     Button(role: .destructive) {
                         modelContext.delete(expense)
                     } label: {
