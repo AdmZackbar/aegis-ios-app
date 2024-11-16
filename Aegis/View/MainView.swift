@@ -8,6 +8,21 @@
 import SwiftUI
 
 struct MainView: View {
+    static let ExpenseCategories: [String : [String]] = {
+        var map: [String : [String]] = [:]
+        map["Car"] = ["Gas", "Car Maintenance", "Car Insurance", "Car Payment", "Parking"]
+        map["Food"] = ["Groceries", "Snacks", "Restaurant", "Fast Food", "Cookware", "Grocery Membership"]
+        map["Housing"] = ["Rent", "Mortgage Bill", "Housing Payment", "Utility Bill", "Housing Maintenance", "Appliances", "Furniture", "Decor", "Fuel"]
+        map["Media"] = ["Video Games", "Music", "TV", "Books", "Games", "Other Media"]
+        map["Medicine"] = ["Dental", "Vision", "Medicine", "Clinic", "Physical Therapy", "Hospital"]
+        map["Personal"] = ["Apparel", "Hygiene", "Haircut"]
+        map["Recreation"] = ["Sports Facility", "Sports Gear", "Sports Event", "Recreation Event"]
+        map["Technology"] = ["Tech Devices", "Device Accessories", "Computer Parts", "Peripherals", "Software", "Tech Service", "Digital Assets"]
+        map["Travel"] = ["Accomodations", "Rental Car", "Airfare", "Rideshare"]
+        map["Other"] = ["Gift", "Charity", "Taxes", "Contributions"]
+        return map
+    }()
+    
     @State private var path: [ViewType] = []
     
     var body: some View {
@@ -15,7 +30,7 @@ struct MainView: View {
             List {
                 Section("View") {
                     Button {
-                        path.append(.ListByCategory)
+                        path.append(.ListByCategory())
                     } label: {
                         HStack {
                             Label("List By Category", systemImage: "folder")
@@ -50,8 +65,8 @@ struct MainView: View {
     @ViewBuilder
     private func computeDestination(viewType: ViewType) -> some View {
         switch viewType {
-        case .ListByCategory:
-            CategoryListView(path: $path)
+        case .ListByCategory(let category):
+            CategoryListView(path: $path, selectedCategory: category)
         case .ListByDate:
             DateListView(path: $path)
         case .AddExpense:
@@ -65,7 +80,7 @@ struct MainView: View {
 }
 
 enum ViewType: Hashable {
-    case ListByCategory
+    case ListByCategory(category: String? = nil)
     case ListByDate
     case AddExpense
     case EditExpense(expense: Expense)

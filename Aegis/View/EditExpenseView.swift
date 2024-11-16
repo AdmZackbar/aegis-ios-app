@@ -261,24 +261,9 @@ struct EditExpenseView: View {
         }
     }
     
-    private let categories: [String : [String]] = {
-        var map: [String : [String]] = [:]
-        map["Car"] = ["Gas", "Car Maintenance", "Car Insurance", "Car Payment", "Parking"]
-        map["Food"] = ["Groceries", "Snacks", "Restaurant", "Fast Food", "Cookware", "Grocery Membership"]
-        map["Housing"] = ["Rent", "Mortgage Bill", "Housing Payment", "Utility Bill", "Housing Maintenance", "Appliances", "Furniture", "Decor", "Fuel"]
-        map["Media"] = ["Video Games", "Music", "TV", "Books", "Games", "Other Media"]
-        map["Medicine"] = ["Dental", "Vision", "Medicine", "Clinic", "Physical Therapy", "Hospital"]
-        map["Personal"] = ["Apparel", "Hygiene", "Haircut"]
-        map["Recreation"] = ["Sports Facility", "Sports Gear", "Sports Event", "Recreation Event"]
-        map["Technology"] = ["Tech Devices", "Device Accessories", "Computer Parts", "Peripherals", "Software", "Tech Service", "Digital Assets"]
-        map["Travel"] = ["Accomodations", "Rental Car", "Airfare", "Rideshare"]
-        map["Other"] = ["Gift", "Charity", "Taxes", "Contributions"]
-        return map
-    }()
-    
     private func categoryView() -> some View {
         Section("Select Category") {
-            ForEach(categories.sorted(by: { $0.key < $1.key }), id: \.key.hashValue) { header, children in
+            ForEach(MainView.ExpenseCategories.sorted(by: { $0.key < $1.key }), id: \.key.hashValue) { header, children in
                 Menu {
                     ForEach(children, id: \.hashValue) { child in
                         Button(child) {
