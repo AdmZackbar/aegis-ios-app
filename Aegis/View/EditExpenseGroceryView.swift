@@ -9,6 +9,10 @@ import SwiftData
 import SwiftUI
 
 struct EditExpenseGroceryView: View {
+    @Query(filter: #Predicate<Expense> { expense in
+        expense.category == "Groceries"
+    }, sort: \Expense.date, order: .reverse) var groceryExpenses: [Expense]
+    
     @Binding private var details: Details
     @State private var foodDetails: FoodDetails = FoodDetails()
     @State private var itemIndex: Int = -1
@@ -47,7 +51,7 @@ struct EditExpenseGroceryView: View {
         }.sheet(isPresented: $sheetShowing) {
             NavigationStack {
                 Form {
-                    FoodDetailView(foodDetails: $foodDetails)
+                    FoodDetailView(foodDetails: $foodDetails, groceryExpenses: groceryExpenses)
                 }.navigationTitle(itemIndex < 0 ? "Add Food" : "Edit Food")
                     .navigationBarTitleDisplayMode(.inline)
                     .navigationBarBackButtonHidden()
@@ -73,11 +77,9 @@ struct EditExpenseGroceryView: View {
     }
     
     struct FoodDetailView: View {
-        @Query(filter: #Predicate<Expense> { expense in
-            expense.category == "Groceries"
-        }, sort: \Expense.date, order: .reverse) var groceryExpenses: [Expense]
-        
         private let categories: [String] = ["Carbs", "Dairy", "Fruits", "Ingredients", "Meal", "Meat", "Sweets", "Vegetables"]
+        
+        let groceryExpenses: [Expense]
         
         @Binding private var foodDetails: FoodDetails
         
@@ -88,8 +90,9 @@ struct EditExpenseGroceryView: View {
             return formatter
         }()
         
-        init(foodDetails: Binding<FoodDetails>) {
+        init(foodDetails: Binding<FoodDetails>, groceryExpenses: [Expense]) {
             self._foodDetails = foodDetails
+            self.groceryExpenses = groceryExpenses
         }
         
         var body: some View {
@@ -98,9 +101,9 @@ struct EditExpenseGroceryView: View {
                 TextField("required", text: $foodDetails.name)
                     .textInputAutocapitalization(.words)
             }
-            let suggestions = foodDetails.name.isEmpty ? [] : Array(Set(groceryExpenses.map(toFoods).joined().filter(isFoodSuggested)))
-            if !suggestions.isEmpty && suggestions[0].name != foodDetails.name {
-                ForEach(suggestions, id: \.hashValue) { suggestion in
+            let nameSuggestions = foodDetails.name.isEmpty ? [] : Array(Set(groceryExpenses.map(toFoods).joined().filter(isFoodSuggested)))
+            if !nameSuggestions.isEmpty && nameSuggestions[0].name != foodDetails.name {
+                ForEach(nameSuggestions, id: \.hashValue) { suggestion in
                     Button(suggestion.name) {
                         foodDetails.name = suggestion.name
                         foodDetails.brand = suggestion.brand
@@ -116,6 +119,14 @@ struct EditExpenseGroceryView: View {
                 Text("Brand:")
                 TextField("required", text: $foodDetails.brand)
                     .textInputAutocapitalization(.words)
+            }
+            let brandSuggestions = foodDetails.brand.isEmpty ? [] : Array(Set(groceryExpenses.map(toFoods).joined().filter(isBrandSuggested).map({ $0.brand })))
+            if !brandSuggestions.isEmpty && brandSuggestions[0] != foodDetails.brand {
+                ForEach(brandSuggestions, id: \.hashValue) { suggestion in
+                    Button(suggestion) {
+                        foodDetails.brand = suggestion
+                    }
+                }
             }
             HStack {
                 Text("Unit Price:")
@@ -153,6 +164,10 @@ struct EditExpenseGroceryView: View {
         private func isFoodSuggested(_ food: Expense.GroceryList.Food) -> Bool {
             food.name.localizedCaseInsensitiveContains(foodDetails.name) ||
             food.brand.localizedCaseInsensitiveContains(foodDetails.name)
+        }
+        
+        private func isBrandSuggested(_ food: Expense.GroceryList.Food) -> Bool {
+            food.brand.localizedStandardContains(foodDetails.brand)
         }
     }
     
