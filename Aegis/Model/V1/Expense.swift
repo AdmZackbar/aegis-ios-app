@@ -72,10 +72,10 @@ extension SchemaV1 {
             struct Food: Codable, Hashable, Equatable {
                 var name: String
                 var unitPrice: Price
-                var quantity: Int
+                var quantity: Double
                 var totalPrice: Price {
                     get {
-                        return unitPrice * Double(quantity)
+                        return unitPrice * quantity
                     }
                 }
                 var category: String

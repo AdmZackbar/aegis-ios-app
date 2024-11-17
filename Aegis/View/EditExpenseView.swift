@@ -129,6 +129,7 @@ struct EditExpenseView: View {
     @State private var fuelDetails: FuelExpenseView.Details = FuelExpenseView.Details()
     @State private var tipDetails: TipExpenseView.Details = TipExpenseView.Details()
     @State private var billDetails: BillExpenseView.Details = BillExpenseView.Details()
+    @State private var groceryDetails: GroceryExpenseView.Details = GroceryExpenseView.Details()
     
     init(path: Binding<[ViewType]>, expense: Expense? = nil) {
         self._path = path
@@ -200,9 +201,8 @@ struct EditExpenseView: View {
             TipExpenseView(details: $tipDetails, detailPlaceholder: "Details")
         case .Bill:
             BillExpenseView(details: $billDetails, detailPlaceholder: "Details")
-        // TODO
-        default:
-            GenericExpenseView(details: $genericDetails, placeholder: "Details")
+        case .Grocery:
+            GroceryExpenseView(details: $groceryDetails)
         }
     }
     
@@ -228,6 +228,7 @@ struct EditExpenseView: View {
             fuelDetails = FuelExpenseView.Details.fromExpense(expense.details)
             tipDetails = TipExpenseView.Details.fromExpense(expense.details)
             billDetails = BillExpenseView.Details.fromExpense(expense.details)
+            groceryDetails = GroceryExpenseView.Details.fromExpense(expense.details)
         }
     }
     
@@ -255,9 +256,8 @@ struct EditExpenseView: View {
             return tipDetails.toExpense()
         case .Bill:
             return billDetails.toExpense()
-        // TODO
-        default:
-            return genericDetails.toExpense()
+        case .Grocery:
+            return groceryDetails.toExpense()
         }
     }
     
@@ -689,8 +689,161 @@ private struct BillExpenseView: View {
     }
 }
 
+private struct GroceryExpenseView: View {
+    @Binding private var details: Details
+    @State private var foodDetails: FoodDetails = FoodDetails()
+    @State private var itemIndex: Int = -1
+    @State private var sheetShowing: Bool = false
+    
+    init(details: Binding<Details>) {
+        self._details = details
+    }
+    
+    var body: some View {
+        ForEach(details.foods, id: \.hashValue) { food in
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text(food.name).bold()
+                        if food.quantity != 1.0 {
+                            Text("(x\(food.quantity.formatted(.number.precision(.fractionLength(0...2)))))")
+                                .font(.subheadline)
+                        }
+                    }
+                    Text("\(food.category) | Total: \((Price.Cents(food.price) * food.quantity).toString())")
+                        .font(.subheadline).italic()
+                }
+                Spacer()
+                Button("Edit") {
+                    itemIndex = details.foods.firstIndex(of: food)!
+                    foodDetails = food
+                    sheetShowing = true
+                }
+            }
+        }
+        Button("Add Food") {
+            foodDetails = FoodDetails()
+            itemIndex = -1
+            sheetShowing = true
+        }.sheet(isPresented: $sheetShowing) {
+            NavigationStack {
+                Form {
+                    FoodDetailView(foodDetails: $foodDetails)
+                }.navigationTitle(itemIndex < 0 ? "Add Food" : "Edit Food")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .navigationBarBackButtonHidden()
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel") {
+                                sheetShowing = false
+                            }
+                        }
+                        ToolbarItem(placement: .primaryAction) {
+                            Button("Save") {
+                                if itemIndex >= 0 && itemIndex < details.foods.count {
+                                    details.foods[itemIndex] = foodDetails
+                                } else {
+                                    details.foods.append(foodDetails)
+                                }
+                                sheetShowing = false
+                            }
+                        }
+                    }
+            }.presentationDetents([.height(300)])
+        }
+    }
+    
+    struct FoodDetailView: View {
+        private let categories: [String] = ["Carbs", "Dairy", "Fruits", "Ingredients", "Meal", "Meat", "Sweets", "Vegetables"]
+        
+        @Binding private var foodDetails: FoodDetails
+        
+        private let formatter = {
+            let formatter = NumberFormatter()
+            formatter.maximumFractionDigits = 2
+            formatter.zeroSymbol = ""
+            return formatter
+        }()
+        private let currencyFormatter = {
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .currency
+            formatter.maximumFractionDigits = 2
+            return formatter
+        }()
+        
+        init(foodDetails: Binding<FoodDetails>) {
+            self._foodDetails = foodDetails
+        }
+        
+        var body: some View {
+            HStack {
+                Text("Name:")
+                TextField("required", text: $foodDetails.name)
+                    .textInputAutocapitalization(.words)
+            }
+            HStack {
+                Text("Unit Price:")
+                CurrencyTextField(numberFormatter: currencyFormatter, value: $foodDetails.price)
+            }
+            HStack {
+                Text("Quantity:")
+                Stepper() {
+                    TextField("required", value: $foodDetails.quantity, formatter: formatter)
+                        .keyboardType(.decimalPad)
+                } onIncrement: {
+                    foodDetails.quantity += 1
+                } onDecrement: {
+                    if foodDetails.quantity > 1 {
+                        foodDetails.quantity -= 1
+                    }
+                }
+            }
+            Picker("Category:", selection: $foodDetails.category) {
+                ForEach(categories, id: \.hashValue) { category in
+                    Text(category).tag(category)
+                }
+            }
+        }
+    }
+    
+    struct FoodDetails: Codable, Hashable, Equatable {
+        var name: String = ""
+        var price: Int = 0
+        var quantity: Double = 1.0
+        var category: String = "Carbs"
+    }
+    
+    struct Details {
+        var foods: [FoodDetails] = []
+        
+        static func fromExpense(_ details: Expense.Details) -> Details {
+            switch details {
+            case .Groceries(let list):
+                return Details(foods: list.foods.map(toFood))
+            default:
+                return Details()
+            }
+        }
+        
+        private static func toFood(_ food: Expense.GroceryList.Food) -> FoodDetails {
+            switch food.unitPrice {
+            case .Cents(let cents):
+                FoodDetails(name: food.name, price: cents, quantity: food.quantity, category: food.category)
+            }
+        }
+        
+        func toExpense() -> Expense.Details {
+            return .Groceries(list: .init(foods: foods.map(toExpenseFood)))
+        }
+        
+        private func toExpenseFood(_ food: FoodDetails) -> Expense.GroceryList.Food {
+            return .init(name: food.name, unitPrice: .Cents(food.price), quantity: food.quantity, category: food.category)
+        }
+    }
+}
+
 #Preview {
     NavigationStack {
-        EditExpenseView(path: .constant([]), expense: .init(date: .now, payee: "Util Company", amount: .Cents(6010), category: "Fuel", details: .Fuel(amount: 1.0, rate: 0.1, type: "Gas", user: "Personal Car")))
+        EditExpenseView(path: .constant([]), expense: .init(date: .now, payee: "Costco", amount: .Cents(60110), category: "Groceries", details: .Groceries(list: .init(foods: [.init(name: "Chicken Thighs", unitPrice: .Cents(2134), quantity: 2.0, category: "Meat")]))))
     }
 }
