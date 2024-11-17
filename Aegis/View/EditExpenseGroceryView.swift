@@ -5,6 +5,7 @@
 //  Created by Zach Wassynger on 11/17/24.
 //
 
+import SwiftData
 import SwiftUI
 
 struct EditExpenseGroceryView: View {
@@ -67,11 +68,15 @@ struct EditExpenseGroceryView: View {
                             }
                         }
                     }
-            }.presentationDetents([.height(300)])
+            }.presentationDetents([.medium])
         }
     }
     
     struct FoodDetailView: View {
+        @Query(filter: #Predicate<Expense> { expense in
+            expense.category == "Groceries"
+        }, sort: \Expense.date, order: .reverse) var groceryExpenses: [Expense]
+        
         private let categories: [String] = ["Carbs", "Dairy", "Fruits", "Ingredients", "Meal", "Meat", "Sweets", "Vegetables"]
         
         @Binding private var foodDetails: FoodDetails
@@ -92,6 +97,20 @@ struct EditExpenseGroceryView: View {
                 Text("Name:")
                 TextField("required", text: $foodDetails.name)
                     .textInputAutocapitalization(.words)
+            }
+            let suggestions = Array(Set(groceryExpenses.map(toFoods).joined().filter(isFoodSuggested)))
+            if !suggestions.isEmpty && suggestions[0].name != foodDetails.name {
+                ForEach(suggestions, id: \.hashValue) { suggestion in
+                    Button(suggestion.name) {
+                        foodDetails.name = suggestion.name
+                        foodDetails.category = suggestion.category
+                        switch suggestion.unitPrice {
+                        case .Cents(let cents):
+                            foodDetails.price = cents
+                        }
+                        foodDetails.quantity = suggestion.quantity
+                    }
+                }
             }
             HStack {
                 Text("Unit Price:")
@@ -115,6 +134,19 @@ struct EditExpenseGroceryView: View {
                     Text(category).tag(category)
                 }
             }
+        }
+        
+        private func toFoods(_ expense: Expense) -> [Expense.GroceryList.Food] {
+            switch expense.details {
+            case .Groceries(let list):
+                return list.foods
+            default:
+                return []
+            }
+        }
+        
+        private func isFoodSuggested(_ food: Expense.GroceryList.Food) -> Bool {
+            food.name.localizedCaseInsensitiveContains(foodDetails.name)
         }
     }
     
@@ -155,7 +187,9 @@ struct EditExpenseGroceryView: View {
 }
 
 #Preview {
-    NavigationStack {
+    let container = createTestModelContainer()
+    addExpenses(container.mainContext)
+    return NavigationStack {
         EditExpenseView(path: .constant([]), expense: .init(date: .now, payee: "Costco", amount: .Cents(60110), category: "Groceries", details: .Groceries(list: .init(foods: [.init(name: "Chicken Thighs", unitPrice: .Cents(2134), quantity: 2.0, category: "Meat")]))))
-    }
+    }.modelContainer(container)
 }
