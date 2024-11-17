@@ -8,7 +8,7 @@
 import SwiftData
 import SwiftUI
 
-struct GroceryListExpenseView: View {
+struct ExpenseGroceryListView: View {
     let expense: Expense
     let groceryList: Expense.GroceryList
     
@@ -44,7 +44,7 @@ struct GroceryListExpenseView: View {
                             Text(food.category)
                             Spacer()
                             if food.quantity > 1 {
-                                Text("x\(food.quantity)")
+                                Text("x\(food.quantity.formatted())")
                             }
                         }.font(.subheadline).italic()
                     }
@@ -67,6 +67,6 @@ struct GroceryListExpenseView: View {
     addExpenses(container.mainContext)
     let expenses = try! container.mainContext.fetch(FetchDescriptor<Expense>(predicate: #Predicate { $0.category == "Groceries" }))
     return NavigationStack {
-        GroceryListExpenseView(path: .constant([]), expense: expenses.first!)
+        ExpenseGroceryListView(path: .constant([]), expense: expenses.first!)
     }.modelContainer(container)
 }

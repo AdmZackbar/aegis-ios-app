@@ -23,6 +23,13 @@ struct MainView: View {
         return map
     }()
     
+    static let CurrencyFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.maximumFractionDigits = 2
+        return formatter
+    }()
+    
     @State private var path: [ViewType] = []
     
     var body: some View {
@@ -74,7 +81,7 @@ struct MainView: View {
         case .EditExpense(let expense):
             EditExpenseView(path: $path, expense: expense)
         case .ViewGroceryListExpense(let expense):
-            GroceryListExpenseView(path: $path, expense: expense)
+            ExpenseGroceryListView(path: $path, expense: expense)
         }
     }
 }
