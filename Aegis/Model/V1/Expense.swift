@@ -71,6 +71,7 @@ extension SchemaV1 {
             
             struct Food: Codable, Hashable, Equatable {
                 var name: String
+                var brand: String
                 var unitPrice: Price
                 var quantity: Double
                 var totalPrice: Price {

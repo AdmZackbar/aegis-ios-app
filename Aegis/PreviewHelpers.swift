@@ -49,8 +49,8 @@ func addExpenses(_ context: ModelContext) {
                            amount: .Cents(10723),
                            category: "Groceries",
                            details: .Groceries(list: .init(foods: [
-                            .init(name: "Chicken breast", unitPrice: .Cents(1230), quantity: 2, category: "Meat"),
-                            .init(name: "Apples", unitPrice: .Cents(190), quantity: 1, category: "Fruit"),
-                            .init(name: "Root beer", unitPrice: .Cents(699), quantity: 4, category: "Sweets")
+                            .init(name: "Chicken breast", brand: "Kirkland Signature", unitPrice: .Cents(1230), quantity: 2, category: "Meat"),
+                            .init(name: "Apples", brand: "Publix", unitPrice: .Cents(190), quantity: 1, category: "Fruit"),
+                            .init(name: "Root beer", brand: "IBC", unitPrice: .Cents(699), quantity: 4, category: "Sweets")
                            ]))))
 }

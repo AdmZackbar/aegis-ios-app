@@ -98,19 +98,24 @@ struct EditExpenseGroceryView: View {
                 TextField("required", text: $foodDetails.name)
                     .textInputAutocapitalization(.words)
             }
-            let suggestions = Array(Set(groceryExpenses.map(toFoods).joined().filter(isFoodSuggested)))
+            let suggestions = foodDetails.name.isEmpty ? [] : Array(Set(groceryExpenses.map(toFoods).joined().filter(isFoodSuggested)))
             if !suggestions.isEmpty && suggestions[0].name != foodDetails.name {
                 ForEach(suggestions, id: \.hashValue) { suggestion in
                     Button(suggestion.name) {
                         foodDetails.name = suggestion.name
+                        foodDetails.brand = suggestion.brand
                         foodDetails.category = suggestion.category
                         switch suggestion.unitPrice {
                         case .Cents(let cents):
                             foodDetails.price = cents
                         }
-                        foodDetails.quantity = suggestion.quantity
                     }
                 }
+            }
+            HStack {
+                Text("Brand:")
+                TextField("required", text: $foodDetails.brand)
+                    .textInputAutocapitalization(.words)
             }
             HStack {
                 Text("Unit Price:")
@@ -146,12 +151,14 @@ struct EditExpenseGroceryView: View {
         }
         
         private func isFoodSuggested(_ food: Expense.GroceryList.Food) -> Bool {
-            food.name.localizedCaseInsensitiveContains(foodDetails.name)
+            food.name.localizedCaseInsensitiveContains(foodDetails.name) ||
+            food.brand.localizedCaseInsensitiveContains(foodDetails.name)
         }
     }
     
     struct FoodDetails: Codable, Hashable, Equatable {
         var name: String = ""
+        var brand: String = ""
         var price: Int = 0
         var quantity: Double = 1.0
         var category: String = "Carbs"
@@ -172,7 +179,7 @@ struct EditExpenseGroceryView: View {
         private static func toFood(_ food: Expense.GroceryList.Food) -> FoodDetails {
             switch food.unitPrice {
             case .Cents(let cents):
-                FoodDetails(name: food.name, price: cents, quantity: food.quantity, category: food.category)
+                FoodDetails(name: food.name, brand: food.brand, price: cents, quantity: food.quantity, category: food.category)
             }
         }
         
@@ -181,7 +188,7 @@ struct EditExpenseGroceryView: View {
         }
         
         private func toExpenseFood(_ food: FoodDetails) -> Expense.GroceryList.Food {
-            return .init(name: food.name, unitPrice: .Cents(food.price), quantity: food.quantity, category: food.category)
+            return .init(name: food.name, brand: food.brand, unitPrice: .Cents(food.price), quantity: food.quantity, category: food.category)
         }
     }
 }
@@ -190,6 +197,6 @@ struct EditExpenseGroceryView: View {
     let container = createTestModelContainer()
     addExpenses(container.mainContext)
     return NavigationStack {
-        EditExpenseView(path: .constant([]), expense: .init(date: .now, payee: "Costco", amount: .Cents(60110), category: "Groceries", details: .Groceries(list: .init(foods: [.init(name: "Chicken Thighs", unitPrice: .Cents(2134), quantity: 2.0, category: "Meat")]))))
+        EditExpenseView(path: .constant([]), expense: .init(date: .now, payee: "Costco", amount: .Cents(60110), category: "Groceries", details: .Groceries(list: .init(foods: [.init(name: "Chicken Thighs", brand: "Kirkland Signature",unitPrice: .Cents(2134), quantity: 2.0, category: "Meat")]))))
     }.modelContainer(container)
 }
