@@ -33,22 +33,7 @@ struct ExpenseGroceryListView: View {
                 Text("Total: \(expense.amount.toString())")
             }
             Section("Foods") {
-                ForEach(groceryList.foods, id: \.hashValue) { food in
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Text(food.name)
-                            Spacer()
-                            Text(food.totalPrice.toString())
-                        }
-                        HStack {
-                            Text(food.category)
-                            Spacer()
-                            if food.quantity > 1 {
-                                Text("x\(food.quantity.formatted())")
-                            }
-                        }.font(.subheadline).italic()
-                    }
-                }
+                ForEach(groceryList.foods, id: \.hashValue, content: foodEntry)
             }
         }.navigationTitle("\(expense.payee) Groceries - \(expense.date.formatted(date: .abbreviated, time: .omitted))")
             .navigationBarTitleDisplayMode(.inline)
@@ -59,6 +44,24 @@ struct ExpenseGroceryListView: View {
                     }
                 }
             }
+    }
+    
+    @ViewBuilder
+    private func foodEntry(_ food: Expense.GroceryList.Food) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(food.name)
+                Spacer()
+                Text(food.totalPrice.toString())
+            }
+            HStack {
+                Text(food.category)
+                Spacer()
+                if food.quantity > 1 {
+                    Text("x\(food.quantity.formatted())")
+                }
+            }.font(.subheadline).italic()
+        }
     }
 }
 

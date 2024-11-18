@@ -17,6 +17,8 @@ struct EditExpenseGroceryView: View {
     @State private var foodDetails: FoodDetails = FoodDetails()
     @State private var itemIndex: Int = -1
     @State private var sheetShowing: Bool = false
+    @State private var deleteAlertShowing: Bool = false
+    @State private var deleteFood: FoodDetails? = nil
     
     init(details: Binding<Details>) {
         self._details = details
@@ -41,6 +43,21 @@ struct EditExpenseGroceryView: View {
                     itemIndex = details.foods.firstIndex(of: food)!
                     foodDetails = food
                     sheetShowing = true
+                }
+            }.swipeActions {
+                Button {
+                    deleteFood = food
+                    deleteAlertShowing = true
+                } label: {
+                    Label("Delete", systemImage: "trash").tint(.red)
+                }
+            }
+        }.alert("Delete this food?", isPresented: $deleteAlertShowing) {
+            Button("Delete", role: .destructive) {
+                if let selectedFood = deleteFood {
+                    withAnimation {
+                        details.foods.removeAll(where: { $0 == selectedFood })
+                    }
                 }
             }
         }

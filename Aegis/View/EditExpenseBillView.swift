@@ -19,6 +19,8 @@ struct EditExpenseBillView: View {
     @State private var typeDetails: TypeDetails = TypeDetails()
     @State private var itemIndex: Int = -1
     @State private var sheetShowing: Bool = false
+    @State private var deleteShowing: Bool = false
+    @State private var deleteItem: TypeDetails? = nil
     
     init(details: Binding<Details>, detailPlaceholder: String) {
         self._details = details
@@ -33,6 +35,15 @@ struct EditExpenseBillView: View {
         TextField(detailPlaceholder, text: $details.details, axis: .vertical)
             .lineLimit(3...9)
         ForEach(details.types, id: \.hashValue, content: billTypeEntry)
+            .alert("Delete Entry?", isPresented: $deleteShowing) {
+                Button("Delete", role: .destructive) {
+                    if let item = deleteItem {
+                        withAnimation {
+                            details.types.removeAll(where: { $0 == item })
+                        }
+                    }
+                }
+            }
         Button("Add Charge") {
             typeDetails = TypeDetails()
             itemIndex = -1
@@ -56,6 +67,13 @@ struct EditExpenseBillView: View {
                 itemIndex = details.types.firstIndex(of: type)!
                 typeDetails = type
                 sheetShowing = true
+            }
+        }.swipeActions {
+            Button {
+                deleteItem = type
+                deleteShowing = true
+            } label: {
+                Label("Delete", systemImage: "trash").tint(.red)
             }
         }
     }

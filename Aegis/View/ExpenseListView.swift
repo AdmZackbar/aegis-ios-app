@@ -11,10 +11,12 @@ import SwiftUI
 struct ExpenseListView: View {
     @Environment(\.modelContext) var modelContext
     
-    let expenses: [Expense]
-    let titleComponents: [Component]
+    private let expenses: [Expense]
+    private let titleComponents: [Component]
     
     @Binding private var path: [ViewType]
+    @State private var deleteShowing: Bool = false
+    @State private var deleteItem: Expense? = nil
     
     init(path: Binding<[ViewType]>, expenses: [Expense], titleComponents: [Component] = []) {
         self._path = path
@@ -25,17 +27,17 @@ struct ExpenseListView: View {
     var body: some View {
         ForEach(expenses, id: \.hashValue) { expense in
             expenseEntry(expense)
+                .swipeActions {
+                    deleteButton(expense)
+                    editButton(expense)
+                }
                 .contextMenu {
                     Button {
                         path.append(.ListByCategory(category: expense.category))
                     } label: {
                         Label("View '\(expense.category)'", systemImage: "magnifyingglass")
                     }
-                    Button {
-                        path.append(.EditExpense(expense: expense))
-                    } label: {
-                        Label("Edit", systemImage: "pencil.circle")
-                    }
+                    editButton(expense)
                     Button {
                         let duplicate = Expense(date: expense.date, payee: expense.payee, amount: expense.amount, category: expense.category, details: expense.details)
                         modelContext.insert(duplicate)
@@ -43,17 +45,34 @@ struct ExpenseListView: View {
                     } label: {
                         Label("Duplicate", systemImage: "plus.square.on.square")
                     }
-                    Button(role: .destructive) {
-                        modelContext.delete(expense)
-                    } label: {
-                        Label("Delete", systemImage: "trash")
+                    deleteButton(expense)
+                }
+        }.alert("Delete Expense?", isPresented: $deleteShowing) {
+            Button("Delete", role: .destructive) {
+                if let item = deleteItem {
+                    withAnimation {
+                        modelContext.delete(item)
                     }
                 }
-        }.onDelete(perform: { indexSet in
-            for index in indexSet {
-                modelContext.delete(expenses[index])
             }
-        })
+        }
+    }
+    
+    private func editButton(_ expense: Expense) -> some View {
+        Button {
+            path.append(.EditExpense(expense: expense))
+        } label: {
+            Label("Edit", systemImage: "pencil.circle").tint(.blue)
+        }
+    }
+    
+    private func deleteButton(_ expense: Expense) -> some View {
+        Button {
+            deleteItem = expense
+            deleteShowing = true
+        } label: {
+            Label("Delete", systemImage: "trash").tint(.red)
+        }
     }
     
     @ViewBuilder
