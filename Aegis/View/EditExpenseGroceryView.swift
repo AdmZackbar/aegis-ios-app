@@ -147,7 +147,8 @@ struct EditExpenseGroceryView: View {
             }
             HStack {
                 Text("Unit Price:")
-                CurrencyTextField(numberFormatter: MainView.CurrencyFormatter, value: $foodDetails.price)
+                TextField("", value: $foodDetails.priceUsd, formatter: MainView.CurrencyFormatter)
+                    .keyboardType(.decimalPad)
             }
             HStack {
                 Text("Quantity:")
@@ -192,6 +193,14 @@ struct EditExpenseGroceryView: View {
         var name: String = ""
         var brand: String = ""
         var price: Int = 0
+        var priceUsd: Double {
+            get {
+                Double(price) / 100.0
+            }
+            set(value) {
+                price = Int(round(value * 100.0))
+            }
+        }
         var quantity: Double = 1.0
         var category: String = "Carbs"
     }

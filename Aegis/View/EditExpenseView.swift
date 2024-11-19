@@ -15,6 +15,14 @@ private struct ExpenseInfo {
     var date: Date = Date()
     var payee: String = ""
     var amount: Int = 0
+    var amountUsd: Double {
+        get {
+            Double(amount) / 100.0
+        }
+        set(value) {
+            amount = Int(round(value * 100.0))
+        }
+    }
     var category: String = ""
 }
 
@@ -177,7 +185,8 @@ struct EditExpenseView: View {
     private func amountTextField(_ placeholder: String) -> some View {
         HStack {
             Text("\(placeholder):")
-            CurrencyTextField(numberFormatter: MainView.CurrencyFormatter, value: $info.amount)
+            TextField("", value: $info.amountUsd, formatter: MainView.CurrencyFormatter)
+                .keyboardType(.decimalPad)
         }
     }
     
@@ -451,7 +460,8 @@ private struct TipExpenseView: View {
     var body: some View {
         HStack {
             Text("Tip:")
-            CurrencyTextField(numberFormatter: currencyFormatter, value: $details.tip)
+            TextField("", value: $details.tipUsd, formatter: MainView.CurrencyFormatter)
+                .keyboardType(.decimalPad)
         }
         TextField(detailPlaceholder, text: $details.details, axis: .vertical)
             .lineLimit(3...9)
@@ -459,6 +469,14 @@ private struct TipExpenseView: View {
     
     struct Details {
         var tip: Int = 0
+        var tipUsd: Double {
+            get {
+                Double(tip) / 100.0
+            }
+            set(value) {
+                tip = Int(round(value * 100.0))
+            }
+        }
         var details: String = ""
         
         static func fromExpense(_ details: Expense.Details) -> Details {
