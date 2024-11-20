@@ -22,7 +22,7 @@ struct CategoryListView: View {
     }
     
     var body: some View {
-        let map = {
+        let map: [String: [Expense]] = {
             var map: [String: [Expense]] = [:]
             for expense in expenses {
                 map[expense.category, default: []].append(expense)
@@ -30,43 +30,16 @@ struct CategoryListView: View {
             return map
         }()
         Form {
-            if let selectedCategory = selectedCategory {
-                if selectedCategory == "All" {
-                    ForEach(map.sorted(by: { $0.key < $1.key }), id: \.key) { category, expenses in
-                        Section(category) {
-                            ExpenseListView(path: $path, expenses: expenses, titleComponents: [.Date])
-                        }
+            if let category = selectedCategory {
+                if MainView.ExpenseCategories.keys.contains(category) {
+                    ForEach(MainView.ExpenseCategories[category]!, id: \.hashValue) { c in
+                        categoryListView(category: c, expenses: map[c, default: []])
                     }
                 } else {
-                    Section(selectedCategory) {
-                        ExpenseListView(path: $path, expenses: map[selectedCategory, default: []], titleComponents: [.Date])
-                    }
+                    categoryListView(category: category, expenses: map[category, default: []])
                 }
             } else {
-                Button {
-                    path.append(.ListByCategory(category: "All"))
-                } label: {
-                    HStack {
-                        Text("All")
-                        Spacer()
-                    }.frame(height: 36).contentShape(Rectangle())
-                }.buttonStyle(.plain)
-                Section("Categories") {
-                    ForEach(MainView.ExpenseCategories.sorted(by: { $0.key < $1.key }), id: \.key.hashValue) { header, children in
-                        Menu {
-                            ForEach(children, id: \.hashValue) { child in
-                                Button(child) {
-                                    path.append(.ListByCategory(category: child))
-                                }
-                            }
-                        } label: {
-                            HStack {
-                                Text(header)
-                                Spacer()
-                            }.frame(height: 36).contentShape(Rectangle())
-                        }.buttonStyle(.plain)
-                    }
-                }
+                selectView(map)
             }
         }.navigationTitle(selectedCategory ?? "Select Category")
             .navigationBarTitleDisplayMode(.inline)
@@ -80,12 +53,52 @@ struct CategoryListView: View {
                 }
             }
     }
+    
+    @ViewBuilder
+    private func selectView(_ map: [String: [Expense]]) -> some View {
+        ForEach(MainView.ExpenseCategories.sorted(by: { $0.key < $1.key }), id: \.key.hashValue) { header, categories in
+            // Only display sections with expenses in its subcategories
+            if categories.map({ map[$0, default: []].count }).reduce(0, +) > 0 {
+                Section(header) {
+                    ForEach(categories, id: \.hashValue) { category in
+                        // Only show the button if it has expenses
+                        if !map[category, default: []].isEmpty {
+                            categoryButton(map: map, category: category)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func categoryButton(map: [String: [Expense]], category: String) -> some View {
+        Button {
+            path.append(.ListByCategory(category: category))
+        } label: {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(category).font(.headline)
+                HStack {
+                    Text("\(map[category, default: []].count) expenses")
+                    Spacer()
+                    Text(map[category, default: []].map({ $0.amount }).reduce(Price.Cents(0), +).toString())
+                }.font(.subheadline).italic()
+            }.contentShape(Rectangle())
+        }.buttonStyle(.plain)
+    }
+    
+    @ViewBuilder
+    private func categoryListView(category: String, expenses: [Expense]) -> some View {
+        Section(category) {
+            ExpenseListView(path: $path, expenses: expenses, titleComponents: [.Date])
+        }
+    }
 }
 
 #Preview {
     let container = createTestModelContainer()
     addExpenses(container.mainContext)
     return NavigationStack {
-        CategoryListView(path: .constant([]), selectedCategory: "All")
+        CategoryListView(path: .constant([]))
     }.modelContainer(container)
 }
