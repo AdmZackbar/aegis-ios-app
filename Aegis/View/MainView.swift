@@ -77,6 +77,8 @@ struct MainView: View {
             CategoryListView(path: $path, selectedCategory: category)
         case .ListByDate:
             DateListView(path: $path)
+        case .ListByMonth(let month, let year):
+            MonthListView(path: $path, month: month, year: year)
         case .AddExpense:
             EditExpenseView(path: $path)
         case .EditExpense(let expense):
@@ -90,6 +92,7 @@ struct MainView: View {
 enum ViewType: Hashable {
     case ListByCategory(category: String? = nil)
     case ListByDate
+    case ListByMonth(month: Int, year: Int)
     case AddExpense
     case EditExpense(expense: Expense)
     case ViewGroceryListExpense(expense: Expense)
