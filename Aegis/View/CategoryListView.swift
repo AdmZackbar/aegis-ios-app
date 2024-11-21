@@ -15,6 +15,7 @@ struct CategoryListView: View {
     private var selectedCategory: String?
     
     @Binding private var path: [ViewType]
+    @State private var searchText: String = ""
     
     init(path: Binding<[ViewType]>, selectedCategory: String? = nil) {
         self._path = path
@@ -43,6 +44,7 @@ struct CategoryListView: View {
             }
         }.navigationTitle(selectedCategory ?? "Select Category")
             .navigationBarTitleDisplayMode(.inline)
+            .searchable(text: $searchText)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
@@ -57,10 +59,11 @@ struct CategoryListView: View {
     @ViewBuilder
     private func selectView(_ map: [String: [Expense]]) -> some View {
         ForEach(MainView.ExpenseCategories.sorted(by: { $0.key < $1.key }), id: \.key.hashValue) { header, categories in
+            let filteredCategories = categories.filter(isCategoryFiltered)
             // Only display sections with expenses in its subcategories
-            if categories.map({ map[$0, default: []].count }).reduce(0, +) > 0 {
+            if filteredCategories.map({ map[$0, default: []].count }).reduce(0, +) > 0 {
                 Section(header) {
-                    ForEach(categories, id: \.hashValue) { category in
+                    ForEach(filteredCategories, id: \.hashValue) { category in
                         // Only show the button if it has expenses
                         if !map[category, default: []].isEmpty {
                             categoryButton(map: map, category: category)
@@ -69,6 +72,10 @@ struct CategoryListView: View {
                 }
             }
         }
+    }
+    
+    private func isCategoryFiltered(_ category: String) -> Bool {
+        searchText.isEmpty || category.localizedCaseInsensitiveContains(searchText)
     }
     
     @ViewBuilder
@@ -90,7 +97,24 @@ struct CategoryListView: View {
     @ViewBuilder
     private func categoryListView(category: String, expenses: [Expense]) -> some View {
         Section(category) {
-            ExpenseListView(path: $path, expenses: expenses, titleComponents: [.Date])
+            ExpenseListView(path: $path, expenses: expenses.filter(isFiltered), titleComponents: [.Date])
+        }
+    }
+    
+    private func isFiltered(_ expense: Expense) -> Bool {
+        searchText.isEmpty || expense.payee.localizedCaseInsensitiveContains(searchText) || isFiltered(expense.details)
+    }
+    
+    private func isFiltered(_ details: Expense.Details) -> Bool {
+        switch details {
+        case .Generic(let str):
+            return str.localizedCaseInsensitiveContains(searchText)
+        case .Tag(let tag, let details):
+            return tag.localizedCaseInsensitiveContains(searchText) || details.localizedCaseInsensitiveContains(searchText)
+        case .Tip(_, let details):
+            return details.localizedCaseInsensitiveContains(searchText)
+        default:
+            return false
         }
     }
 }
