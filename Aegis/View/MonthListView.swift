@@ -23,8 +23,25 @@ struct MonthListView: View {
     }
     
     var body: some View {
+        let map: [Date : [Expense]] = {
+            var map: [Date : [Expense]] = [:]
+            expenses.filter(validExpense)
+                .sorted(by: { $0.category < $1.category })
+                .sorted(by: { $0.date > $1.date })
+                .forEach({ map[Calendar.current.startOfDay(for: $0.date), default: []].append($0) })
+            return map
+        }()
+        let dayFormatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MMMM d"
+            return formatter
+        }()
         Form {
-            ExpenseListView(path: $path, expenses: expenses.filter(validExpense), titleComponents: [.Date, .Category])
+            ForEach(map.sorted(by: { $0.key > $1.key }), id: \.key.hashValue) { day, expenses in
+                Section(dayFormatter.string(for: day)!) {
+                    ExpenseListView(path: $path, expenses: expenses, titleComponents: [.Category])
+                }
+            }
         }.navigationTitle("\(DateFormatter().monthSymbols[month - 1]) \(year.formatted(.number.grouping(.never)))")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
