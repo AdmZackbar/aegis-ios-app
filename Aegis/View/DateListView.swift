@@ -5,6 +5,7 @@
 //  Created by Zach Wassynger on 11/12/24.
 //
 
+import Charts
 import SwiftData
 import SwiftUI
 
@@ -66,6 +67,59 @@ struct DateListView: View {
             }.contentShape(Rectangle())
                 .frame(height: 48)
         }.buttonStyle(.plain)
+            .contextMenu {
+                Button("View") {
+                    path.append(.ListByMonth(month: month, year: year))
+                }
+            } preview: {
+                monthPreview(month: month, expenses: expenses, year: year)
+            }
+    }
+    
+    @ViewBuilder
+    private func monthPreview(month: Int, expenses: [Expense], year: Int) -> some View {
+        let categoryMap: [String : String] = {
+            var map: [String : String] = [:]
+            MainView.ExpenseCategories.forEach({ header, categories in categories.forEach({ category in map[category] = header }) })
+            return map
+        }()
+        let map: [String : [Expense]] = {
+            var map: [String : [Expense]] = [:]
+            for expense in expenses {
+                map[categoryMap[expense.category, default: expense.category], default: []].append(expense)
+            }
+            return map
+        }()
+        let data = map.compactMap({ (name: $0, value: $1.map({ $0.amount }).reduce(Price.Cents(0), +).toUsd()) })
+            .sorted(by: { $0.value > $1.value })
+        let m = DateFormatter().monthSymbols[month - 1]
+        let total = data.map({ $0.value }).reduce(0, +)
+        VStack {
+            Text("\(m) \(year.formatted(.number.grouping(.never)))")
+                .font(.title2)
+                .bold()
+            Chart(data, id: \.name) { name, totals in
+                SectorMark(
+                    angle: .value("Value", totals),
+                    innerRadius: .ratio(0.68),
+                    outerRadius: .ratio(1.0),
+                    angularInset: 1
+                ).cornerRadius(4)
+                    .foregroundStyle(by: .value("Category", name))
+            }.chartForegroundStyleScale { category in
+                MainView.ExpenseCategoryColors[category] ?? .clear
+            }.chartLegend(position: .trailing, alignment: .top, spacing: 16)
+                .chartBackground { chartProxy in
+                    GeometryReader { geometry in
+                        if let anchor = chartProxy.plotFrame {
+                            let frame = geometry[anchor]
+                            Text("\(total.formatted(.currency(code: "USD")))")
+                                .position(x: frame.midX, y: frame.midY)
+                                .italic()
+                        }
+                    }
+                }
+        }.frame(width: 300, height: 220).padding()
     }
 }
 

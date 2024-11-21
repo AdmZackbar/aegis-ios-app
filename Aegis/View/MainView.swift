@@ -23,6 +23,19 @@ struct MainView: View {
         return map
     }()
     
+    static let ExpenseCategoryColors: [String : Color] = [
+        "Car": Color.indigo,
+        "Food": Color.blue,
+        "Housing": Color.red,
+        "Media": Color.cyan,
+        "Medicine": Color.pink,
+        "Personal": Color.orange,
+        "Recreation": Color.yellow,
+        "Technology": Color.green,
+        "Travel": Color.purple,
+        "Other": Color.gray
+    ]
+    
     static let CurrencyFormatter = {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
