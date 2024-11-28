@@ -51,6 +51,14 @@ struct MainView: View {
             List {
                 Section("View") {
                     Button {
+                        path.append(.Dashboard)
+                    } label: {
+                        HStack {
+                            Label("Dashboard", systemImage: "house")
+                            Spacer()
+                        }.frame(height: 36).contentShape(Rectangle())
+                    }.buttonStyle(.plain)
+                    Button {
                         path.append(.ListByCategory())
                     } label: {
                         HStack {
@@ -86,6 +94,8 @@ struct MainView: View {
     @ViewBuilder
     private func computeDestination(viewType: ViewType) -> some View {
         switch viewType {
+        case .Dashboard:
+            DashboardYearView(path: $path)
         case .ListByCategory(let category):
             CategoryListView(path: $path, selectedCategory: category)
         case .ListByDate:
@@ -98,17 +108,21 @@ struct MainView: View {
             EditExpenseView(path: $path, expense: expense)
         case .ViewGroceryListExpense(let expense):
             ExpenseGroceryListView(path: $path, expense: expense)
+        case .Loan(let loan):
+            LoanView(path: $path, loan: loan)
         }
     }
 }
 
 enum ViewType: Hashable {
+    case Dashboard
     case ListByCategory(category: String? = nil)
     case ListByDate
     case ListByMonth(month: Int, year: Int)
     case AddExpense
     case EditExpense(expense: Expense)
     case ViewGroceryListExpense(expense: Expense)
+    case Loan(loan: Loan)
 }
 
 #Preview {

@@ -11,7 +11,23 @@ technically an 'expense', but that money goes to paying for an asset
 that is worth the same value in theory. Retirement contributions are
 similar.
 
-### Expense Categories
+### Revenue
+
+Revenue encompasses all transactions where liquid cash is coming in.
+
+- Date
+- Payer
+- Amount
+- Category
+    - Paycheck
+    - Asset Sale
+    - Stock Sale
+    - Dividends
+    - Gift
+    - Tax Return
+- Details
+
+### Expenses
 
 All expenses will include the following:
 - Date: the date of the transaction
@@ -276,8 +292,6 @@ All expenses will include the following:
     - Payee: Bank
     - Amount: Amount
     - Details
-
-### Expense Metadata
 
 Other information such as vacations/trips, dating, are contained in other
 tables and link back to the expense table.
