@@ -84,6 +84,14 @@ struct MainView: View {
                             Spacer()
                         }.frame(height: 36).contentShape(Rectangle())
                     }.buttonStyle(.plain)
+                    Button {
+                        path.append(.AddLoan)
+                    } label: {
+                        HStack {
+                            Label("Add Loan", systemImage: "plus")
+                            Spacer()
+                        }.frame(height: 36).contentShape(Rectangle())
+                    }.buttonStyle(.plain)
                 }
             }.navigationTitle("Aegis")
                 .navigationBarTitleDisplayMode(.inline)
@@ -108,8 +116,12 @@ struct MainView: View {
             EditExpenseView(path: $path, expense: expense)
         case .ViewGroceryListExpense(let expense):
             ExpenseGroceryListView(path: $path, expense: expense)
-        case .Loan(let loan):
+        case .ViewLoan(let loan):
             LoanView(path: $path, loan: loan)
+        case .AddLoan:
+            EditLoanView(path: $path)
+        case .EditLoan(let loan):
+            EditLoanView(path: $path, loan: loan)
         }
     }
 }
@@ -122,7 +134,9 @@ enum ViewType: Hashable {
     case AddExpense
     case EditExpense(expense: Expense)
     case ViewGroceryListExpense(expense: Expense)
-    case Loan(loan: Loan)
+    case ViewLoan(loan: Loan)
+    case AddLoan
+    case EditLoan(loan: Loan)
 }
 
 #Preview {

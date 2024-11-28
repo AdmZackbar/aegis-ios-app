@@ -16,18 +16,37 @@ extension SchemaV1 {
     final class Loan {
         var name: String
         var startDate: Date
-        var originalAmount: Price
-        var remainingAmount: Price
+        var amount: Price
         var metaData: MetaData
+        
+        var totalPaid: Price {
+            get {
+                payments.map({ $0.getAmount() }).reduce(.Cents(0), +)
+            }
+        }
+        var principalPaid: Price {
+            get {
+                payments.map({ $0.getPrincipal() }).reduce(.Cents(0), +)
+            }
+        }
+        var interestPaid: Price {
+            get {
+                payments.map({ $0.getInterest() }).reduce(.Cents(0), +)
+            }
+        }
+        var remainingAmount: Price {
+            get {
+                amount - principalPaid
+            }
+        }
         
         @Relationship(deleteRule: .cascade, inverse: \LoanPayment.loan)
         var payments: [LoanPayment] = []
         
-        init(name: String, startDate: Date, originalAmount: Price, remainingAmount: Price, metaData: MetaData) {
+        init(name: String, startDate: Date, amount: Price, metaData: MetaData) {
             self.name = name
             self.startDate = startDate
-            self.originalAmount = originalAmount
-            self.remainingAmount = remainingAmount
+            self.amount = amount
             self.metaData = metaData
         }
         
@@ -72,6 +91,15 @@ extension SchemaV1 {
                 return principal
             case .Principal(let principal):
                 return principal
+            }
+        }
+        
+        func getInterest() -> Price {
+            switch type {
+            case .Regular(_, let interest):
+                return interest
+            case .Principal(_):
+                return .Cents(0)
             }
         }
         

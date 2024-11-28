@@ -32,15 +32,15 @@ struct LoanView: View {
                         Text("\(loan.metaData.rate.formatted())% for \(num) years").italic()
                     }
                 }
-                Gauge(value: (loan.originalAmount - loan.remainingAmount).toUsd(),
-                      in: 0...loan.originalAmount.toUsd()) {
-                    Text("\((loan.originalAmount - loan.remainingAmount).toString()) paid")
+                Gauge(value: (loan.amount - loan.remainingAmount).toUsd(),
+                      in: 0...loan.amount.toUsd()) {
+                    Text("\((loan.amount - loan.remainingAmount).toString()) paid")
                 } currentValueLabel: {
                     Text("Remaining: \(loan.remainingAmount.toString())").italic()
                 } minimumValueLabel: {
                     Text("")
                 } maximumValueLabel: {
-                    Text(loan.originalAmount.toString())
+                    Text(loan.amount.toString())
                 }
                 if !loan.payments.isEmpty {
                     VStack(alignment: .leading) {
@@ -66,7 +66,7 @@ struct LoanView: View {
 
 #Preview {
     let container = createTestModelContainer()
-    let loan = Loan(name: "332 Dovington Drive Mortgage", startDate: .now, originalAmount: .Cents(24531223), remainingAmount: .Cents(20010245), metaData: .init(lender: "NBKC Bank", rate: 6.625, term: .Years(num: 30), category: "Housing"))
+    let loan = Loan(name: "332 Dovington Drive Mortgage", startDate: .now, amount: .Cents(24531223), metaData: .init(lender: "NBKC Bank", rate: 6.625, term: .Years(num: 30), category: "Housing"))
     let payment = LoanPayment(loan: loan, date: .now, type: .Regular(principal: .Cents(30141), interest: .Cents(158323)), details: "November payment")
     container.mainContext.insert(payment)
     return NavigationStack {
