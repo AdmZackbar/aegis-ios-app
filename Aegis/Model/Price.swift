@@ -17,6 +17,13 @@ enum Price: Codable, Equatable, Hashable, Comparable {
         return formatter
     }()
     
+    func toCents() -> Int {
+        switch self {
+        case .Cents(let amount):
+            return amount
+        }
+    }
+    
     func toUsd() -> Double {
         switch self {
         case .Cents(let amount):

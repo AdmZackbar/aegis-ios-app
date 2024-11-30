@@ -51,6 +51,14 @@ struct MainView: View {
                         }.frame(height: 36).contentShape(Rectangle())
                     }.buttonStyle(.plain)
                     Button {
+                        path.append(.NetWorth)
+                    } label: {
+                        HStack {
+                            Label("Net Worth", systemImage: "dollarsign")
+                            Spacer()
+                        }.frame(height: 36).contentShape(Rectangle())
+                    }.buttonStyle(.plain)
+                    Button {
                         path.append(.ListByCategory())
                     } label: {
                         HStack {
@@ -96,6 +104,8 @@ struct MainView: View {
         switch viewType {
         case .Dashboard:
             DashboardYearView(path: $path)
+        case .NetWorth:
+            NetWorthView(path: $path)
         case .ListByCategory(let category):
             CategoryListView(path: $path, selectedCategory: category)
         case .ListByDate:
@@ -120,6 +130,7 @@ struct MainView: View {
 
 enum ViewType: Hashable {
     case Dashboard
+    case NetWorth
     case ListByCategory(category: String? = nil)
     case ListByDate
     case ListByMonth(month: Int, year: Int)

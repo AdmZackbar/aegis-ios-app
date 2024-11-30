@@ -55,9 +55,10 @@ func addExpenses(_ context: ModelContext) {
                            ]))))
 }
 
+@discardableResult
 func addTestLoan(_ context: ModelContext) -> Loan {
     let loan = Loan(name: "332 Dovington Drive Mortgage", startDate: .now, amount: .Cents(24531223), metaData: .init(lender: "NBKC Bank", rate: 6.625, term: .Years(num: 30), category: "Housing"))
-    let payment = LoanPayment(loan: loan, date: .now, type: .Regular(principal: .Cents(30141), interest: .Cents(158323)), details: "November payment")
+    let payment = LoanPayment(loan: loan, date: .now, type: .Regular(details: .init(principal: .Cents(30141), interest: .Cents(158323), escrow: .Cents(53623), other: .Cents(0))), details: "November payment")
     context.insert(payment)
     return loan
 }

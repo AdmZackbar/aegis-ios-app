@@ -29,11 +29,6 @@ extension SchemaV1 {
                 payments.map({ $0.getPrincipal() }).reduce(.Cents(0), +)
             }
         }
-        var interestPaid: Price {
-            get {
-                payments.map({ $0.getInterest() }).reduce(.Cents(0), +)
-            }
-        }
         var remainingAmount: Price {
             get {
                 amount - principalPaid
@@ -69,7 +64,7 @@ extension SchemaV1 {
         var type: LoanType
         var details: String
         
-        init(loan: Loan, date: Date, type: LoanType, details: String) {
+        init(loan: Loan? = nil, date: Date, type: LoanType, details: String) {
             self.loan = loan
             self.date = date
             self.type = type
@@ -78,8 +73,8 @@ extension SchemaV1 {
         
         func getAmount() -> Price {
             switch type {
-            case .Regular(let principal, let interest):
-                return principal + interest
+            case .Regular(let details):
+                return details.total
             case .Principal(let principal):
                 return principal
             }
@@ -87,25 +82,28 @@ extension SchemaV1 {
         
         func getPrincipal() -> Price {
             switch type {
-            case .Regular(let principal, _):
-                return principal
+            case .Regular(let details):
+                return details.principal
             case .Principal(let principal):
                 return principal
             }
         }
         
-        func getInterest() -> Price {
-            switch type {
-            case .Regular(_, let interest):
-                return interest
-            case .Principal(_):
-                return .Cents(0)
-            }
-        }
-        
         enum LoanType: Codable {
-            case Regular(principal: Price, interest: Price)
+            case Regular(details: RegularPaymentDetails)
             case Principal(principal: Price)
+        }
+    }
+    
+    struct RegularPaymentDetails: Codable {
+        var principal: Price
+        var interest: Price
+        var escrow: Price
+        var other: Price
+        var total: Price {
+            get {
+                principal + interest + escrow + other
+            }
         }
     }
 }

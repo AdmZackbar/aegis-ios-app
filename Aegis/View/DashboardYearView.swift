@@ -34,7 +34,8 @@ struct DashboardYearView: View {
                         HStack {
                             VStack(alignment: .leading) {
                                 Text("Total Expenses").font(.caption).italic().opacity(0.7)
-                                Text(monthMap.values.flatMap { $0 }.map({ $0.amount }).reduce(Price.Cents(0), +).toString()).font(.title2).fontWeight(.semibold)
+                                Text(monthMap.values.flatMap { $0 }.map({ $0.amount }).reduce(Price.Cents(0), +).toString())
+                                    .font(.title2).fontWeight(.semibold)
                                 yearBarChart(year: year, map: monthMap)
                                     .frame(height: 140)
                             }
