@@ -30,8 +30,7 @@ struct EditExpenseBillView: View {
     var body: some View {
         HStack {
             Text("Tax:")
-            TextField("", value: $details.taxUsd, formatter: MainView.CurrencyFormatter)
-                .keyboardType(.decimalPad)
+            CurrencyField(value: $details.tax)
         }
         TextField(detailPlaceholder, text: $details.details, axis: .vertical)
             .lineLimit(3...9)
@@ -136,7 +135,7 @@ struct EditExpenseBillView: View {
             }
             HStack {
                 Text("Base Charge:")
-                TextField("", value: $typeDetails.baseUsd, formatter: MainView.CurrencyFormatter)
+                CurrencyField(value: $typeDetails.base)
             }
             if typeDetails.type == .Variable {
                 HStack {
@@ -157,14 +156,6 @@ struct EditExpenseBillView: View {
         var type: BillType = .Flat
         var name: String = "Electric"
         var base: Int = 0
-        var baseUsd: Double {
-            get {
-                Double(base) / 100.0
-            }
-            set(value) {
-                base = Int(round(value * 100.0))
-            }
-        }
         var amount: Double = 0.0
         var rate: Double = 0.0
     }
@@ -172,14 +163,6 @@ struct EditExpenseBillView: View {
     struct Details {
         var types: [TypeDetails] = []
         var tax: Int = 0
-        var taxUsd: Double {
-            get {
-                Double(tax) / 100.0
-            }
-            set(value) {
-                tax = Int(round(value * 100.0))
-            }
-        }
         var details: String = ""
         
         static func fromExpense(_ details: Expense.Details) -> Details {

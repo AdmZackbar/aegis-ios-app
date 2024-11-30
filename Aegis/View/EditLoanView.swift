@@ -34,7 +34,7 @@ struct EditLoanView: View {
             TextField("Name", text: $name)
             HStack {
                 Text("Amount:")
-                TextField("", value: $amount, formatter: MainView.CurrencyFormatter)
+                CurrencyField(value: $amount)
             }
             DatePicker("Start Date:", selection: $startDate, displayedComponents: .date)
             TextField("Lender", text: $lender)
@@ -64,6 +64,7 @@ struct EditLoanView: View {
         }.navigationTitle(mode.getTitle())
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden()
+            .onAppear(perform: load)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", action: back)
@@ -73,6 +74,24 @@ struct EditLoanView: View {
                         .disabled(name.isEmpty || amount <= 0 || lender.isEmpty || rate <= 0 || years <= 0)
                 }
             }
+    }
+    
+    private func load() {
+        if mode == .Edit {
+            name = loan.name
+            startDate = loan.startDate
+            switch loan.amount {
+            case .Cents(let cents):
+                amount = cents
+            }
+            lender = loan.metaData.lender
+            rate = loan.metaData.rate
+            switch loan.metaData.term {
+            case .Years(let num):
+                years = num
+            }
+            category = loan.metaData.category
+        }
     }
     
     private func back() {
@@ -109,7 +128,8 @@ struct EditLoanView: View {
 
 #Preview {
     let container = createTestModelContainer()
+    let loan = addTestLoan(container.mainContext)
     return NavigationStack {
-        EditLoanView(path: .constant([]))
+        EditLoanView(path: .constant([]), loan: loan)
     }.modelContainer(container)
 }

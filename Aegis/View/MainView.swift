@@ -36,14 +36,6 @@ struct MainView: View {
         "Other": Color.gray
     ]
     
-    static let CurrencyFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.maximumFractionDigits = 2
-        formatter.zeroSymbol = "$"
-        return formatter
-    }()
-    
     @State private var path: [ViewType] = []
     
     var body: some View {
