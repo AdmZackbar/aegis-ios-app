@@ -18,7 +18,7 @@ struct NetWorthView: View {
     }
     
     var body: some View {
-        let net = .Cents(0) - loans.map({ $0.amount }).reduce(.Cents(0), +)
+        let net = .Cents(0) - loans.map({ $0.remainingAmount }).reduce(.Cents(0), +)
         ScrollView {
             VStack {
                 Text(net.toString())

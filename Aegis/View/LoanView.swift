@@ -52,7 +52,7 @@ struct LoanView: View {
                             Text("Payments").font(.title).bold()
                             Spacer()
                         }
-                        ForEach(loan.payments, id: \.id) { payment in
+                        ForEach(loan.payments.sorted(by: { $0.date > $1.date }), id: \.id) { payment in
                             Button {
                                 selectedPayment = payment
                                 showPaymentSheet = true
