@@ -21,16 +21,22 @@ func addExpenses(_ context: ModelContext) {
                            payee: "Costco",
                            amount: .Cents(3541),
                            category: "Gas",
+                           notes: "",
+                           detailType: nil,
                            details: .Fuel(amount: 11.123, rate: 2.652, type: "Gas", user: "Personal Vehicle")))
     context.insert(Expense(date: .now,
                            payee: "NBKC Bank",
                            amount: .Cents(600),
                            category: "Housing Payment",
+                           notes: "",
+                           detailType: nil,
                            details: .Generic(details: "November payment")))
     context.insert(Expense(date: .now,
                            payee: "HSV Utils",
                            amount: .Cents(10234),
                            category: "Utility Bill",
+                           notes: "",
+                           detailType: nil,
                            details: .Bill(details: .init(types: [
                             .Variable(name: "Electric", base: .Cents(3552), amount: 462, rate: 0.00231),
                             .Flat(name: "Trash", base: .Cents(1423))], tax: .Cents(255),details: "November bill"))))
@@ -38,16 +44,22 @@ func addExpenses(_ context: ModelContext) {
                            payee: "HP HSV",
                            amount: .Cents(2267),
                            category: "Sports Gear",
+                           notes: "",
+                           detailType: nil,
                            details: .Tag(tag: "Climbing", details: "Chalk")))
     context.insert(Expense(date: .now,
                            payee: "Greasy Hands",
                            amount: .Cents(4523),
                            category: "Haircut",
+                           notes: "",
+                           detailType: nil,
                            details: .Tip(tip: .Cents(1002), details: "Day out")))
     context.insert(Expense(date: .now,
                            payee: "Publix",
                            amount: .Cents(10723),
                            category: "Groceries",
+                           notes: "",
+                           detailType: nil,
                            details: .Groceries(list: .init(foods: [
                             .init(name: "Chicken breast", brand: "Kirkland Signature", unitPrice: .Cents(1230), quantity: 2, category: "Meat"),
                             .init(name: "Apples", brand: "Publix", unitPrice: .Cents(190), quantity: 1, category: "Fruit"),

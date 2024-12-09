@@ -126,7 +126,7 @@ struct EditExpenseView: View {
     
     init(path: Binding<[ViewType]>, expense: Expense? = nil) {
         self._path = path
-        self.expense = expense ?? Expense(date: Date(), payee: "", amount: .Cents(0), category: "", details: .Generic(details: ""))
+        self.expense = expense ?? Expense(date: Date(), payee: "", amount: .Cents(0), category: "", notes: "", detailType: nil, details: .Generic(details: ""))
         mode = expense == nil ? .Add : .Edit
     }
     
@@ -216,12 +216,12 @@ struct EditExpenseView: View {
                 info.amount = amount
             }
             info.category = expense.category
-            genericDetails = GenericExpenseView.Details.fromExpense(expense.details)
-            tagDetails = TagExpenseView.Details.fromExpense(expense.details)
-            fuelDetails = FuelExpenseView.Details.fromExpense(expense.details)
-            tipDetails = TipExpenseView.Details.fromExpense(expense.details)
-            billDetails = EditExpenseBillView.Details.fromExpense(expense.details)
-            groceryDetails = EditExpenseGroceryView.Details.fromExpense(expense.details)
+//            genericDetails = GenericExpenseView.Details.fromExpense(expense.details)
+//            tagDetails = TagExpenseView.Details.fromExpense(expense.details)
+//            fuelDetails = FuelExpenseView.Details.fromExpense(expense.details)
+//            tipDetails = TipExpenseView.Details.fromExpense(expense.details)
+//            billDetails = EditExpenseBillView.Details.fromExpense(expense.details)
+//            groceryDetails = EditExpenseGroceryView.Details.fromExpense(expense.details)
         }
     }
     
@@ -337,8 +337,6 @@ private struct TagExpenseView: View {
                 return Details(details: details)
             case .Tip(_, let details):
                 return Details(details: details)
-            case .Bill(let details):
-                return Details(details: details.details)
             default:
                 return Details()
             }
@@ -472,8 +470,6 @@ private struct TipExpenseView: View {
                 return Details(details: details)
             case .Tag(_, let details):
                 return Details(details: details)
-            case .Bill(let details):
-                return Details(details: details.details)
             default:
                 return Details()
             }

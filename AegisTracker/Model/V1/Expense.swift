@@ -17,13 +17,17 @@ extension SchemaV1 {
         var payee: String
         var amount: Price
         var category: String
-        var details: Details
+        var notes: String?
+        var detailType: DetailType?
+        var details: Details?
         
-        init(date: Date, payee: String, amount: Price, category: String, details: Details) {
+        init(date: Date, payee: String, amount: Price, category: String, notes: String?, detailType: DetailType?, details: Details?) {
             self.date = date
             self.payee = payee
             self.amount = amount
             self.category = category
+            self.notes = notes
+            self.detailType = detailType
             self.details = details
         }
         
@@ -36,10 +40,18 @@ extension SchemaV1 {
             case Groceries(list: GroceryList)
         }
         
+        enum DetailType: Codable {
+            case Tag(name: String)
+            case Tip(amount: Price)
+            case Bill(details: BillDetails)
+            case Foods(list: GroceryList)
+            case Fuel(details: FuelDetails)
+        }
+        
         struct BillDetails: Codable {
             var types: [BillType]
             var tax: Price
-            var details: String
+            var details: String?
         }
         
         enum BillType: Codable, Hashable, Equatable {
@@ -81,6 +93,12 @@ extension SchemaV1 {
                 }
                 var category: String
             }
+        }
+        
+        struct FuelDetails: Codable {
+            var amount: Double
+            var rate: Double
+            var user: String
         }
     }
 }

@@ -170,7 +170,7 @@ struct EditExpenseBillView: View {
             case .Bill(let details):
                 switch details.tax {
                 case .Cents(let cents):
-                    return Details(types: details.types.map(toType), tax: cents, details: details.details)
+                    return Details(types: details.types.map(toType), tax: cents, details: details.details ?? "")
                 }
             default:
                 return Details()
@@ -209,6 +209,6 @@ struct EditExpenseBillView: View {
 
 #Preview {
     NavigationStack {
-        EditExpenseView(path: .constant([]), expense: .init(date: .now, payee: "HSV Utils", amount: .Cents(10234), category: "Utility Bill", details: .Bill(details: .init(types: [.Variable(name: "Electric", base: .Cents(3552), amount: 462, rate: 0.00231), .Flat(name: "Trash", base: .Cents(1423))], tax: .Cents(255),details: "November bill"))))
+        EditExpenseView(path: .constant([]), expense: .init(date: .now, payee: "HSV Utils", amount: .Cents(10234), category: "Utility Bill", notes: "", detailType: nil, details: .Bill(details: .init(types: [.Variable(name: "Electric", base: .Cents(3552), amount: 462, rate: 0.00231), .Flat(name: "Trash", base: .Cents(1423))], tax: .Cents(255),details: "November bill"))))
     }
 }

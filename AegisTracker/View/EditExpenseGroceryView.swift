@@ -229,6 +229,6 @@ struct EditExpenseGroceryView: View {
     let container = createTestModelContainer()
     addExpenses(container.mainContext)
     return NavigationStack {
-        EditExpenseView(path: .constant([]), expense: .init(date: .now, payee: "Costco", amount: .Cents(60110), category: "Groceries", details: .Groceries(list: .init(foods: [.init(name: "Chicken Thighs", brand: "Kirkland Signature",unitPrice: .Cents(2134), quantity: 2.0, category: "Meat")]))))
+        EditExpenseView(path: .constant([]), expense: .init(date: .now, payee: "Costco", amount: .Cents(60110), category: "Groceries", notes: "", detailType: nil, details: .Groceries(list: .init(foods: [.init(name: "Chicken Thighs", brand: "Kirkland Signature",unitPrice: .Cents(2134), quantity: 2.0, category: "Meat")]))))
     }.modelContainer(container)
 }

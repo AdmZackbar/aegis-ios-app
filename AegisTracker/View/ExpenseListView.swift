@@ -39,7 +39,7 @@ struct ExpenseListView: View {
                     }
                     editButton(expense)
                     Button {
-                        let duplicate = Expense(date: expense.date, payee: expense.payee, amount: expense.amount, category: expense.category, details: expense.details)
+                        let duplicate = Expense(date: expense.date, payee: expense.payee, amount: expense.amount, category: expense.category, notes: expense.notes, detailType: expense.detailType, details: expense.details)
                         modelContext.insert(duplicate)
                         path.append(.EditExpense(expense: duplicate))
                     } label: {
@@ -143,9 +143,11 @@ struct ExpenseListView: View {
                         Text(type.getTotal().toString())
                     }.font(.subheadline)
                 }
-                if !details.details.isEmpty {
-                    Text(details.details).font(.caption)
+                if !(details.details ?? "").isEmpty {
+                    Text(details.details ?? "").font(.caption)
                 }
+            default:
+                EmptyView()
             }
         }
     }

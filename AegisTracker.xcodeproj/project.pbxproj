@@ -24,7 +24,7 @@
 		E88769962CF8FF5F00D989E1 /* EditLoanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769952CF8FF5F00D989E1 /* EditLoanView.swift */; };
 		E887699B2CFA4CF800D989E1 /* CurrencyField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887699A2CFA4CF800D989E1 /* CurrencyField.swift */; };
 		E887699D2CFAB7F800D989E1 /* NetWorthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887699C2CFAB7F800D989E1 /* NetWorthView.swift */; };
-		E8EB2A672CE063A7000E4B67 /* AegisApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A662CE063A7000E4B67 /* AegisApp.swift */; };
+		E8EB2A672CE063A7000E4B67 /* AegisTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A662CE063A7000E4B67 /* AegisTrackerApp.swift */; };
 		E8EB2A6D2CE063A9000E4B67 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */; };
 		E8EB2A702CE063A9000E4B67 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8EB2A6F2CE063A9000E4B67 /* Preview Assets.xcassets */; };
 		E8EB2A7A2CE063A9000E4B67 /* AegisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A792CE063A9000E4B67 /* AegisTests.swift */; };
@@ -33,6 +33,7 @@
 		E8EB2A962CE06617000E4B67 /* Schema.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A952CE06617000E4B67 /* Schema.swift */; };
 		E8EB2A9B2CE1074F000E4B67 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A9A2CE1074F000E4B67 /* MainView.swift */; };
 		E8EB2A9D2CE11D39000E4B67 /* PreviewHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A9C2CE11D39000E4B67 /* PreviewHelpers.swift */; };
+		E8F863FD2D066E8600A3EBCC /* ExpenseEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F863FC2D066E8600A3EBCC /* ExpenseEditView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,18 +72,19 @@
 		E88769952CF8FF5F00D989E1 /* EditLoanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditLoanView.swift; sourceTree = "<group>"; };
 		E887699A2CFA4CF800D989E1 /* CurrencyField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyField.swift; sourceTree = "<group>"; };
 		E887699C2CFAB7F800D989E1 /* NetWorthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetWorthView.swift; sourceTree = "<group>"; };
-		E8EB2A632CE063A7000E4B67 /* Aegis.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aegis.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		E8EB2A662CE063A7000E4B67 /* AegisApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisApp.swift; sourceTree = "<group>"; };
+		E8EB2A632CE063A7000E4B67 /* AegisTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AegisTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8EB2A662CE063A7000E4B67 /* AegisTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisTrackerApp.swift; sourceTree = "<group>"; };
 		E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E8EB2A6F2CE063A9000E4B67 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		E8EB2A752CE063A9000E4B67 /* AegisTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AegisTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8EB2A752CE063A9000E4B67 /* AegisTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AegisTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8EB2A792CE063A9000E4B67 /* AegisTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisTests.swift; sourceTree = "<group>"; };
-		E8EB2A7F2CE063A9000E4B67 /* AegisUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AegisUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8EB2A7F2CE063A9000E4B67 /* AegisTrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AegisTrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8EB2A832CE063A9000E4B67 /* AegisUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisUITests.swift; sourceTree = "<group>"; };
 		E8EB2A852CE063A9000E4B67 /* AegisUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		E8EB2A952CE06617000E4B67 /* Schema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Schema.swift; sourceTree = "<group>"; };
 		E8EB2A9A2CE1074F000E4B67 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		E8EB2A9C2CE11D39000E4B67 /* PreviewHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewHelpers.swift; sourceTree = "<group>"; };
+		E8F863FC2D066E8600A3EBCC /* ExpenseEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseEditView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,9 +134,9 @@
 			isa = PBXGroup;
 			children = (
 				E887697E2CE6881600D989E1 /* README.md */,
-				E8EB2A652CE063A7000E4B67 /* Aegis */,
-				E8EB2A782CE063A9000E4B67 /* AegisTests */,
-				E8EB2A822CE063A9000E4B67 /* AegisUITests */,
+				E8EB2A652CE063A7000E4B67 /* AegisTracker */,
+				E8EB2A782CE063A9000E4B67 /* AegisTrackerTests */,
+				E8EB2A822CE063A9000E4B67 /* AegisTrackerUITests */,
 				E8EB2A642CE063A7000E4B67 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -142,17 +144,17 @@
 		E8EB2A642CE063A7000E4B67 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E8EB2A632CE063A7000E4B67 /* Aegis.app */,
-				E8EB2A752CE063A9000E4B67 /* AegisTests.xctest */,
-				E8EB2A7F2CE063A9000E4B67 /* AegisUITests.xctest */,
+				E8EB2A632CE063A7000E4B67 /* AegisTracker.app */,
+				E8EB2A752CE063A9000E4B67 /* AegisTrackerTests.xctest */,
+				E8EB2A7F2CE063A9000E4B67 /* AegisTrackerUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		E8EB2A652CE063A7000E4B67 /* Aegis */ = {
+		E8EB2A652CE063A7000E4B67 /* AegisTracker */ = {
 			isa = PBXGroup;
 			children = (
-				E8EB2A662CE063A7000E4B67 /* AegisApp.swift */,
+				E8EB2A662CE063A7000E4B67 /* AegisTrackerApp.swift */,
 				E8EB2A9C2CE11D39000E4B67 /* PreviewHelpers.swift */,
 				E8EB2A922CE06478000E4B67 /* Model */,
 				E8EB2A972CE10630000E4B67 /* View */,
@@ -160,7 +162,7 @@
 				E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */,
 				E8EB2A6E2CE063A9000E4B67 /* Preview Content */,
 			);
-			path = Aegis;
+			path = AegisTracker;
 			sourceTree = "<group>";
 		};
 		E8EB2A6E2CE063A9000E4B67 /* Preview Content */ = {
@@ -171,21 +173,21 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		E8EB2A782CE063A9000E4B67 /* AegisTests */ = {
+		E8EB2A782CE063A9000E4B67 /* AegisTrackerTests */ = {
 			isa = PBXGroup;
 			children = (
 				E8EB2A792CE063A9000E4B67 /* AegisTests.swift */,
 			);
-			path = AegisTests;
+			path = AegisTrackerTests;
 			sourceTree = "<group>";
 		};
-		E8EB2A822CE063A9000E4B67 /* AegisUITests */ = {
+		E8EB2A822CE063A9000E4B67 /* AegisTrackerUITests */ = {
 			isa = PBXGroup;
 			children = (
 				E8EB2A832CE063A9000E4B67 /* AegisUITests.swift */,
 				E8EB2A852CE063A9000E4B67 /* AegisUITestsLaunchTests.swift */,
 			);
-			path = AegisUITests;
+			path = AegisTrackerUITests;
 			sourceTree = "<group>";
 		};
 		E8EB2A922CE06478000E4B67 /* Model */ = {
@@ -214,6 +216,7 @@
 				E88769872CEA489300D989E1 /* EditExpenseGroceryView.swift */,
 				E88769932CF8D4E800D989E1 /* LoanView.swift */,
 				E88769952CF8FF5F00D989E1 /* EditLoanView.swift */,
+				E8F863FC2D066E8600A3EBCC /* ExpenseEditView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -221,9 +224,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E8EB2A622CE063A7000E4B67 /* Aegis */ = {
+		E8EB2A622CE063A7000E4B67 /* AegisTracker */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E8EB2A892CE063A9000E4B67 /* Build configuration list for PBXNativeTarget "Aegis" */;
+			buildConfigurationList = E8EB2A892CE063A9000E4B67 /* Build configuration list for PBXNativeTarget "AegisTracker" */;
 			buildPhases = (
 				E8EB2A5F2CE063A7000E4B67 /* Sources */,
 				E8EB2A602CE063A7000E4B67 /* Frameworks */,
@@ -233,14 +236,14 @@
 			);
 			dependencies = (
 			);
-			name = Aegis;
+			name = AegisTracker;
 			productName = Aegis;
-			productReference = E8EB2A632CE063A7000E4B67 /* Aegis.app */;
+			productReference = E8EB2A632CE063A7000E4B67 /* AegisTracker.app */;
 			productType = "com.apple.product-type.application";
 		};
-		E8EB2A742CE063A9000E4B67 /* AegisTests */ = {
+		E8EB2A742CE063A9000E4B67 /* AegisTrackerTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E8EB2A8C2CE063A9000E4B67 /* Build configuration list for PBXNativeTarget "AegisTests" */;
+			buildConfigurationList = E8EB2A8C2CE063A9000E4B67 /* Build configuration list for PBXNativeTarget "AegisTrackerTests" */;
 			buildPhases = (
 				E8EB2A712CE063A9000E4B67 /* Sources */,
 				E8EB2A722CE063A9000E4B67 /* Frameworks */,
@@ -251,14 +254,14 @@
 			dependencies = (
 				E8EB2A772CE063A9000E4B67 /* PBXTargetDependency */,
 			);
-			name = AegisTests;
+			name = AegisTrackerTests;
 			productName = AegisTests;
-			productReference = E8EB2A752CE063A9000E4B67 /* AegisTests.xctest */;
+			productReference = E8EB2A752CE063A9000E4B67 /* AegisTrackerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		E8EB2A7E2CE063A9000E4B67 /* AegisUITests */ = {
+		E8EB2A7E2CE063A9000E4B67 /* AegisTrackerUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E8EB2A8F2CE063A9000E4B67 /* Build configuration list for PBXNativeTarget "AegisUITests" */;
+			buildConfigurationList = E8EB2A8F2CE063A9000E4B67 /* Build configuration list for PBXNativeTarget "AegisTrackerUITests" */;
 			buildPhases = (
 				E8EB2A7B2CE063A9000E4B67 /* Sources */,
 				E8EB2A7C2CE063A9000E4B67 /* Frameworks */,
@@ -269,9 +272,9 @@
 			dependencies = (
 				E8EB2A812CE063A9000E4B67 /* PBXTargetDependency */,
 			);
-			name = AegisUITests;
+			name = AegisTrackerUITests;
 			productName = AegisUITests;
-			productReference = E8EB2A7F2CE063A9000E4B67 /* AegisUITests.xctest */;
+			productReference = E8EB2A7F2CE063A9000E4B67 /* AegisTrackerUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -297,7 +300,7 @@
 					};
 				};
 			};
-			buildConfigurationList = E8EB2A5E2CE063A7000E4B67 /* Build configuration list for PBXProject "Aegis" */;
+			buildConfigurationList = E8EB2A5E2CE063A7000E4B67 /* Build configuration list for PBXProject "AegisTracker" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -310,9 +313,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E8EB2A622CE063A7000E4B67 /* Aegis */,
-				E8EB2A742CE063A9000E4B67 /* AegisTests */,
-				E8EB2A7E2CE063A9000E4B67 /* AegisUITests */,
+				E8EB2A622CE063A7000E4B67 /* AegisTracker */,
+				E8EB2A742CE063A9000E4B67 /* AegisTrackerTests */,
+				E8EB2A7E2CE063A9000E4B67 /* AegisTrackerUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -355,7 +358,7 @@
 				E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */,
 				E887698E2CEE684700D989E1 /* MonthListView.swift in Sources */,
 				E887699D2CFAB7F800D989E1 /* NetWorthView.swift in Sources */,
-				E8EB2A672CE063A7000E4B67 /* AegisApp.swift in Sources */,
+				E8EB2A672CE063A7000E4B67 /* AegisTrackerApp.swift in Sources */,
 				E88769962CF8FF5F00D989E1 /* EditLoanView.swift in Sources */,
 				E88769902CEFC21B00D989E1 /* DashboardYearView.swift in Sources */,
 				E887698A2CEA493F00D989E1 /* EditExpenseBillView.swift in Sources */,
@@ -367,6 +370,7 @@
 				E887699B2CFA4CF800D989E1 /* CurrencyField.swift in Sources */,
 				E88769882CEA489300D989E1 /* EditExpenseGroceryView.swift in Sources */,
 				E88769822CE7F96000D989E1 /* ExpenseGroceryListView.swift in Sources */,
+				E8F863FD2D066E8600A3EBCC /* ExpenseEditView.swift in Sources */,
 				E88769922CF8BA6200D989E1 /* Loan.swift in Sources */,
 				E88769842CE83B6300D989E1 /* CategoryListView.swift in Sources */,
 			);
@@ -394,12 +398,12 @@
 /* Begin PBXTargetDependency section */
 		E8EB2A772CE063A9000E4B67 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E8EB2A622CE063A7000E4B67 /* Aegis */;
+			target = E8EB2A622CE063A7000E4B67 /* AegisTracker */;
 			targetProxy = E8EB2A762CE063A9000E4B67 /* PBXContainerItemProxy */;
 		};
 		E8EB2A812CE063A9000E4B67 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E8EB2A622CE063A7000E4B67 /* Aegis */;
+			target = E8EB2A622CE063A7000E4B67 /* AegisTracker */;
 			targetProxy = E8EB2A802CE063A9000E4B67 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -529,24 +533,28 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Aegis/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"AegisTracker/Preview Content\"";
 				DEVELOPMENT_TEAM = FU2B76F7PF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Aegis Expense Tracker";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.wassynger.Aegis;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wassynger.AegisTracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -558,24 +566,28 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Aegis/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"AegisTracker/Preview Content\"";
 				DEVELOPMENT_TEAM = FU2B76F7PF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Aegis Expense Tracker";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.wassynger.Aegis;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wassynger.AegisTracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -598,7 +610,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Aegis.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Aegis";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AegisTracker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AegisTracker";
 			};
 			name = Debug;
 		};
@@ -618,7 +630,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Aegis.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Aegis";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AegisTracker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AegisTracker";
 			};
 			name = Release;
 		};
@@ -661,7 +673,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E8EB2A5E2CE063A7000E4B67 /* Build configuration list for PBXProject "Aegis" */ = {
+		E8EB2A5E2CE063A7000E4B67 /* Build configuration list for PBXProject "AegisTracker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E8EB2A872CE063A9000E4B67 /* Debug */,
@@ -670,7 +682,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E8EB2A892CE063A9000E4B67 /* Build configuration list for PBXNativeTarget "Aegis" */ = {
+		E8EB2A892CE063A9000E4B67 /* Build configuration list for PBXNativeTarget "AegisTracker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E8EB2A8A2CE063A9000E4B67 /* Debug */,
@@ -679,7 +691,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E8EB2A8C2CE063A9000E4B67 /* Build configuration list for PBXNativeTarget "AegisTests" */ = {
+		E8EB2A8C2CE063A9000E4B67 /* Build configuration list for PBXNativeTarget "AegisTrackerTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E8EB2A8D2CE063A9000E4B67 /* Debug */,
@@ -688,7 +700,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E8EB2A8F2CE063A9000E4B67 /* Build configuration list for PBXNativeTarget "AegisUITests" */ = {
+		E8EB2A8F2CE063A9000E4B67 /* Build configuration list for PBXNativeTarget "AegisTrackerUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E8EB2A902CE063A9000E4B67 /* Debug */,

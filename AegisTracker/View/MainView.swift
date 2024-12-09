@@ -5,6 +5,7 @@
 //  Created by Zach Wassynger on 11/10/24.
 //
 
+import SwiftData
 import SwiftUI
 
 struct MainView: View {
@@ -35,6 +36,8 @@ struct MainView: View {
         "Travel": Color.purple,
         "Other": Color.gray
     ]
+    
+    @Query var expenses: [Expense]
     
     @State private var path: [ViewType] = []
     
@@ -92,6 +95,35 @@ struct MainView: View {
                             Spacer()
                         }.frame(height: 36).contentShape(Rectangle())
                     }.buttonStyle(.plain)
+                    Button {
+                        for expense in expenses {
+                            switch expense.details {
+                            case .Generic(let details):
+                                expense.notes = details
+                            case .Tag(let tag, let details):
+                                expense.notes = details
+                                expense.detailType = .Tag(name: tag)
+                            case .Tip(let tip, let details):
+                                expense.notes = details
+                                expense.detailType = .Tip(amount: tip)
+                            case .Bill(let details):
+                                expense.notes = details.details ?? ""
+                                expense.detailType = .Bill(details: .init(types: details.types, tax: details.tax))
+                            case .Groceries(let list):
+                                expense.detailType = .Foods(list: list)
+                            case .Fuel(let amount, let rate, _, let user):
+                                expense.detailType = .Fuel(details: .init(amount: amount, rate: rate, user: user))
+                            default:
+                                break
+                            }
+                            expense.details = nil
+                        }
+                    } label: {
+                        HStack {
+                            Label("Transfer Data", systemImage: "plus")
+                            Spacer()
+                        }.frame(height: 36).contentShape(Rectangle())
+                    }.buttonStyle(.plain)
                 }
             }.navigationTitle("Aegis")
                 .navigationBarTitleDisplayMode(.inline)
@@ -113,9 +145,9 @@ struct MainView: View {
         case .ListByMonth(let month, let year):
             MonthListView(path: $path, month: month, year: year)
         case .AddExpense:
-            EditExpenseView(path: $path)
+            ExpenseEditView(path: $path)
         case .EditExpense(let expense):
-            EditExpenseView(path: $path, expense: expense)
+            ExpenseEditView(path: $path, expense: expense)
         case .ViewGroceryListExpense(let expense):
             ExpenseGroceryListView(path: $path, expense: expense)
         case .ViewLoan(let loan):

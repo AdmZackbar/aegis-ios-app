@@ -105,17 +105,20 @@ struct CategoryListView: View {
         searchText.isEmpty || expense.payee.localizedCaseInsensitiveContains(searchText) || isFiltered(expense.details)
     }
     
-    private func isFiltered(_ details: Expense.Details) -> Bool {
-        switch details {
-        case .Generic(let str):
-            return str.localizedCaseInsensitiveContains(searchText)
-        case .Tag(let tag, let details):
-            return tag.localizedCaseInsensitiveContains(searchText) || details.localizedCaseInsensitiveContains(searchText)
-        case .Tip(_, let details):
-            return details.localizedCaseInsensitiveContains(searchText)
-        default:
-            return false
+    private func isFiltered(_ details: Expense.Details?) -> Bool {
+        if let details {
+            switch details {
+            case .Generic(let str):
+                return str.localizedCaseInsensitiveContains(searchText)
+            case .Tag(let tag, let details):
+                return tag.localizedCaseInsensitiveContains(searchText) || details.localizedCaseInsensitiveContains(searchText)
+            case .Tip(_, let details):
+                return details.localizedCaseInsensitiveContains(searchText)
+            default:
+                return false
+            }
         }
+        return false
     }
 }
 
