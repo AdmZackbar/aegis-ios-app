@@ -13,27 +13,16 @@ typealias Revenue = SchemaV1.Revenue
 extension SchemaV1 {
     @Model
     final class Revenue {
-        var date: Date
-        var payer: String
-        var amount: Price
-        var category: Category
+        var date: Date = Date()
+        var payer: String = ""
+        var amount: Price = Price.Cents(0)
+        var category: String = ""
         
-        init(date: Date, payer: String, amount: Price, category: Category) {
+        init(date: Date, payer: String, amount: Price, category: String) {
             self.date = date
             self.payer = payer
             self.amount = amount
             self.category = category
-        }
-        
-        enum Category: String, Codable, CaseIterable {
-            // Earning money from a job or completing a task
-            case Paycheck
-            // Receiving cash as a gift
-            case Gift
-            // Selling assets for liquid cash
-            case Liquidation
-            // Dividends from the stock market
-            case Dividend
         }
     }
 }

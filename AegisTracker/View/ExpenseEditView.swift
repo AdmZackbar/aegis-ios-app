@@ -37,7 +37,7 @@ struct ExpenseEditView: View {
     
     init(path: Binding<[ViewType]>, expense: Expense? = nil) {
         self._path = path
-        self.expense = expense ?? Expense(date: Date(), payee: "", amount: .Cents(0), category: "", notes: "", detailType: nil, details: .Generic(details: ""))
+        self.expense = expense ?? Expense(date: Date(), payee: "", amount: .Cents(0), category: "", notes: "", detailType: nil)
         mode = expense == nil ? .Add : .Edit
     }
     
@@ -142,7 +142,7 @@ struct ExpenseEditView: View {
             payee = expense.payee
             amount = expense.amount.toCents()
             category = expense.category
-            notes = expense.notes ?? ""
+            notes = expense.notes
             switch expense.detailType {
             case .Tag(let name):
                 type = .Tag

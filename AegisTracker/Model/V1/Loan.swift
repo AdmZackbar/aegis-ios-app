@@ -14,10 +14,10 @@ typealias LoanPayment = SchemaV1.LoanPayment
 extension SchemaV1 {
     @Model
     final class Loan {
-        var name: String
-        var startDate: Date
-        var amount: Price
-        var metaData: MetaData
+        var name: String = ""
+        var startDate: Date = Date()
+        var amount: Price = Price.Cents(0)
+        var metaData: MetaData = MetaData(lender: "", rate: 0.0, term: .Years(num: 0), category: "")
         
         var totalPaid: Price {
             get {
@@ -36,7 +36,7 @@ extension SchemaV1 {
         }
         
         @Relationship(deleteRule: .cascade, inverse: \LoanPayment.loan)
-        var payments: [LoanPayment] = []
+        var payments: [LoanPayment]! = []
         
         init(name: String, startDate: Date, amount: Price, metaData: MetaData) {
             self.name = name
@@ -59,10 +59,10 @@ extension SchemaV1 {
     
     @Model
     final class LoanPayment {
-        var loan: Loan!
-        var date: Date
-        var type: LoanType
-        var details: String
+        var loan: Loan! = nil
+        var date: Date = Date()
+        var type: LoanType = LoanType.Principal(principal: .Cents(0))
+        var details: String = ""
         
         init(loan: Loan? = nil, date: Date, type: LoanType, details: String) {
             self.loan = loan

@@ -17,8 +17,8 @@ struct ExpenseGroceryListView: View {
     init(path: Binding<[ViewType]>, expense: Expense) {
         self._path = path
         self.expense = expense
-        switch expense.details {
-        case .Groceries(let list):
+        switch expense.detailType {
+        case .Foods(let list):
             self.groceryList = list
         default:
             self.groceryList = .init(foods: [])

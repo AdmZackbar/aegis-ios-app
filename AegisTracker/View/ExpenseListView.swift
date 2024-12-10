@@ -38,13 +38,7 @@ struct ExpenseListView: View {
                         Label("View '\(expense.category)'", systemImage: "magnifyingglass")
                     }
                     editButton(expense)
-                    Button {
-                        let duplicate = Expense(date: expense.date, payee: expense.payee, amount: expense.amount, category: expense.category, notes: expense.notes, detailType: expense.detailType, details: expense.details)
-                        modelContext.insert(duplicate)
-                        path.append(.EditExpense(expense: duplicate))
-                    } label: {
-                        Label("Duplicate", systemImage: "plus.square.on.square")
-                    }
+                    duplicateButton(expense)
                     deleteButton(expense)
                 }
         }.alert("Delete Expense?", isPresented: $deleteShowing) {
@@ -66,6 +60,16 @@ struct ExpenseListView: View {
         }
     }
     
+    private func duplicateButton(_ expense: Expense) -> some View {
+        Button {
+            let duplicate = Expense(date: expense.date, payee: expense.payee, amount: expense.amount, category: expense.category, notes: expense.notes, detailType: expense.detailType)
+            modelContext.insert(duplicate)
+            path.append(.EditExpense(expense: duplicate))
+        } label: {
+            Label("Duplicate", systemImage: "plus.square.on.square")
+        }
+    }
+    
     private func deleteButton(_ expense: Expense) -> some View {
         Button {
             deleteItem = expense
@@ -83,34 +87,27 @@ struct ExpenseListView: View {
                 Spacer()
                 Text(expense.amount.toString()).bold()
             }
-            switch expense.details {
-            case .Generic(let details):
+            switch expense.detailType {
+            case .none:
                 Text(expense.payee).font(.subheadline).italic()
-                if !details.isEmpty {
-                    Text(details).font(.caption)
+                if !expense.notes.isEmpty {
+                    Text(expense.notes).font(.caption)
                 }
-            case .Tag(let tag, let details):
+            case .Tag(let tag):
                 HStack {
                     Text(expense.payee).font(.subheadline).italic()
                     Spacer()
                     Text(tag).font(.subheadline).italic()
                 }
-                if !details.isEmpty {
-                    Text(details).font(.caption)
-                }
-            case .Fuel(let numGallons, let costPerGallon, let type, let user):
+            case .Fuel(let details):
                 HStack(alignment: .top) {
                     Text(expense.payee).font(.subheadline).italic()
                     Spacer()
-                    Text("\(numGallons.formatted(.number.precision(.fractionLength(0...1)))) gal @ \(costPerGallon.formatted(.currency(code: "USD")))")
+                    Text("\(details.amount.formatted(.number.precision(.fractionLength(0...1)))) gal @ \(details.rate.formatted(.currency(code: "USD")))")
                         .font(.subheadline).italic()
                 }
-                HStack {
-                    Text(user).font(.caption)
-                    Spacer()
-                    Text(type).font(.caption)
-                }
-            case .Groceries(let list):
+                Text(details.user).font(.caption)
+            case .Foods(let list):
                 Button {
                     path.append(.ViewGroceryListExpense(expense: expense))
                 } label: {
@@ -120,7 +117,7 @@ struct ExpenseListView: View {
                         Text("\(list.foods.count) items")
                     }
                 }.font(.subheadline).italic().tint(.primary)
-            case .Tip(let tip, let details):
+            case .Tip(let tip):
                 HStack(alignment: .top) {
                     Text(expense.payee).font(.subheadline).italic()
                     Spacer()
@@ -128,8 +125,8 @@ struct ExpenseListView: View {
                         Text("\(tip.toString()) tip").font(.subheadline).italic()
                     }
                 }
-                if !details.isEmpty {
-                    Text(details).font(.caption)
+                if !expense.notes.isEmpty {
+                    Text(expense.notes).font(.caption)
                 }
             case .Bill(let details):
                 HStack {
@@ -143,11 +140,9 @@ struct ExpenseListView: View {
                         Text(type.getTotal().toString())
                     }.font(.subheadline)
                 }
-                if !(details.details ?? "").isEmpty {
-                    Text(details.details ?? "").font(.caption)
+                if !expense.notes.isEmpty {
+                    Text(expense.notes).font(.caption)
                 }
-            default:
-                EmptyView()
             }
         }
     }

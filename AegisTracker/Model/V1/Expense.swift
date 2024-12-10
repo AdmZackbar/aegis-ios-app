@@ -13,31 +13,20 @@ typealias Expense = SchemaV1.Expense
 extension SchemaV1 {
     @Model
     final class Expense {
-        var date: Date
-        var payee: String
-        var amount: Price
-        var category: String
-        var notes: String?
-        var detailType: DetailType?
-        var details: Details?
+        var date: Date = Date()
+        var payee: String = ""
+        var amount: Price = Price.Cents(0)
+        var category: String = ""
+        var notes: String = ""
+        var detailType: DetailType? = nil
         
-        init(date: Date, payee: String, amount: Price, category: String, notes: String?, detailType: DetailType?, details: Details?) {
+        init(date: Date, payee: String, amount: Price, category: String, notes: String, detailType: DetailType? = nil) {
             self.date = date
             self.payee = payee
             self.amount = amount
             self.category = category
             self.notes = notes
             self.detailType = detailType
-            self.details = details
-        }
-        
-        enum Details: Codable {
-            case Generic(details: String)
-            case Tag(tag: String, details: String)
-            case Fuel(amount: Double, rate: Double, type: String, user: String)
-            case Tip(tip: Price, details: String)
-            case Bill(details: BillDetails)
-            case Groceries(list: GroceryList)
         }
         
         enum DetailType: Codable {
@@ -51,7 +40,6 @@ extension SchemaV1 {
         struct BillDetails: Codable {
             var types: [BillType]
             var tax: Price
-            var details: String?
         }
         
         enum BillType: Codable, Hashable, Equatable {
