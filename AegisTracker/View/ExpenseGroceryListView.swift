@@ -67,7 +67,7 @@ struct ExpenseGroceryListView: View {
 
 #Preview {
     let container = createTestModelContainer()
-    addExpenses(container.mainContext)
+    addTestExpenses(container.mainContext)
     let expenses = try! container.mainContext.fetch(FetchDescriptor<Expense>(predicate: #Predicate { $0.category == "Groceries" }))
     return NavigationStack {
         ExpenseGroceryListView(path: .constant([]), expense: expenses.first!)

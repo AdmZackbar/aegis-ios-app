@@ -168,7 +168,7 @@ struct ExpenseListView: View {
 
 #Preview {
     let container = createTestModelContainer()
-    addExpenses(container.mainContext)
+    addTestExpenses(container.mainContext)
     let expenses = try! container.mainContext.fetch(FetchDescriptor<Expense>())
     return NavigationStack {
         Form {

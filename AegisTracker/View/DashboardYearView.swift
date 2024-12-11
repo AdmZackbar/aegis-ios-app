@@ -174,7 +174,7 @@ struct DashboardYearView: View {
 
 #Preview {
     let container = createTestModelContainer()
-    addExpenses(container.mainContext)
+    addTestExpenses(container.mainContext)
     return NavigationStack {
         DashboardYearView(path: .constant([]))
     }.modelContainer(container)

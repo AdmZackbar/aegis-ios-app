@@ -64,7 +64,7 @@ struct MonthListView: View {
 
 #Preview {
     let container = createTestModelContainer()
-    addExpenses(container.mainContext)
+    addTestExpenses(container.mainContext)
     let m = Calendar.current.component(.month, from: .now)
     let y = Calendar.current.component(.year, from: .now)
     return NavigationStack {

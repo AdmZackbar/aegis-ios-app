@@ -64,7 +64,7 @@ func addTestExpenses(_ context: ModelContext) {
 func addTestAsset(_ context: ModelContext) -> Asset {
     let asset = Asset(name: "332 Dovington Drive Mortgage",
                       purchaseDate: Date(), totalCost: .Cents(30523199),
-                      valuations: [(date: Date(), amount: .Cents(31023199))],
+                      valuations: [.init(date: Date(), amount: .Cents(31023199))],
                       loan: .init(
                         amount: .Cents(24531223),
                         payments: [

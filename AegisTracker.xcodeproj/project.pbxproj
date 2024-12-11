@@ -17,8 +17,6 @@
 		E88769862CE91E5800D989E1 /* ExpenseListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769852CE91E5800D989E1 /* ExpenseListView.swift */; };
 		E887698E2CEE684700D989E1 /* MonthListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887698D2CEE684700D989E1 /* MonthListView.swift */; };
 		E88769902CEFC21B00D989E1 /* DashboardYearView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887698F2CEFC21B00D989E1 /* DashboardYearView.swift */; };
-		E88769942CF8D4E800D989E1 /* LoanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769932CF8D4E800D989E1 /* LoanView.swift */; };
-		E88769962CF8FF5F00D989E1 /* EditLoanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769952CF8FF5F00D989E1 /* EditLoanView.swift */; };
 		E887699B2CFA4CF800D989E1 /* CurrencyField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887699A2CFA4CF800D989E1 /* CurrencyField.swift */; };
 		E8EB2A672CE063A7000E4B67 /* AegisTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A662CE063A7000E4B67 /* AegisTrackerApp.swift */; };
 		E8EB2A6D2CE063A9000E4B67 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */; };
@@ -63,8 +61,6 @@
 		E88769852CE91E5800D989E1 /* ExpenseListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseListView.swift; sourceTree = "<group>"; };
 		E887698D2CEE684700D989E1 /* MonthListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthListView.swift; sourceTree = "<group>"; };
 		E887698F2CEFC21B00D989E1 /* DashboardYearView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardYearView.swift; sourceTree = "<group>"; };
-		E88769932CF8D4E800D989E1 /* LoanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoanView.swift; sourceTree = "<group>"; };
-		E88769952CF8FF5F00D989E1 /* EditLoanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditLoanView.swift; sourceTree = "<group>"; };
 		E887699A2CFA4CF800D989E1 /* CurrencyField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyField.swift; sourceTree = "<group>"; };
 		E8EB2A632CE063A7000E4B67 /* AegisTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AegisTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8EB2A662CE063A7000E4B67 /* AegisTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisTrackerApp.swift; sourceTree = "<group>"; };
@@ -206,8 +202,6 @@
 				E887698D2CEE684700D989E1 /* MonthListView.swift */,
 				E88769852CE91E5800D989E1 /* ExpenseListView.swift */,
 				E88769812CE7F96000D989E1 /* ExpenseGroceryListView.swift */,
-				E88769932CF8D4E800D989E1 /* LoanView.swift */,
-				E88769952CF8FF5F00D989E1 /* EditLoanView.swift */,
 				E8F863FC2D066E8600A3EBCC /* ExpenseEditView.swift */,
 			);
 			path = View;
@@ -344,13 +338,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				E88769772CE3FF4600D989E1 /* Expense.swift in Sources */,
-				E88769942CF8D4E800D989E1 /* LoanView.swift in Sources */,
 				E85AE3D12D09483C00CA9D0C /* Asset.swift in Sources */,
 				E8EB2A9D2CE11D39000E4B67 /* PreviewHelpers.swift in Sources */,
 				E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */,
 				E887698E2CEE684700D989E1 /* MonthListView.swift in Sources */,
 				E8EB2A672CE063A7000E4B67 /* AegisTrackerApp.swift in Sources */,
-				E88769962CF8FF5F00D989E1 /* EditLoanView.swift in Sources */,
 				E88769902CEFC21B00D989E1 /* DashboardYearView.swift in Sources */,
 				E887697D2CE4672F00D989E1 /* DateListView.swift in Sources */,
 				E88769862CE91E5800D989E1 /* ExpenseListView.swift in Sources */,
@@ -532,7 +524,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AegisTracker/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Aegis Expense Tracker";
+				INFOPLIST_KEY_CFBundleDisplayName = Aegis;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -568,7 +560,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AegisTracker/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Aegis Expense Tracker";
+				INFOPLIST_KEY_CFBundleDisplayName = Aegis;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

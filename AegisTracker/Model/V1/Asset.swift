@@ -9,7 +9,6 @@ import Foundation
 import SwiftData
 
 typealias Asset = SchemaV1.Asset
-typealias Valuation = (date: Date, amount: Price)
 
 extension SchemaV1 {
     @Model
@@ -28,7 +27,12 @@ extension SchemaV1 {
             self.loan = loan
         }
         
-        struct Loan {
+        struct Valuation: Codable {
+            var date: Date
+            var amount: Price
+        }
+        
+        struct Loan: Codable {
             var amount: Price = Price.Cents(0)
             var payments: [Payment] = []
             var metaData: MetaData = MetaData(lender: "", rate: 0.0, term: .Years(num: 0), category: "")

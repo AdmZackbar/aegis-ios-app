@@ -125,7 +125,7 @@ struct DateListView: View {
 
 #Preview {
     let container = createTestModelContainer()
-    addExpenses(container.mainContext)
+    addTestExpenses(container.mainContext)
     return NavigationStack {
         DateListView(path: .constant([]))
     }.modelContainer(container)
