@@ -16,13 +16,13 @@ func createTestModelContainer() -> ModelContainer {
     return container
 }
 
-func addExpenses(_ context: ModelContext) {
+func addTestExpenses(_ context: ModelContext) {
     context.insert(Expense(date: .now,
                            payee: "Costco",
                            amount: .Cents(3541),
                            category: "Gas",
                            notes: "",
-                           detailType: .Fuel(details: .init(amount: 11.2, rate: 2.561, user: "CX-5"))))
+                           details: .Fuel(details: .init(amount: 11.2, rate: 2.561, user: "CX-5"))))
     context.insert(Expense(date: .now,
                            payee: "NBKC Bank",
                            amount: .Cents(600),
@@ -33,7 +33,7 @@ func addExpenses(_ context: ModelContext) {
                            amount: .Cents(10234),
                            category: "Utility Bill",
                            notes: "November bill",
-                           detailType: .Bill(details: .init(types: [
+                           details: .Bill(details: .init(bills: [
                             .Variable(name: "Electric", base: .Cents(3552), amount: 462, rate: 0.00231),
                             .Flat(name: "Trash", base: .Cents(1423))], tax: .Cents(255)))))
     context.insert(Expense(date: .now,
@@ -41,29 +41,46 @@ func addExpenses(_ context: ModelContext) {
                            amount: .Cents(2267),
                            category: "Sports Gear",
                            notes: "Chalk",
-                           detailType: .Tag(name: "Climbing")))
+                           details: .Tag(name: "Climbing")))
     context.insert(Expense(date: .now,
                            payee: "Greasy Hands",
                            amount: .Cents(4523),
                            category: "Haircut",
                            notes: "Ryle cut",
-                           detailType: .Tip(amount: .Cents(1002))))
+                           details: .Tip(amount: .Cents(1002))))
     context.insert(Expense(date: .now,
                            payee: "Publix",
                            amount: .Cents(10723),
                            category: "Groceries",
                            notes: "",
-                           detailType: .Foods(list: .init(foods: [
-                            .init(name: "Chicken breast", brand: "Kirkland Signature", unitPrice: .Cents(1230), quantity: 2, category: "Meat"),
-                            .init(name: "Apples", brand: "Publix", unitPrice: .Cents(190), quantity: 1, category: "Fruit"),
-                            .init(name: "Root beer", brand: "IBC", unitPrice: .Cents(699), quantity: 4, category: "Sweets")
+                           details: .Foods(list: .init(foods: [
+                            .init(name: "Chicken breast", brand: "Kirkland Signature", totalPrice: .Cents(1230), quantity: 2, category: "Meat"),
+                            .init(name: "Apples", brand: "Publix", totalPrice: .Cents(190), quantity: 1, category: "Fruit"),
+                            .init(name: "Root beer", brand: "IBC", totalPrice: .Cents(699), quantity: 4, category: "Sweets")
                            ]))))
 }
 
 @discardableResult
-func addTestLoan(_ context: ModelContext) -> Loan {
-    let loan = Loan(name: "332 Dovington Drive Mortgage", startDate: .now, amount: .Cents(24531223), metaData: .init(lender: "NBKC Bank", rate: 6.625, term: .Years(num: 30), category: "Housing"))
-    let payment = LoanPayment(loan: loan, date: .now, type: .Regular(details: .init(principal: .Cents(30141), interest: .Cents(158323), escrow: .Cents(53623), other: .Cents(0))), details: "November payment")
-    context.insert(payment)
-    return loan
+func addTestAsset(_ context: ModelContext) -> Asset {
+    let asset = Asset(name: "332 Dovington Drive Mortgage",
+                      purchaseDate: Date(), totalCost: .Cents(30523199),
+                      valuations: [(date: Date(), amount: .Cents(31023199))],
+                      loan: .init(
+                        amount: .Cents(24531223),
+                        payments: [
+                            .init(date: .now,
+                                  type: .Regular(
+                                    details: .init(
+                                        principal: .Cents(30141),
+                                        interest: .Cents(158323),
+                                        escrow: .Cents(53623),
+                                        other: .Cents(0))),
+                                  notes: "November payment")],
+                        metaData: .init(
+                            lender: "NBKC Bank",
+                            rate: 6.625,
+                            term: .Years(num: 30),
+                            category: "Housing")))
+    context.insert(asset)
+    return asset
 }

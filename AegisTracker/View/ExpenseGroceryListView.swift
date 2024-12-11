@@ -10,14 +10,14 @@ import SwiftUI
 
 struct ExpenseGroceryListView: View {
     let expense: Expense
-    let groceryList: Expense.GroceryList
+    let groceryList: Expense.FoodList
     
     @Binding private var path: [ViewType]
     
     init(path: Binding<[ViewType]>, expense: Expense) {
         self._path = path
         self.expense = expense
-        switch expense.detailType {
+        switch expense.details {
         case .Foods(let list):
             self.groceryList = list
         default:
@@ -47,7 +47,7 @@ struct ExpenseGroceryListView: View {
     }
     
     @ViewBuilder
-    private func foodEntry(_ food: Expense.GroceryList.Food) -> some View {
+    private func foodEntry(_ food: Expense.FoodList.Food) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(food.name)

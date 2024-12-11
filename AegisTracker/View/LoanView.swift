@@ -193,7 +193,7 @@ struct LoanPaymentView: View {
         case .Principal:
             payment.type = .Principal(principal: .Cents(principal))
         }
-        payment.details = details
+        payment.notes = details
         if mode == .Add {
             payment.loan = loan
             loan.payments.append(payment)

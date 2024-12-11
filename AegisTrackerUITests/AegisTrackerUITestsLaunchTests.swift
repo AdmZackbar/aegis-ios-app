@@ -7,7 +7,7 @@
 
 import XCTest
 
-final class AegisUITestsLaunchTests: XCTestCase {
+final class AegisTrackerUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

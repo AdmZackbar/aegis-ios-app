@@ -28,16 +28,16 @@ struct ExpenseEditView: View {
     // Tip
     @State private var tip: Int = 0
     // Bill
-    @State private var bills: [Expense.BillType] = []
+    @State private var bills: [Expense.BillDetails.Bill] = []
     @State private var billTax: Int = 0
     // Food
-    @State private var food: [Expense.GroceryList.Food] = []
+    @State private var food: [Expense.FoodList.Food] = []
     // Fuel
     @State private var fuel: Expense.FuelDetails = .init(amount: 0.0, rate: 0.0, user: "")
     
     init(path: Binding<[ViewType]>, expense: Expense? = nil) {
         self._path = path
-        self.expense = expense ?? Expense(date: Date(), payee: "", amount: .Cents(0), category: "", notes: "", detailType: nil)
+        self.expense = expense ?? Expense(date: Date(), payee: "", amount: .Cents(0), category: "", notes: "", details: nil)
         mode = expense == nil ? .Add : .Edit
     }
     
@@ -143,7 +143,7 @@ struct ExpenseEditView: View {
             amount = expense.amount.toCents()
             category = expense.category
             notes = expense.notes
-            switch expense.detailType {
+            switch expense.details {
             case .Tag(let name):
                 type = .Tag
                 tag = name
@@ -152,7 +152,7 @@ struct ExpenseEditView: View {
                 tip = amount.toCents()
             case .Bill(let details):
                 type = .Bill
-                bills = details.types
+                bills = details.bills
                 billTax = details.tax.toCents()
             case .Foods(let list):
                 type = .Foods
@@ -174,15 +174,15 @@ struct ExpenseEditView: View {
         expense.notes = notes
         switch type {
         case .Tag:
-            expense.detailType = .Tag(name: tag)
+            expense.details = .Tag(name: tag)
         case .Tip:
-            expense.detailType = .Tip(amount: .Cents(tip))
+            expense.details = .Tip(amount: .Cents(tip))
         case .Bill:
-            expense.detailType = .Bill(details: .init(types: bills, tax: .Cents(billTax)))
+            expense.details = .Bill(details: .init(bills: bills, tax: .Cents(billTax)))
         case .Foods:
-            expense.detailType = .Foods(list: .init(foods: food))
+            expense.details = .Foods(list: .init(foods: food))
         case .Fuel:
-            expense.detailType = .Fuel(details: fuel)
+            expense.details = .Fuel(details: fuel)
         default:
             break
         }

@@ -62,7 +62,7 @@ struct ExpenseListView: View {
     
     private func duplicateButton(_ expense: Expense) -> some View {
         Button {
-            let duplicate = Expense(date: expense.date, payee: expense.payee, amount: expense.amount, category: expense.category, notes: expense.notes, detailType: expense.detailType)
+            let duplicate = Expense(date: expense.date, payee: expense.payee, amount: expense.amount, category: expense.category, notes: expense.notes, details: expense.details)
             modelContext.insert(duplicate)
             path.append(.EditExpense(expense: duplicate))
         } label: {
@@ -87,7 +87,7 @@ struct ExpenseListView: View {
                 Spacer()
                 Text(expense.amount.toString()).bold()
             }
-            switch expense.detailType {
+            switch expense.details {
             case .none:
                 Text(expense.payee).font(.subheadline).italic()
                 if !expense.notes.isEmpty {
@@ -133,11 +133,11 @@ struct ExpenseListView: View {
                     Text(expense.payee).font(.subheadline).italic()
                     Spacer()
                 }
-                ForEach(details.types, id: \.hashValue) { type in
+                ForEach(details.bills, id: \.hashValue) { bill in
                     HStack {
-                        Text(type.getName())
+                        Text(bill.getName())
                         Spacer()
-                        Text(type.getTotal().toString())
+                        Text(bill.getTotal().toString())
                     }.font(.subheadline)
                 }
                 if !expense.notes.isEmpty {

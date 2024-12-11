@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E85AE3D12D09483C00CA9D0C /* Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85AE3D02D09483C00CA9D0C /* Asset.swift */; };
 		E88769772CE3FF4600D989E1 /* Expense.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769762CE3FF4600D989E1 /* Expense.swift */; };
 		E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769782CE3FF7400D989E1 /* Revenue.swift */; };
 		E887697D2CE4672F00D989E1 /* DateListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887697C2CE4672F00D989E1 /* DateListView.swift */; };
@@ -16,17 +17,15 @@
 		E88769862CE91E5800D989E1 /* ExpenseListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769852CE91E5800D989E1 /* ExpenseListView.swift */; };
 		E887698E2CEE684700D989E1 /* MonthListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887698D2CEE684700D989E1 /* MonthListView.swift */; };
 		E88769902CEFC21B00D989E1 /* DashboardYearView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887698F2CEFC21B00D989E1 /* DashboardYearView.swift */; };
-		E88769922CF8BA6200D989E1 /* Loan.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769912CF8BA6200D989E1 /* Loan.swift */; };
 		E88769942CF8D4E800D989E1 /* LoanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769932CF8D4E800D989E1 /* LoanView.swift */; };
 		E88769962CF8FF5F00D989E1 /* EditLoanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769952CF8FF5F00D989E1 /* EditLoanView.swift */; };
 		E887699B2CFA4CF800D989E1 /* CurrencyField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887699A2CFA4CF800D989E1 /* CurrencyField.swift */; };
-		E887699D2CFAB7F800D989E1 /* NetWorthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887699C2CFAB7F800D989E1 /* NetWorthView.swift */; };
 		E8EB2A672CE063A7000E4B67 /* AegisTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A662CE063A7000E4B67 /* AegisTrackerApp.swift */; };
 		E8EB2A6D2CE063A9000E4B67 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */; };
 		E8EB2A702CE063A9000E4B67 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8EB2A6F2CE063A9000E4B67 /* Preview Assets.xcassets */; };
-		E8EB2A7A2CE063A9000E4B67 /* AegisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A792CE063A9000E4B67 /* AegisTests.swift */; };
-		E8EB2A842CE063A9000E4B67 /* AegisUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A832CE063A9000E4B67 /* AegisUITests.swift */; };
-		E8EB2A862CE063A9000E4B67 /* AegisUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A852CE063A9000E4B67 /* AegisUITestsLaunchTests.swift */; };
+		E8EB2A7A2CE063A9000E4B67 /* AegisTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A792CE063A9000E4B67 /* AegisTrackerTests.swift */; };
+		E8EB2A842CE063A9000E4B67 /* AegisTrackerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A832CE063A9000E4B67 /* AegisTrackerUITests.swift */; };
+		E8EB2A862CE063A9000E4B67 /* AegisTrackerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A852CE063A9000E4B67 /* AegisTrackerUITestsLaunchTests.swift */; };
 		E8EB2A962CE06617000E4B67 /* Schema.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A952CE06617000E4B67 /* Schema.swift */; };
 		E8EB2A9B2CE1074F000E4B67 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A9A2CE1074F000E4B67 /* MainView.swift */; };
 		E8EB2A9D2CE11D39000E4B67 /* PreviewHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A9C2CE11D39000E4B67 /* PreviewHelpers.swift */; };
@@ -53,6 +52,7 @@
 /* Begin PBXFileReference section */
 		E85AE3CE2D0808BE00CA9D0C /* AegisTracker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AegisTracker.entitlements; sourceTree = "<group>"; };
 		E85AE3CF2D0808DE00CA9D0C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		E85AE3D02D09483C00CA9D0C /* Asset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Asset.swift; sourceTree = "<group>"; };
 		E88769762CE3FF4600D989E1 /* Expense.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Expense.swift; sourceTree = "<group>"; };
 		E88769782CE3FF7400D989E1 /* Revenue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Revenue.swift; sourceTree = "<group>"; };
 		E887697C2CE4672F00D989E1 /* DateListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateListView.swift; sourceTree = "<group>"; };
@@ -63,20 +63,18 @@
 		E88769852CE91E5800D989E1 /* ExpenseListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseListView.swift; sourceTree = "<group>"; };
 		E887698D2CEE684700D989E1 /* MonthListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthListView.swift; sourceTree = "<group>"; };
 		E887698F2CEFC21B00D989E1 /* DashboardYearView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardYearView.swift; sourceTree = "<group>"; };
-		E88769912CF8BA6200D989E1 /* Loan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Loan.swift; sourceTree = "<group>"; };
 		E88769932CF8D4E800D989E1 /* LoanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoanView.swift; sourceTree = "<group>"; };
 		E88769952CF8FF5F00D989E1 /* EditLoanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditLoanView.swift; sourceTree = "<group>"; };
 		E887699A2CFA4CF800D989E1 /* CurrencyField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyField.swift; sourceTree = "<group>"; };
-		E887699C2CFAB7F800D989E1 /* NetWorthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetWorthView.swift; sourceTree = "<group>"; };
 		E8EB2A632CE063A7000E4B67 /* AegisTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AegisTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8EB2A662CE063A7000E4B67 /* AegisTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisTrackerApp.swift; sourceTree = "<group>"; };
 		E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E8EB2A6F2CE063A9000E4B67 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		E8EB2A752CE063A9000E4B67 /* AegisTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AegisTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		E8EB2A792CE063A9000E4B67 /* AegisTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisTests.swift; sourceTree = "<group>"; };
+		E8EB2A792CE063A9000E4B67 /* AegisTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisTrackerTests.swift; sourceTree = "<group>"; };
 		E8EB2A7F2CE063A9000E4B67 /* AegisTrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AegisTrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		E8EB2A832CE063A9000E4B67 /* AegisUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisUITests.swift; sourceTree = "<group>"; };
-		E8EB2A852CE063A9000E4B67 /* AegisUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		E8EB2A832CE063A9000E4B67 /* AegisTrackerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisTrackerUITests.swift; sourceTree = "<group>"; };
+		E8EB2A852CE063A9000E4B67 /* AegisTrackerUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisTrackerUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		E8EB2A952CE06617000E4B67 /* Schema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Schema.swift; sourceTree = "<group>"; };
 		E8EB2A9A2CE1074F000E4B67 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		E8EB2A9C2CE11D39000E4B67 /* PreviewHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewHelpers.swift; sourceTree = "<group>"; };
@@ -113,7 +111,7 @@
 			children = (
 				E88769762CE3FF4600D989E1 /* Expense.swift */,
 				E88769782CE3FF7400D989E1 /* Revenue.swift */,
-				E88769912CF8BA6200D989E1 /* Loan.swift */,
+				E85AE3D02D09483C00CA9D0C /* Asset.swift */,
 			);
 			path = V1;
 			sourceTree = "<group>";
@@ -174,7 +172,7 @@
 		E8EB2A782CE063A9000E4B67 /* AegisTrackerTests */ = {
 			isa = PBXGroup;
 			children = (
-				E8EB2A792CE063A9000E4B67 /* AegisTests.swift */,
+				E8EB2A792CE063A9000E4B67 /* AegisTrackerTests.swift */,
 			);
 			path = AegisTrackerTests;
 			sourceTree = "<group>";
@@ -182,8 +180,8 @@
 		E8EB2A822CE063A9000E4B67 /* AegisTrackerUITests */ = {
 			isa = PBXGroup;
 			children = (
-				E8EB2A832CE063A9000E4B67 /* AegisUITests.swift */,
-				E8EB2A852CE063A9000E4B67 /* AegisUITestsLaunchTests.swift */,
+				E8EB2A832CE063A9000E4B67 /* AegisTrackerUITests.swift */,
+				E8EB2A852CE063A9000E4B67 /* AegisTrackerUITestsLaunchTests.swift */,
 			);
 			path = AegisTrackerUITests;
 			sourceTree = "<group>";
@@ -203,7 +201,6 @@
 			children = (
 				E8EB2A9A2CE1074F000E4B67 /* MainView.swift */,
 				E887698F2CEFC21B00D989E1 /* DashboardYearView.swift */,
-				E887699C2CFAB7F800D989E1 /* NetWorthView.swift */,
 				E88769832CE83B6300D989E1 /* CategoryListView.swift */,
 				E887697C2CE4672F00D989E1 /* DateListView.swift */,
 				E887698D2CEE684700D989E1 /* MonthListView.swift */,
@@ -348,10 +345,10 @@
 			files = (
 				E88769772CE3FF4600D989E1 /* Expense.swift in Sources */,
 				E88769942CF8D4E800D989E1 /* LoanView.swift in Sources */,
+				E85AE3D12D09483C00CA9D0C /* Asset.swift in Sources */,
 				E8EB2A9D2CE11D39000E4B67 /* PreviewHelpers.swift in Sources */,
 				E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */,
 				E887698E2CEE684700D989E1 /* MonthListView.swift in Sources */,
-				E887699D2CFAB7F800D989E1 /* NetWorthView.swift in Sources */,
 				E8EB2A672CE063A7000E4B67 /* AegisTrackerApp.swift in Sources */,
 				E88769962CF8FF5F00D989E1 /* EditLoanView.swift in Sources */,
 				E88769902CEFC21B00D989E1 /* DashboardYearView.swift in Sources */,
@@ -363,7 +360,6 @@
 				E887699B2CFA4CF800D989E1 /* CurrencyField.swift in Sources */,
 				E88769822CE7F96000D989E1 /* ExpenseGroceryListView.swift in Sources */,
 				E8F863FD2D066E8600A3EBCC /* ExpenseEditView.swift in Sources */,
-				E88769922CF8BA6200D989E1 /* Loan.swift in Sources */,
 				E88769842CE83B6300D989E1 /* CategoryListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -372,7 +368,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E8EB2A7A2CE063A9000E4B67 /* AegisTests.swift in Sources */,
+				E8EB2A7A2CE063A9000E4B67 /* AegisTrackerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -380,8 +376,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E8EB2A862CE063A9000E4B67 /* AegisUITestsLaunchTests.swift in Sources */,
-				E8EB2A842CE063A9000E4B67 /* AegisUITests.swift in Sources */,
+				E8EB2A862CE063A9000E4B67 /* AegisTrackerUITestsLaunchTests.swift in Sources */,
+				E8EB2A842CE063A9000E4B67 /* AegisTrackerUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
