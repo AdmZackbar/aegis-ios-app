@@ -43,30 +43,39 @@ struct ExpenseEditView: View {
     
     var body: some View {
         Form {
-            DatePicker("Date:", selection: $date, displayedComponents: .date)
-            HStack {
-                Text("Amount:")
-                CurrencyField(value: $amount)
-            }
-            HStack {
-                Text("Payee:")
-                TextField("", text: $payee).multilineTextAlignment(.trailing)
-            }
-            HStack {
-                Text("Category:")
-                TextField("", text: $category).multilineTextAlignment(.trailing)
-            }
-            TextField("Notes", text: $notes, axis: .vertical)
-                .lineLimit(3...9)
-            if type == nil {
-                Menu {
-                    ForEach(DetailType.allCases, id: \.rawValue) { type in
-                        Button(type.getName()) {
-                            self.type = type
+            Section("Details") {
+                DatePicker("Date:", selection: $date, displayedComponents: .date)
+                HStack {
+                    Text("Amount:")
+                    CurrencyField(value: $amount)
+                }
+                HStack {
+                    Text("Payee:")
+                    TextField("required", text: $payee)
+                        .textInputAutocapitalization(.words)
+                        .autocorrectionDisabled()
+                }
+                HStack {
+                    Text("Category:")
+                    TextField("required", text: $category)
+                        .textInputAutocapitalization(.words)
+                }
+                TextField("Notes", text: $notes, axis: .vertical)
+                    .lineLimit(3...9)
+                    .textInputAutocapitalization(.sentences)
+                if type == nil {
+                    Menu {
+                        ForEach(DetailType.allCases, id: \.rawValue) { type in
+                            Button(type.getName()) {
+                                self.type = type
+                            }
                         }
+                    } label: {
+                        HStack {
+                            Label("Add Additional Details...", systemImage: "plus")
+                            Spacer()
+                        }.contentShape(Rectangle())
                     }
-                } label: {
-                    Label("Add Additional Details...", systemImage: "plus")
                 }
             }
             detailsView()
