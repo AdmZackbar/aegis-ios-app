@@ -200,7 +200,10 @@ struct ExpenseEditView: View {
                         TextField("required", value: $fuel.rate, formatter: formatter)
                             .keyboardType(.decimalPad)
                     }
-                    TextField("User", text: $fuel.user)
+                    HStack {
+                        Text("User:")
+                        TextField("required", text: $fuel.user)
+                    }
                 }
                 Button("Remove Additional Details", role: .destructive) {
                     self.type = nil

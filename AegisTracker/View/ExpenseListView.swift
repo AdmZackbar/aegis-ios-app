@@ -81,70 +81,70 @@ struct ExpenseListView: View {
     
     @ViewBuilder
     private func expenseEntry(_ expense: Expense) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack(alignment: .top) {
-                Text(getTitle(expense)).bold()
-                Spacer()
-                Text(expense.amount.toString()).bold()
-            }
-            switch expense.details {
-            case .none:
-                Text(expense.payee).font(.subheadline).italic()
-                if !expense.notes.isEmpty {
-                    Text(expense.notes).font(.caption)
-                }
-            case .Tag(let tag):
-                HStack {
-                    Text(expense.payee).font(.subheadline).italic()
-                    Spacer()
-                    Text(tag).font(.subheadline).italic()
-                }
-            case .Fuel(let details):
+        Button {
+            path.append(.ViewExpense(expense: expense))
+        } label: {
+            VStack(alignment: .leading, spacing: 4) {
                 HStack(alignment: .top) {
-                    Text(expense.payee).font(.subheadline).italic()
+                    Text(getTitle(expense)).bold()
                     Spacer()
-                    Text("\(details.amount.formatted(.number.precision(.fractionLength(0...1)))) gal @ \(details.rate.formatted(.currency(code: "USD")))")
-                        .font(.subheadline).italic()
+                    Text(expense.amount.toString()).bold()
                 }
-                Text(details.user).font(.caption)
-            case .Foods(let list):
-                Button {
-                    path.append(.ViewGroceryListExpense(expense: expense))
-                } label: {
+                switch expense.details {
+                case .none:
+                    Text(expense.payee).font(.subheadline).italic()
+                    if !expense.notes.isEmpty {
+                        Text(expense.notes).font(.caption)
+                    }
+                case .Tag(let tag):
+                    HStack {
+                        Text(expense.payee).font(.subheadline).italic()
+                        Spacer()
+                        Text(tag).font(.subheadline).italic()
+                    }
+                case .Fuel(let details):
+                    HStack(alignment: .top) {
+                        Text(expense.payee).font(.subheadline).italic()
+                        Spacer()
+                        Text("\(details.amount.formatted(.number.precision(.fractionLength(0...1)))) gal @ \(details.rate.formatted(.currency(code: "USD")))")
+                            .font(.subheadline).italic()
+                    }
+                    Text(details.user).font(.caption)
+                case .Foods(let list):
                     HStack {
                         Text(expense.payee)
                         Spacer()
                         Text("\(list.foods.count) items")
-                    }
-                }.font(.subheadline).italic().tint(.primary)
-            case .Tip(let tip):
-                HStack(alignment: .top) {
-                    Text(expense.payee).font(.subheadline).italic()
-                    Spacer()
-                    if tip.toUsd() > 0 {
-                        Text("\(tip.toString()) tip").font(.subheadline).italic()
-                    }
-                }
-                if !expense.notes.isEmpty {
-                    Text(expense.notes).font(.caption)
-                }
-            case .Bill(let details):
-                HStack {
-                    Text(expense.payee).font(.subheadline).italic()
-                    Spacer()
-                }
-                ForEach(details.bills, id: \.hashValue) { bill in
-                    HStack {
-                        Text(bill.getName())
+                    }.font(.subheadline).italic()
+                case .Tip(let tip):
+                    HStack(alignment: .top) {
+                        Text(expense.payee).font(.subheadline).italic()
                         Spacer()
-                        Text(bill.getTotal().toString())
-                    }.font(.subheadline)
+                        if tip.toUsd() > 0 {
+                            Text("\(tip.toString()) tip").font(.subheadline).italic()
+                        }
+                    }
+                    if !expense.notes.isEmpty {
+                        Text(expense.notes).font(.caption)
+                    }
+                case .Bill(let details):
+                    HStack {
+                        Text(expense.payee).font(.subheadline).italic()
+                        Spacer()
+                    }
+                    ForEach(details.bills, id: \.hashValue) { bill in
+                        HStack {
+                            Text(bill.getName())
+                            Spacer()
+                            Text(bill.getTotal().toString())
+                        }.font(.subheadline)
+                    }
+                    if !expense.notes.isEmpty {
+                        Text(expense.notes).font(.caption)
+                    }
                 }
-                if !expense.notes.isEmpty {
-                    Text(expense.notes).font(.caption)
-                }
-            }
-        }
+            }.contentShape(Rectangle())
+        }.buttonStyle(.plain)
     }
     
     private func getTitle(_ expense: Expense) -> String {
