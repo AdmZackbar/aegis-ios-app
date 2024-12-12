@@ -44,22 +44,45 @@ struct ExpenseEditView: View {
     var body: some View {
         Form {
             Section("Details") {
-                DatePicker("Date:", selection: $date, displayedComponents: .date)
+                DatePicker(selection: $date, displayedComponents: .date) {
+                    HStack {
+                        Image(systemName: "calendar")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 16, height: 16)
+                        Text("Date:")
+                    }
+                }
                 HStack {
+                    Image(systemName: "dollarsign.circle")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
                     Text("Amount:")
                     CurrencyField(value: $amount)
                 }
                 HStack {
+                    Image(systemName: "person.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
                     Text("Payee:")
                     TextField("required", text: $payee)
                         .textInputAutocapitalization(.words)
                         .autocorrectionDisabled()
                 }
                 HStack {
+                    Image(systemName: "tag.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
                     Text("Category:")
                     TextField("required", text: $category)
                         .textInputAutocapitalization(.words)
+                        .autocorrectionDisabled()
+                    categoryDropDownMenu()
                 }
+                categoryAutoCompleteView()
                 TextField("Notes", text: $notes, axis: .vertical)
                     .lineLimit(3...9)
                     .textInputAutocapitalization(.sentences)
@@ -92,6 +115,53 @@ struct ExpenseEditView: View {
                         .disabled(payee.isEmpty || amount <= 0 || category.isEmpty)
                 }
             }
+    }
+    
+    private func categoryDropDownMenu() -> some View {
+        Menu {
+            ForEach(MainView.ExpenseCategories.sorted(by: { $0.key < $1.key }), id: \.key.hashValue) { category, children in
+                Menu(category) {
+                    ForEach(children, id: \.hashValue) { child in
+                        Button(child) {
+                            self.category = child
+                        }
+                    }
+                }
+            }
+        } label: {
+            VStack(spacing: 5){
+                Image(systemName: "chevron.down")
+                    .font(.title3)
+                    .fontWeight(.bold)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func categoryAutoCompleteView() -> some View {
+        if !category.isEmpty && !isStandardCategory(category) {
+            let options = getValidCategories(category)
+            if !options.isEmpty {
+                ScrollView(.horizontal) {
+                    HStack {
+                        ForEach(options, id: \.self) { name in
+                            Button(name) {
+                                self.category = name
+                            }.padding([.leading, .trailing], 4)
+                            Divider()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private func isStandardCategory(_ name: String) -> Bool {
+        MainView.ExpenseCategories.values.contains(where: { $0.contains(where: { $0 == name }) })
+    }
+    
+    private func getValidCategories(_ name: String) -> [String] {
+        MainView.ExpenseCategories.values.flatMap({ $0 }).filter({ $0.contains(name) }).sorted()
     }
     
     @ViewBuilder
