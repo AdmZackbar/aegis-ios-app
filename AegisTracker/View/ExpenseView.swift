@@ -91,6 +91,27 @@ struct ExpenseView: View {
                 Spacer()
                 Text(amount.toString()).italic()
             }
+        case .Items(let list):
+            if !list.items.isEmpty {
+                Section("Items") {
+                    ForEach(list.items, id: \.hashValue) { item in
+                        VStack(alignment: .leading) {
+                            HStack {
+                                Text(item.name).bold()
+                                Spacer()
+                                Text(item.total.toString()).italic()
+                            }
+                            if !item.brand.isEmpty || !item.quantity.summary.isEmpty {
+                                HStack {
+                                    Text(item.brand)
+                                    Spacer()
+                                    Text(item.quantity.summary)
+                                }.font(.subheadline).italic()
+                            }
+                        }
+                    }
+                }
+            }
         case .Fuel(let details):
             VStack(alignment: .leading, spacing: 4) {
                 Text(details.user).bold()
@@ -98,18 +119,6 @@ struct ExpenseView: View {
                     Text("\(details.amount.formatted()) gallons")
                     Spacer()
                     Text("\(details.rate.formatted()) $/gal").italic()
-                }
-            }
-        case .Foods(let list):
-            if !list.foods.isEmpty {
-                Section("Foods") {
-                    ForEach(list.foods, id: \.hashValue) { food in
-                        HStack {
-                            Text(food.name).bold()
-                            Spacer()
-                            Text(food.totalPrice.toString()).italic()
-                        }
-                    }
                 }
             }
         case .Bill(let details):

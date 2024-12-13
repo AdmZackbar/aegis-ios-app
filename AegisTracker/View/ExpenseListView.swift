@@ -102,6 +102,12 @@ struct ExpenseListView: View {
                         Spacer()
                         Text(tag).font(.subheadline).italic()
                     }
+                case .Items(let list):
+                    HStack {
+                        Text(expense.payee)
+                        Spacer()
+                        Text("\(list.items.count) items")
+                    }.font(.subheadline).italic()
                 case .Fuel(let details):
                     HStack(alignment: .top) {
                         Text(expense.payee).font(.subheadline).italic()
@@ -110,12 +116,6 @@ struct ExpenseListView: View {
                             .font(.subheadline).italic()
                     }
                     Text(details.user).font(.caption)
-                case .Foods(let list):
-                    HStack {
-                        Text(expense.payee)
-                        Spacer()
-                        Text("\(list.foods.count) items")
-                    }.font(.subheadline).italic()
                 case .Tip(let tip):
                     HStack(alignment: .top) {
                         Text(expense.payee).font(.subheadline).italic()

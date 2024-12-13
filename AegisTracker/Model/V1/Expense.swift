@@ -32,8 +32,8 @@ extension SchemaV1 {
         enum Details: Codable {
             case Tag(name: String)
             case Tip(amount: Price)
+            case Items(list: ItemList)
             case Bill(details: BillDetails)
-            case Foods(list: FoodList)
             case Fuel(details: FuelDetails)
         }
         
@@ -66,20 +66,43 @@ extension SchemaV1 {
         }
         
         // Need to wrap the list in a struct
-        struct FoodList: Codable, Hashable, Equatable {
-            var foods: [Food]
-            
-            struct Food: Codable, Hashable, Equatable {
-                var name: String
-                var brand: String
-                var totalPrice: Price
-                var quantity: Double
-                var unitPrice: Price {
-                    get {
-                        return totalPrice / quantity
+        struct ItemList: Codable, Hashable, Equatable {
+            var items: [Item]
+        }
+        
+        struct Item: Codable, Hashable, Equatable {
+            var name: String
+            var brand: String
+            var quantity: Amount
+            var total: Price
+            var unitCost: Price {
+                get {
+                    switch quantity {
+                    case .Discrete(let num):
+                        return total / Double(num)
+                    case .Unit(let num, _):
+                        return total / num
                     }
                 }
-                var category: String
+            }
+            
+            enum Amount: Codable, Hashable, Equatable {
+                case Discrete(_ num: Int)
+                case Unit(num: Double, unit: String)
+                
+                var summary: String {
+                    get {
+                        switch self {
+                        case .Discrete(let num):
+                            if num <= 1 {
+                                return ""
+                            }
+                            return "\(num.formatted()) items"
+                        case .Unit(let num, let unit):
+                            return unit.isEmpty ? num.formatted() : "\(num.formatted()) \(unit)"
+                        }
+                    }
+                }
             }
         }
         

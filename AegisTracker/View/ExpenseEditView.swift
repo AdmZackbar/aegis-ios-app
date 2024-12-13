@@ -27,11 +27,14 @@ struct ExpenseEditView: View {
     @State private var tag: String = ""
     // Tip
     @State private var tip: Int = 0
+    // Items
+    @State private var items: [Expense.Item] = []
+    @State private var itemSheetShowing: Bool = false
+    @State private var item: EditItemView.Item = .init()
+    @State private var itemIndex: Int = -1
     // Bill
     @State private var bills: [Expense.BillDetails.Bill] = []
     @State private var billTax: Int = 0
-    // Food
-    @State private var food: [Expense.FoodList.Food] = []
     // Fuel
     @State private var fuel: Expense.FuelDetails = .init(amount: 0.0, rate: 0.0, user: "")
     
@@ -89,7 +92,7 @@ struct ExpenseEditView: View {
                 if type == nil {
                     Menu {
                         ForEach(DetailType.allCases, id: \.rawValue) { type in
-                            Button(type.getName()) {
+                            Button("\(type.getName())...") {
                                 self.type = type
                             }
                         }
@@ -114,6 +117,11 @@ struct ExpenseEditView: View {
                     Button("Save", action: save)
                         .disabled(payee.isEmpty || amount <= 0 || category.isEmpty)
                 }
+            }
+            .sheet(isPresented: $itemSheetShowing) {
+                NavigationStack {
+                    itemSheetView()
+                }.presentationDetents([.medium])
             }
     }
     
@@ -179,36 +187,117 @@ struct ExpenseEditView: View {
                         Text("Amount:")
                         CurrencyField(value: $tip)
                     }
+                case .Items:
+                    itemDetailView()
                 case .Bill:
                     Text("Bill")
-                case .Foods:
-                    Text("Foods")
                 case .Fuel:
-                    let formatter = {
-                        let formatter = NumberFormatter()
-                        formatter.maximumFractionDigits = 6
-                        formatter.zeroSymbol = ""
-                        return formatter
-                    }()
-                    HStack {
-                        Text("Gallons:")
-                        TextField("required", value: $fuel.amount, formatter: formatter)
-                            .keyboardType(.decimalPad)
-                    }
-                    HStack {
-                        Text("Rate:")
-                        TextField("required", value: $fuel.rate, formatter: formatter)
-                            .keyboardType(.decimalPad)
-                    }
-                    HStack {
-                        Text("User:")
-                        TextField("required", text: $fuel.user)
-                    }
+                    fuelDetailView()
                 }
-                Button("Remove Additional Details", role: .destructive) {
+                Button(role: .destructive) {
                     self.type = nil
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "trash")
+                        Text("Remove Additional Details")
+                    }.bold()
                 }
             }
+        }
+    }
+    
+    @ViewBuilder
+    private func itemDetailView() -> some View {
+        ForEach(items, id: \.hashValue) { item in
+            Button {
+                self.item = .fromExpenseItem(item)
+                itemIndex = items.firstIndex(of: item) ?? -1
+                itemSheetShowing = true
+            } label: {
+                HStack {
+                    VStack(alignment: .leading) {
+                        HStack {
+                            Text(item.name).bold()
+                            Spacer()
+                            Text(item.total.toString()).italic()
+                        }
+                        if !item.brand.isEmpty || !item.quantity.summary.isEmpty {
+                            HStack {
+                                Text(item.brand)
+                                Spacer()
+                                Text(item.quantity.summary)
+                            }.font(.subheadline).italic()
+                        }
+                    }
+                    Image(systemName: "pencil.circle")
+                        .foregroundStyle(.blue)
+                        .padding(.leading, 4)
+                }.contentShape(Rectangle())
+            }.buttonStyle(.plain)
+        }
+        Button {
+            item = .init()
+            itemIndex = -1
+            itemSheetShowing = true
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "plus")
+                Text("Add Item")
+            }.bold()
+        }
+    }
+    
+    @ViewBuilder
+    private func itemSheetView() -> some View {
+        EditItemView(item: $item)
+            .navigationTitle(itemIndex >= 0 ? "Edit Item" : "Add Item")
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden()
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel", action: hideItemSheet)
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Save", action: saveItem)
+                        .disabled(item.isInvalid())
+                }
+            }
+    }
+    
+    private func hideItemSheet() {
+        itemSheetShowing = false
+    }
+    
+    private func saveItem() {
+        if itemIndex < 0 {
+            items.append(item.toExpenseItem())
+        } else {
+            items[itemIndex] = item.toExpenseItem()
+        }
+        hideItemSheet()
+    }
+    
+    @ViewBuilder
+    private func fuelDetailView() -> some View {
+        let formatter = {
+            let formatter = NumberFormatter()
+            formatter.maximumFractionDigits = 6
+            formatter.zeroSymbol = ""
+            return formatter
+        }()
+        HStack {
+            Text("Gallons:")
+            TextField("required", value: $fuel.amount, formatter: formatter)
+                .keyboardType(.decimalPad)
+        }
+        HStack {
+            Text("Rate:")
+            TextField("required", value: $fuel.rate, formatter: formatter)
+                .keyboardType(.decimalPad)
+        }
+        HStack {
+            Text("User:")
+            TextField("required", text: $fuel.user)
         }
     }
     
@@ -232,13 +321,13 @@ struct ExpenseEditView: View {
             case .Tip(let amount):
                 type = .Tip
                 tip = amount.toCents()
+            case .Items(let list):
+                type = .Items
+                items = list.items
             case .Bill(let details):
                 type = .Bill
                 bills = details.bills
                 billTax = details.tax.toCents()
-            case .Foods(let list):
-                type = .Foods
-                food = list.foods
             case .Fuel(let details):
                 type = .Fuel
                 fuel = details
@@ -259,10 +348,10 @@ struct ExpenseEditView: View {
             expense.details = .Tag(name: tag)
         case .Tip:
             expense.details = .Tip(amount: .Cents(tip))
+        case .Items:
+            expense.details = .Items(list: .init(items: items))
         case .Bill:
             expense.details = .Bill(details: .init(bills: bills, tax: .Cents(billTax)))
-        case .Foods:
-            expense.details = .Foods(list: .init(foods: food))
         case .Fuel:
             expense.details = .Fuel(details: fuel)
         default:
@@ -289,25 +378,152 @@ struct ExpenseEditView: View {
     }
     
     enum DetailType: String, CaseIterable {
+        case Items
         case Tag
         case Tip
         case Bill
-        case Foods
         case Fuel
         
         func getName() -> String {
             switch self {
+            case .Items:
+                "Items"
             case .Tag:
                 "Sub-Category"
             case .Tip:
                 "Tip"
             case .Bill:
                 "Utility Bill"
-            case .Foods:
-                "Foods"
             case .Fuel:
                 "Gas"
             }
+        }
+    }
+    
+    private struct EditItemView: View {
+        @Binding private var item: Item
+        
+        init(item: Binding<Item>) {
+            self._item = item
+        }
+        
+        var body: some View {
+            Form {
+                HStack {
+                    Text("Name:")
+                    TextField("required", text: $item.name)
+                        .textInputAutocapitalization(.words)
+                }
+                HStack {
+                    Text("Brand:")
+                    TextField("optional", text: $item.brand)
+                        .textInputAutocapitalization(.words)
+                        .autocorrectionDisabled()
+                }
+                HStack {
+                    Text("Total:")
+                    CurrencyField(value: $item.totalPrice)
+                }
+                Picker("", selection: $item.quantityType) {
+                    Text("Individual").tag(AmountType.Discrete)
+                    Text("By Unit").tag(AmountType.Unit)
+                }.pickerStyle(.segmented)
+                let discreteFormatter = {
+                    let formatter = NumberFormatter()
+                    formatter.numberStyle = .decimal
+                    formatter.maximumFractionDigits = 0
+                    return formatter
+                }()
+                let unitFormatter = {
+                    let formatter = NumberFormatter()
+                    formatter.numberStyle = .decimal
+                    formatter.maximumFractionDigits = 3
+                    return formatter
+                }()
+                switch item.quantityType {
+                case .Discrete:
+                    HStack {
+                        Text("Quantity:")
+                        Stepper {
+                            TextField("required", value: $item.discrete, formatter: discreteFormatter)
+                                .keyboardType(.numberPad)
+                        } onIncrement: {
+                            item.discrete += 1
+                        } onDecrement: {
+                            if item.discrete > 1 {
+                                item.discrete -= 1
+                            }
+                        }
+                    }
+                case .Unit:
+                    HStack {
+                        Text("Amount:")
+                        TextField("required", value: $item.unitAmount, formatter: unitFormatter)
+                            .keyboardType(.decimalPad)
+                        Divider()
+                        Text("Unit:")
+                        TextField("required", text: $item.unit)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                    }
+                }
+            }
+        }
+        
+        struct Item {
+            var name: String
+            var brand: String
+            var quantityType: AmountType
+            var discrete: Int
+            var unitAmount: Double
+            var unit: String
+            var totalPrice: Int
+            
+            init(name: String = "", brand: String = "", quantityType: AmountType = .Discrete, discrete: Int = 1, unitAmount: Double = 1.0, unit: String = "", totalPrice: Int = 0) {
+                self.name = name
+                self.brand = brand
+                self.quantityType = quantityType
+                self.discrete = discrete
+                self.unitAmount = unitAmount
+                self.unit = unit
+                self.totalPrice = totalPrice
+            }
+            
+            static func fromExpenseItem(_ item: Expense.Item) -> Item {
+                switch item.quantity {
+                case .Discrete(let num):
+                    return .init(name: item.name, brand: item.brand, quantityType: .Discrete, discrete: num, totalPrice: item.total.toCents())
+                case .Unit(let num, let unit):
+                    return .init(name: item.name, brand: item.brand, quantityType: .Unit, unitAmount: num, unit: unit, totalPrice: item.total.toCents())
+                }
+            }
+            
+            func toExpenseItem() -> Expense.Item {
+                switch quantityType {
+                case .Discrete:
+                    return .init(name: name, brand: brand, quantity: .Discrete(discrete), total: .Cents(totalPrice))
+                case .Unit:
+                    return .init(name: name, brand: brand, quantity: .Unit(num: unitAmount, unit: unit), total: .Cents(totalPrice))
+                }
+            }
+            
+            func isInvalid() -> Bool {
+                name.isEmpty || isQuantityInvalid()
+            }
+            
+            func isQuantityInvalid() -> Bool {
+                switch quantityType {
+                case .Discrete:
+                    return discrete <= 0
+                case .Unit:
+                    return unitAmount <= 0 || unit.isEmpty
+                }
+            }
+        }
+        
+        enum AmountType {
+            case Discrete
+            case Unit
         }
     }
 }
@@ -315,6 +531,6 @@ struct ExpenseEditView: View {
 #Preview {
     let container = createTestModelContainer()
     return NavigationStack {
-        ExpenseEditView(path: .constant([]))
+        ExpenseEditView(path: .constant([]), expense: .init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Test run", details: .Items(list: .init(items: [.init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 3.3, unit: "lbs"), total: .Cents(3135))]))))
     }.modelContainer(container)
 }

@@ -53,10 +53,10 @@ func addTestExpenses(_ context: ModelContext) {
                            amount: .Cents(10723),
                            category: "Groceries",
                            notes: "",
-                           details: .Foods(list: .init(foods: [
-                            .init(name: "Chicken breast", brand: "Kirkland Signature", totalPrice: .Cents(1230), quantity: 2, category: "Meat"),
-                            .init(name: "Apples", brand: "Publix", totalPrice: .Cents(190), quantity: 1, category: "Fruit"),
-                            .init(name: "Root beer", brand: "IBC", totalPrice: .Cents(699), quantity: 4, category: "Sweets")
+                           details: .Items(list: .init(items: [
+                            .init(name: "Chicken breast", brand: "Kirkland Signature", quantity: .Unit(num: 2.4, unit: "lb"), total: .Cents(1230)),
+                            .init(name: "Apples", brand: "Publix", quantity: .Discrete(6), total: .Cents(190)),
+                            .init(name: "Root beer", brand: "IBC", quantity: .Discrete(1), total: .Cents(699))
                            ]))))
 }
 
