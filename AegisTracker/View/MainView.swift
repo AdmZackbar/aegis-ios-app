@@ -100,8 +100,6 @@ struct MainView: View {
             ExpenseEditView(path: $path)
         case .EditExpense(let expense):
             ExpenseEditView(path: $path, expense: expense)
-        case .ViewGroceryListExpense(let expense):
-            ExpenseGroceryListView(path: $path, expense: expense)
         }
     }
 }
@@ -114,7 +112,6 @@ enum ViewType: Hashable {
     case ViewExpense(expense: Expense)
     case AddExpense
     case EditExpense(expense: Expense)
-    case ViewGroceryListExpense(expense: Expense)
 }
 
 #Preview {
