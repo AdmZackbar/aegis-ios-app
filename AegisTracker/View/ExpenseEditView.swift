@@ -11,6 +11,15 @@ import SwiftUI
 struct ExpenseEditView: View {
     @Environment(\.modelContext) var modelContext
     
+    static let BillNames: [String] = ["Electric", "Water", "Sewer", "Trash", "Internet", "Other"]
+    static let BillUnitMap: [String : String] = {
+        var map: [String : String] = [:]
+        map["Electric"] = "kWh"
+        map["Water"] = "gal"
+        map["Sewer"] = "gal"
+        return map
+    }()
+    
     private let expense: Expense
     private let mode: Mode
     
@@ -35,6 +44,9 @@ struct ExpenseEditView: View {
     // Bill
     @State private var bills: [Expense.BillDetails.Bill] = []
     @State private var billTax: Int = 0
+    @State private var billSheetShowing: Bool = false
+    @State private var bill: EditBillView.Bill = .init()
+    @State private var billIndex: Int = -1
     // Fuel
     @State private var fuel: Expense.FuelDetails = .init(amount: 0.0, rate: 0.0, user: "")
     
@@ -123,6 +135,11 @@ struct ExpenseEditView: View {
                     itemSheetView()
                 }.presentationDetents([.medium])
             }
+            .sheet(isPresented: $billSheetShowing) {
+                NavigationStack {
+                    billSheetView()
+                }.presentationDetents([.medium])
+            }
     }
     
     private func categoryDropDownMenu() -> some View {
@@ -190,7 +207,7 @@ struct ExpenseEditView: View {
                 case .Items:
                     itemDetailView()
                 case .Bill:
-                    Text("Bill")
+                    billDetailView()
                 case .Fuel:
                     fuelDetailView()
                 }
@@ -275,6 +292,89 @@ struct ExpenseEditView: View {
             items[itemIndex] = item.toExpenseItem()
         }
         hideItemSheet()
+    }
+    
+    @ViewBuilder
+    private func billDetailView() -> some View {
+        ForEach(bills, id: \.hashValue) { bill in
+            Button {
+                self.bill = .fromExpenseBill(bill)
+                billIndex = bills.firstIndex(of: bill) ?? -1
+                billSheetShowing = true
+            } label: {
+                switch bill {
+                case .Flat(let name, let base):
+                    HStack {
+                        Text(name).bold()
+                        Spacer()
+                        Text(base.toString()).italic()
+                        Image(systemName: "pencil.circle")
+                            .foregroundStyle(.blue)
+                            .padding(.leading, 4)
+                    }.contentShape(Rectangle())
+                case .Variable(let name, let base, let amount, let rate):
+                    HStack {
+                        VStack(alignment: .leading) {
+                            HStack {
+                                Text(name).bold()
+                                Spacer()
+                                Text(base.toString()).italic()
+                            }
+                            if let unit = ExpenseEditView.BillUnitMap[name] {
+                                HStack {
+                                    Text("\(amount.formatted()) \(unit)")
+                                    Spacer()
+                                    Text("\(rate.formatted(.currency(code: "USD").precision(.fractionLength(2...7)))) / \(unit)")
+                                }.font(.subheadline).italic()
+                            }
+                        }
+                        Image(systemName: "pencil.circle")
+                            .foregroundStyle(.blue)
+                            .padding(.leading, 4)
+                    }.contentShape(Rectangle())
+                }
+            }.buttonStyle(.plain)
+        }
+        Button {
+            bill = .init()
+            billIndex = -1
+            billSheetShowing = true
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "plus")
+                Text("Add Bill")
+            }.bold()
+        }
+    }
+    
+    @ViewBuilder
+    private func billSheetView() -> some View {
+        EditBillView(bill: $bill)
+            .navigationTitle(billIndex >= 0 ? "Edit Bill" : "Add Bill")
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden()
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel", action: hideBillSheet)
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Save", action: saveBill)
+                        .disabled(bill.isInvalid())
+                }
+            }
+    }
+    
+    private func hideBillSheet() {
+        billSheetShowing = false
+    }
+    
+    private func saveBill() {
+        if billIndex < 0 {
+            bills.append(bill.toExpenseBill())
+        } else {
+            bills[billIndex] = bill.toExpenseBill()
+        }
+        hideBillSheet()
     }
     
     @ViewBuilder
@@ -526,11 +626,114 @@ struct ExpenseEditView: View {
             case Unit
         }
     }
+    
+    private struct EditBillView: View {
+        @Binding private var bill: Bill
+        
+        private let formatter = {
+            let formatter = NumberFormatter()
+            formatter.maximumFractionDigits = 7
+            formatter.zeroSymbol = ""
+            return formatter
+        }()
+        
+        init(bill: Binding<Bill>) {
+            self._bill = bill
+        }
+        
+        var body: some View {
+            Form {
+                HStack {
+                    Text("Type:")
+                    Picker("", selection: $bill.type) {
+                        Text("Flat").tag(BillType.Flat)
+                        Text("Variable").tag(BillType.Variable)
+                    }.pickerStyle(.segmented)
+                }
+                Picker("Name:", selection: $bill.name) {
+                    ForEach(ExpenseEditView.BillNames, id: \.hashValue) { name in
+                        Text(name).tag(name)
+                    }
+                }
+                HStack {
+                    Text("Base Charge:")
+                    CurrencyField(value: $bill.base)
+                }
+                if bill.type == .Variable {
+                    let unit = ExpenseEditView.BillUnitMap[bill.name]
+                    HStack {
+                        Text("Usage:")
+                        TextField("required", value: $bill.amount, formatter: formatter)
+                            .keyboardType(.decimalPad)
+                        if let unit {
+                            Text(unit)
+                        }
+                    }
+                    HStack {
+                        Text("Rate:")
+                        TextField("required", value: $bill.rate, formatter: formatter)
+                            .keyboardType(.decimalPad)
+                        if let unit {
+                            Text("$/\(unit)")
+                        }
+                    }
+                }
+            }
+        }
+        
+        enum BillType: Codable, Equatable, Hashable {
+            case Flat
+            case Variable
+        }
+        
+        struct Bill: Codable, Hashable, Equatable {
+            var type: BillType
+            var name: String
+            var base: Int
+            var amount: Double
+            var rate: Double
+            
+            init(type: BillType = .Flat, name: String = "Electric", base: Int = 0, amount: Double = 0.0, rate: Double = 0.0) {
+                self.type = type
+                self.name = name
+                self.base = base
+                self.amount = amount
+                self.rate = rate
+            }
+            
+            static func fromExpenseBill(_ bill: Expense.BillDetails.Bill) -> Bill {
+                switch bill {
+                case .Flat(let name, let base):
+                    return .init(type: .Flat, name: name, base: base.toCents())
+                case .Variable(let name, let base, let amount, let rate):
+                    return .init(type: .Variable, name: name, base: base.toCents(), amount: amount, rate: rate)
+                }
+            }
+            
+            func toExpenseBill() -> Expense.BillDetails.Bill {
+                switch type {
+                case .Flat:
+                    return .Flat(name: name, base: .Cents(base))
+                case .Variable:
+                    return .Variable(name: name, base: .Cents(base), amount: amount, rate: rate)
+                }
+            }
+            
+            func isInvalid() -> Bool {
+                switch type {
+                case .Flat:
+                    return name.isEmpty || base <= 0
+                case .Variable:
+                    return name.isEmpty || base <= 0 || amount <= 0 || rate <= 0
+                }
+            }
+        }
+    }
 }
 
 #Preview {
     let container = createTestModelContainer()
     return NavigationStack {
-        ExpenseEditView(path: .constant([]), expense: .init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Test run", details: .Items(list: .init(items: [.init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 3.3, unit: "lbs"), total: .Cents(3135))]))))
+        ExpenseEditView(path: .constant([]), expense: .init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Test run", details: .Bill(details: .init(bills: [.Variable(name: "Electric", base: .Cents(1400), amount: 1451.2, rate: 0.0234)], tax: .Cents(345)))))
     }.modelContainer(container)
 }

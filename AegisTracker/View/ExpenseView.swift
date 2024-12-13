@@ -125,10 +125,28 @@ struct ExpenseView: View {
             if !details.bills.isEmpty {
                 Section("Bills") {
                     ForEach(details.bills, id: \.hashValue) { bill in
-                        HStack {
-                            Text(bill.getName()).bold()
-                            Spacer()
-                            Text(bill.getTotal().toString()).italic()
+                        switch bill {
+                        case .Flat(let name, let base):
+                            HStack {
+                                Text(name).bold()
+                                Spacer()
+                                Text(base.toString()).italic()
+                            }
+                        case .Variable(let name, let base, let amount, let rate):
+                            VStack(alignment: .leading) {
+                                HStack {
+                                    Text(name).bold()
+                                    Spacer()
+                                    Text(base.toString()).italic()
+                                }
+                                if let unit = ExpenseEditView.BillUnitMap[name] {
+                                    HStack {
+                                        Text("\(amount.formatted()) \(unit)")
+                                        Spacer()
+                                        Text("\(rate.formatted(.currency(code: "USD").precision(.fractionLength(2...7)))) / \(unit)")
+                                    }.font(.subheadline).italic()
+                                }
+                            }
                         }
                     }
                 }
