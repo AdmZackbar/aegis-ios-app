@@ -452,8 +452,8 @@ struct ExpenseEditView: View {
             expense.details = .Bill(details: .init(bills: bills))
         case .Fuel:
             expense.details = .Fuel(details: fuel)
-        default:
-            break
+        case .none:
+            expense.details = nil
         }
         if mode == .Add {
             modelContext.insert(expense)
