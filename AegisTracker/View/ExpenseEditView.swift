@@ -10,6 +10,7 @@ import SwiftUI
 
 struct ExpenseEditView: View {
     @Environment(\.modelContext) var modelContext
+    @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
     
     static let BillNames: [String] = ["Electric", "Water", "Sewer", "Trash", "Internet", "Other"]
     static let BillUnitMap: [String : String] = {
@@ -54,6 +55,8 @@ struct ExpenseEditView: View {
     }
     
     var body: some View {
+        let payees = Set(expenses.map({ $0.payee })).sorted()
+        let categories = Set(MainView.ExpenseCategories.values.flatMap({ $0 }) + expenses.map({ $0.category })).sorted()
         Form {
             Section("Details") {
                 DatePicker(selection: $date, displayedComponents: .date) {
@@ -83,6 +86,7 @@ struct ExpenseEditView: View {
                         .textInputAutocapitalization(.words)
                         .autocorrectionDisabled()
                 }
+                payeeAutoCompleteView(payees)
                 HStack {
                     Image(systemName: "tag.fill")
                         .resizable()
@@ -94,7 +98,7 @@ struct ExpenseEditView: View {
                         .autocorrectionDisabled()
                     categoryDropDownMenu()
                 }
-                categoryAutoCompleteView()
+                categoryAutoCompleteView(categories)
                 TextField("Notes", text: $notes, axis: .vertical)
                     .lineLimit(3...9)
                     .textInputAutocapitalization(.sentences)
@@ -139,6 +143,25 @@ struct ExpenseEditView: View {
             }
     }
     
+    @ViewBuilder
+    private func payeeAutoCompleteView(_ payees: [String]) -> some View {
+        if !payee.isEmpty && !isStandard(payee, payees) {
+            let options = getFilteredEntries(payee, payees)
+            if !options.isEmpty {
+                ScrollView(.horizontal) {
+                    HStack {
+                        ForEach(options, id: \.self) { name in
+                            Button(name) {
+                                self.payee = name
+                            }.padding([.leading, .trailing], 4)
+                            Divider()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     private func categoryDropDownMenu() -> some View {
         Menu {
             ForEach(MainView.ExpenseCategories.sorted(by: { $0.key < $1.key }), id: \.key.hashValue) { category, children in
@@ -160,9 +183,9 @@ struct ExpenseEditView: View {
     }
     
     @ViewBuilder
-    private func categoryAutoCompleteView() -> some View {
-        if !category.isEmpty && !isStandardCategory(category) {
-            let options = getValidCategories(category)
+    private func categoryAutoCompleteView(_ categories: [String]) -> some View {
+        if !category.isEmpty && !isStandard(category, categories) {
+            let options = getFilteredEntries(category, categories)
             if !options.isEmpty {
                 ScrollView(.horizontal) {
                     HStack {
@@ -177,13 +200,13 @@ struct ExpenseEditView: View {
             }
         }
     }
-    
-    private func isStandardCategory(_ name: String) -> Bool {
-        MainView.ExpenseCategories.values.contains(where: { $0.contains(where: { $0 == name }) })
+
+    private func isStandard(_ text: String, _ entries: [String]) -> Bool {
+        entries.contains(text)
     }
     
-    private func getValidCategories(_ name: String) -> [String] {
-        MainView.ExpenseCategories.values.flatMap({ $0 }).filter({ $0.contains(name) }).sorted()
+    private func getFilteredEntries(_ text: String, _ entries: [String]) -> [String] {
+        entries.filter({ $0.localizedCaseInsensitiveContains(text) }).sorted()
     }
     
     @ViewBuilder
@@ -691,6 +714,7 @@ struct ExpenseEditView: View {
 
 #Preview {
     let container = createTestModelContainer()
+    addTestExpenses(container.mainContext)
     return NavigationStack {
         ExpenseEditView(path: .constant([]), expense: .init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Test run", details: .Items(list: .init(items: [
             .init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541)),
