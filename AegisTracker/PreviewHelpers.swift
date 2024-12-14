@@ -37,12 +37,6 @@ func addTestExpenses(_ context: ModelContext) {
                             .Variable(name: "Electric", base: .Cents(3552), amount: 462, rate: 0.00231),
                             .Flat(name: "Trash", base: .Cents(1423))]))))
     context.insert(Expense(date: .now,
-                           payee: "HP HSV",
-                           amount: .Cents(2267),
-                           category: "Sports Gear",
-                           notes: "Chalk",
-                           details: .Tag(name: "Climbing")))
-    context.insert(Expense(date: .now,
                            payee: "Greasy Hands",
                            amount: .Cents(4523),
                            category: "Haircut",

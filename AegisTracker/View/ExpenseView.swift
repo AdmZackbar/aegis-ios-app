@@ -77,12 +77,6 @@ struct ExpenseView: View {
     @ViewBuilder
     private func detailView() -> some View {
         switch expense.details {
-        case .Tag(let name):
-            HStack {
-                Text("Tag:").bold()
-                Spacer()
-                Text(name).italic()
-            }
         case .Tip(let amount):
             HStack {
                 Text("Tip:").bold()

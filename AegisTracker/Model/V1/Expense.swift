@@ -30,7 +30,6 @@ extension SchemaV1 {
         }
         
         enum Details: Codable {
-            case Tag(name: String)
             case Tip(amount: Price)
             case Items(list: ItemList)
             case Bill(details: BillDetails)

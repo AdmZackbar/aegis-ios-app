@@ -32,8 +32,6 @@ struct ExpenseEditView: View {
     @State private var category: String = ""
     @State private var notes: String = ""
     @State private var type: DetailType? = nil
-    // Tag
-    @State private var tag: String = ""
     // Tip
     @State private var tip: Int = 0
     // Items
@@ -193,11 +191,6 @@ struct ExpenseEditView: View {
         if let type {
             Section(type.getName()) {
                 switch type {
-                case .Tag:
-                    HStack {
-                        Text("Name:")
-                        TextField("", text: $tag)
-                    }
                 case .Tip:
                     HStack {
                         Text("Amount:")
@@ -414,9 +407,6 @@ struct ExpenseEditView: View {
             category = expense.category
             notes = expense.notes
             switch expense.details {
-            case .Tag(let name):
-                type = .Tag
-                tag = name
             case .Tip(let amount):
                 type = .Tip
                 tip = amount.toCents()
@@ -442,8 +432,6 @@ struct ExpenseEditView: View {
         expense.category = category
         expense.notes = notes
         switch type {
-        case .Tag:
-            expense.details = .Tag(name: tag)
         case .Tip:
             expense.details = .Tip(amount: .Cents(tip))
         case .Items:
@@ -477,7 +465,6 @@ struct ExpenseEditView: View {
     
     enum DetailType: String, CaseIterable {
         case Items
-        case Tag
         case Tip
         case Bill
         case Fuel
@@ -486,8 +473,6 @@ struct ExpenseEditView: View {
             switch self {
             case .Items:
                 "Items"
-            case .Tag:
-                "Sub-Category"
             case .Tip:
                 "Tip"
             case .Bill:

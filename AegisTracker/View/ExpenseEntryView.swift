@@ -26,12 +26,6 @@ struct ExpenseEntryView: View {
             switch expense.details {
             case .none:
                 componentText(.Payee).font(.subheadline).italic()
-            case .Tag(let tag):
-                HStack(alignment: .top) {
-                    componentText(.Payee)
-                    Spacer()
-                    Text(tag).multilineTextAlignment(.trailing)
-                }.font(.subheadline).italic()
             case .Items(let list):
                 let itemText = itemsText(list)
                 let payee = get(.Payee)
