@@ -10,6 +10,7 @@
 		E85AE3D12D09483C00CA9D0C /* Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85AE3D02D09483C00CA9D0C /* Asset.swift */; };
 		E85AE3D32D0B77E200CA9D0C /* ExpenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85AE3D22D0B77E200CA9D0C /* ExpenseView.swift */; };
 		E86CB3412D0D1CE100DE38FF /* ExpenseEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86CB3402D0D1CE100DE38FF /* ExpenseEntryView.swift */; };
+		E86CB3432D0E1E9000DE38FF /* PayeeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86CB3422D0E1E9000DE38FF /* PayeeListView.swift */; };
 		E88769772CE3FF4600D989E1 /* Expense.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769762CE3FF4600D989E1 /* Expense.swift */; };
 		E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769782CE3FF7400D989E1 /* Revenue.swift */; };
 		E887697D2CE4672F00D989E1 /* DateListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887697C2CE4672F00D989E1 /* DateListView.swift */; };
@@ -54,6 +55,7 @@
 		E85AE3D02D09483C00CA9D0C /* Asset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Asset.swift; sourceTree = "<group>"; };
 		E85AE3D22D0B77E200CA9D0C /* ExpenseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseView.swift; sourceTree = "<group>"; };
 		E86CB3402D0D1CE100DE38FF /* ExpenseEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseEntryView.swift; sourceTree = "<group>"; };
+		E86CB3422D0E1E9000DE38FF /* PayeeListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayeeListView.swift; sourceTree = "<group>"; };
 		E88769762CE3FF4600D989E1 /* Expense.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Expense.swift; sourceTree = "<group>"; };
 		E88769782CE3FF7400D989E1 /* Revenue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Revenue.swift; sourceTree = "<group>"; };
 		E887697C2CE4672F00D989E1 /* DateListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateListView.swift; sourceTree = "<group>"; };
@@ -202,6 +204,7 @@
 				E88769832CE83B6300D989E1 /* CategoryListView.swift */,
 				E887697C2CE4672F00D989E1 /* DateListView.swift */,
 				E887698D2CEE684700D989E1 /* MonthListView.swift */,
+				E86CB3422D0E1E9000DE38FF /* PayeeListView.swift */,
 				E85AE3D22D0B77E200CA9D0C /* ExpenseView.swift */,
 				E88769852CE91E5800D989E1 /* ExpenseListView.swift */,
 				E86CB3402D0D1CE100DE38FF /* ExpenseEntryView.swift */,
@@ -341,6 +344,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E88769772CE3FF4600D989E1 /* Expense.swift in Sources */,
+				E86CB3432D0E1E9000DE38FF /* PayeeListView.swift in Sources */,
 				E85AE3D12D09483C00CA9D0C /* Asset.swift in Sources */,
 				E8EB2A9D2CE11D39000E4B67 /* PreviewHelpers.swift in Sources */,
 				E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */,

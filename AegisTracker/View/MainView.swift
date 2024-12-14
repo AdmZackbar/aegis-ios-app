@@ -66,6 +66,14 @@ struct MainView: View {
                             Spacer()
                         }.frame(height: 36).contentShape(Rectangle())
                     }.buttonStyle(.plain)
+                    Button {
+                        path.append(.ListByPayee())
+                    } label: {
+                        HStack {
+                            Label("List By Payee", systemImage: "person")
+                            Spacer()
+                        }.frame(height: 36).contentShape(Rectangle())
+                    }.buttonStyle(.plain)
                 }
                 Section("Record") {
                     Button {
@@ -94,6 +102,8 @@ struct MainView: View {
             DateListView(path: $path)
         case .ListByMonth(let month, let year):
             MonthListView(path: $path, month: month, year: year)
+        case .ListByPayee(let payee):
+            PayeeListView(path: $path, selectedPayee: payee)
         case .ViewExpense(let expense):
             ExpenseView(path: $path, expense: expense)
         case .AddExpense:
@@ -109,6 +119,7 @@ enum ViewType: Hashable {
     case ListByCategory(category: String? = nil)
     case ListByDate
     case ListByMonth(month: Int, year: Int)
+    case ListByPayee(payee: String? = nil)
     case ViewExpense(expense: Expense)
     case AddExpense
     case EditExpense(expense: Expense)
