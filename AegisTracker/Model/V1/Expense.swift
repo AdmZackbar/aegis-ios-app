@@ -39,7 +39,6 @@ extension SchemaV1 {
         
         struct BillDetails: Codable, Hashable, Equatable {
             var bills: [Bill]
-            var tax: Price
             
             enum Bill: Codable, Hashable, Equatable {
                 case Flat(name: String, base: Price)
@@ -75,6 +74,7 @@ extension SchemaV1 {
             var brand: String
             var quantity: Amount
             var total: Price
+            var discount: Price?
             var unitCost: Price {
                 get {
                     switch quantity {
@@ -83,6 +83,11 @@ extension SchemaV1 {
                     case .Unit(let num, _):
                         return total / num
                     }
+                }
+            }
+            var fullCost: Price {
+                get {
+                    return total + (discount ?? .Cents(0))
                 }
             }
             

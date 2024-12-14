@@ -12,16 +12,16 @@ struct ExpenseListView: View {
     @Environment(\.modelContext) var modelContext
     
     private let expenses: [Expense]
-    private let titleComponents: [Component]
+    private let omitted: [ExpenseEntryView.Component]
     
     @Binding private var path: [ViewType]
     @State private var deleteShowing: Bool = false
     @State private var deleteItem: Expense? = nil
     
-    init(path: Binding<[ViewType]>, expenses: [Expense], titleComponents: [Component] = []) {
+    init(path: Binding<[ViewType]>, expenses: [Expense], omitted: [ExpenseEntryView.Component] = []) {
         self._path = path
         self.expenses = expenses
-        self.titleComponents = !titleComponents.isEmpty ? titleComponents : [.Category, .Date]
+        self.omitted = omitted
     }
     
     var body: some View {
@@ -84,85 +84,9 @@ struct ExpenseListView: View {
         Button {
             path.append(.ViewExpense(expense: expense))
         } label: {
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(alignment: .top) {
-                    Text(getTitle(expense)).bold()
-                    Spacer()
-                    Text(expense.amount.toString()).bold()
-                }
-                switch expense.details {
-                case .none:
-                    Text(expense.payee).font(.subheadline).italic()
-                    if !expense.notes.isEmpty {
-                        Text(expense.notes).font(.caption)
-                    }
-                case .Tag(let tag):
-                    HStack {
-                        Text(expense.payee).font(.subheadline).italic()
-                        Spacer()
-                        Text(tag).font(.subheadline).italic()
-                    }
-                case .Items(let list):
-                    HStack {
-                        Text(expense.payee)
-                        Spacer()
-                        Text("\(list.items.count) items")
-                    }.font(.subheadline).italic()
-                case .Fuel(let details):
-                    HStack(alignment: .top) {
-                        Text(expense.payee).font(.subheadline).italic()
-                        Spacer()
-                        Text("\(details.amount.formatted(.number.precision(.fractionLength(0...1)))) gal @ \(details.rate.formatted(.currency(code: "USD")))")
-                            .font(.subheadline).italic()
-                    }
-                    Text(details.user).font(.caption)
-                case .Tip(let tip):
-                    HStack(alignment: .top) {
-                        Text(expense.payee).font(.subheadline).italic()
-                        Spacer()
-                        if tip.toUsd() > 0 {
-                            Text("\(tip.toString()) tip").font(.subheadline).italic()
-                        }
-                    }
-                    if !expense.notes.isEmpty {
-                        Text(expense.notes).font(.caption)
-                    }
-                case .Bill(let details):
-                    HStack {
-                        Text(expense.payee).font(.subheadline).italic()
-                        Spacer()
-                    }
-                    ForEach(details.bills, id: \.hashValue) { bill in
-                        HStack {
-                            Text(bill.getName())
-                            Spacer()
-                            Text(bill.getTotal().toString())
-                        }.font(.subheadline)
-                    }
-                    if !expense.notes.isEmpty {
-                        Text(expense.notes).font(.caption)
-                    }
-                }
-            }.contentShape(Rectangle())
+            ExpenseEntryView(expense: expense, omitted: omitted)
+                .contentShape(Rectangle())
         }.buttonStyle(.plain)
-    }
-    
-    private func getTitle(_ expense: Expense) -> String {
-        titleComponents.map({ getTitle(expense: expense, component: $0) }).joined(separator: "\n")
-    }
-    
-    private func getTitle(expense: Expense, component: Component) -> String {
-        switch component {
-        case .Date:
-            expense.date.formatted(date: .abbreviated, time: .omitted)
-        case .Category:
-            expense.category
-        }
-    }
-    
-    enum Component {
-        case Date
-        case Category
     }
 }
 
@@ -172,7 +96,7 @@ struct ExpenseListView: View {
     let expenses = try! container.mainContext.fetch(FetchDescriptor<Expense>())
     return NavigationStack {
         Form {
-            ExpenseListView(path: .constant([]), expenses: expenses, titleComponents: [.Date, .Category])
+            ExpenseListView(path: .constant([]), expenses: expenses, omitted: [])
         }
     }.modelContainer(container)
 }

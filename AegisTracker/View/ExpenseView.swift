@@ -27,7 +27,7 @@ struct ExpenseView: View {
             headerView()
             Form {
                 detailView()
-                let relatedExpenses = expenses.filter({ $0.payee == expense.payee && $0 != expense })
+                let relatedExpenses = expenses.filter({ $0.payee == expense.payee && $0.category == expense.category && $0 != expense })
                 if !relatedExpenses.isEmpty {
                     payeeExpenseList(relatedExpenses)
                 }
@@ -50,12 +50,10 @@ struct ExpenseView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .bottom) {
                 VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Text(expense.category)
-                            .textCase(.uppercase)
-                            .font(.caption)
-                            .fontWeight(.light)
-                    }
+                    Text(expense.category)
+                        .textCase(.uppercase)
+                        .font(.caption)
+                        .fontWeight(.light)
                     Text(expense.payee)
                         .font(.title2)
                         .multilineTextAlignment(.leading)
@@ -92,26 +90,7 @@ struct ExpenseView: View {
                 Text(amount.toString()).italic()
             }
         case .Items(let list):
-            if !list.items.isEmpty {
-                Section("Items") {
-                    ForEach(list.items, id: \.hashValue) { item in
-                        VStack(alignment: .leading) {
-                            HStack {
-                                Text(item.name).bold()
-                                Spacer()
-                                Text(item.total.toString()).italic()
-                            }
-                            if !item.brand.isEmpty || !item.quantity.summary.isEmpty {
-                                HStack {
-                                    Text(item.brand)
-                                    Spacer()
-                                    Text(item.quantity.summary)
-                                }.font(.subheadline).italic()
-                            }
-                        }
-                    }
-                }
-            }
+            itemDetailView(list)
         case .Fuel(let details):
             VStack(alignment: .leading, spacing: 4) {
                 Text(details.user).bold()
@@ -122,54 +101,78 @@ struct ExpenseView: View {
                 }
             }
         case .Bill(let details):
-            if !details.bills.isEmpty {
-                Section("Bills") {
-                    ForEach(details.bills, id: \.hashValue) { bill in
-                        switch bill {
-                        case .Flat(let name, let base):
-                            HStack {
-                                Text(name).bold()
-                                Spacer()
-                                Text(base.toString()).italic()
-                            }
-                        case .Variable(let name, let base, let amount, let rate):
-                            VStack(alignment: .leading) {
-                                HStack {
-                                    Text(name).bold()
-                                    Spacer()
-                                    Text(base.toString()).italic()
-                                }
-                                if let unit = ExpenseEditView.BillUnitMap[name] {
-                                    HStack {
-                                        Text("\(amount.formatted()) \(unit)")
-                                        Spacer()
-                                        Text("\(rate.formatted(.currency(code: "USD").precision(.fractionLength(2...7)))) / \(unit)")
-                                    }.font(.subheadline).italic()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            billDetailView(details)
         default:
             EmptyView()
         }
     }
     
     @ViewBuilder
+    private func itemDetailView(_ list: Expense.ItemList) -> some View {
+        if !list.items.isEmpty {
+            Section("Items") {
+                ForEach(list.items, id: \.hashValue) { item in
+                    VStack(alignment: .leading) {
+                        HStack {
+                            Text(item.name).bold()
+                            Spacer()
+                            Text(item.total.toString()).italic()
+                        }
+                        if !item.brand.isEmpty || !item.quantity.summary.isEmpty {
+                            HStack {
+                                Text(item.brand)
+                                Spacer()
+                                Text(item.quantity.summary)
+                            }.font(.subheadline).italic()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func billDetailView(_ details: Expense.BillDetails) -> some View {
+        if !details.bills.isEmpty {
+            Section("Bills") {
+                ForEach(details.bills, id: \.hashValue) { bill in
+                    switch bill {
+                    case .Flat(let name, _):
+                        HStack {
+                            Text(name).bold()
+                            Spacer()
+                            Text(bill.getTotal().toString()).italic()
+                        }
+                    case .Variable(let name, _, let amount, let rate):
+                        VStack(alignment: .leading) {
+                            HStack {
+                                Text(name).bold()
+                                Spacer()
+                                Text(bill.getTotal().toString()).italic()
+                            }
+                            if let unit = ExpenseEditView.BillUnitMap[name] {
+                                HStack {
+                                    Text("\(amount.formatted()) \(unit)")
+                                    Spacer()
+                                    Text("\(rate.formatted(.currency(code: "USD").precision(.fractionLength(2...7)))) / \(unit)")
+                                }.font(.subheadline).italic()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
     private func payeeExpenseList(_ expenses: [Expense]) -> some View {
-        Section("\(expense.payee) Expenses") {
+        Section("\(expense.payee) \(expense.category)") {
             ForEach(expenses, id: \.hashValue) { e in
                 Button {
                     path.append(.ViewExpense(expense: e))
                 } label: {
-                    HStack {
-                        Text(e.date.formatted(date: .abbreviated, time: .omitted))
-                            .bold()
-                        Spacer()
-                        Text(e.amount.toString())
-                            .italic()
-                    }
+                    ExpenseEntryView(expense: e, omitted: [.Category, .Payee])
+                        .contentShape(Rectangle())
                 }.foregroundStyle(.primary)
             }
         }
@@ -213,6 +216,10 @@ struct ExpenseView: View {
     let container = createTestModelContainer()
     addTestExpenses(container.mainContext)
     return NavigationStack {
-        ExpenseView(path: .constant([]), expense: .init(date: .now, payee: "Publix", amount: .Cents(34189), category: "Groceries", notes: "November grocery run", details: .Fuel(details: .init(amount: 12.01, rate: 2.569, user: "Mazda CX-5"))))
+        ExpenseView(path: .constant([]), expense: .init(date: .now, payee: "Publix", amount: .Cents(34189), category: "Groceries", notes: "November grocery run", details: .Items(list: .init(items: [
+            .init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541)),
+            .init(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300)),
+            .init(name: "Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
+        ]))))
     }.modelContainer(container)
 }

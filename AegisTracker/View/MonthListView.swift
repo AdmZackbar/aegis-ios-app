@@ -39,7 +39,7 @@ struct MonthListView: View {
         Form {
             ForEach(map.sorted(by: { $0.key > $1.key }), id: \.key.hashValue) { day, expenses in
                 Section(dayFormatter.string(for: day)!) {
-                    ExpenseListView(path: $path, expenses: expenses, titleComponents: [.Category])
+                    ExpenseListView(path: $path, expenses: expenses, omitted: [.Date])
                 }
             }
         }.navigationTitle("\(DateFormatter().monthSymbols[month - 1]) \(year.formatted(.number.grouping(.never)))")

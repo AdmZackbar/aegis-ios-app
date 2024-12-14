@@ -43,7 +43,6 @@ struct ExpenseEditView: View {
     @State private var itemIndex: Int = -1
     // Bill
     @State private var bills: [Expense.BillDetails.Bill] = []
-    @State private var billTax: Int = 0
     @State private var billSheetShowing: Bool = false
     @State private var bill: EditBillView.Bill = .init()
     @State private var billIndex: Int = -1
@@ -303,22 +302,22 @@ struct ExpenseEditView: View {
                 billSheetShowing = true
             } label: {
                 switch bill {
-                case .Flat(let name, let base):
+                case .Flat(let name, _):
                     HStack {
                         Text(name).bold()
                         Spacer()
-                        Text(base.toString()).italic()
+                        Text(bill.getTotal().toString()).italic()
                         Image(systemName: "pencil.circle")
                             .foregroundStyle(.blue)
                             .padding(.leading, 4)
                     }.contentShape(Rectangle())
-                case .Variable(let name, let base, let amount, let rate):
+                case .Variable(let name, _, let amount, let rate):
                     HStack {
                         VStack(alignment: .leading) {
                             HStack {
                                 Text(name).bold()
                                 Spacer()
-                                Text(base.toString()).italic()
+                                Text(bill.getTotal().toString()).italic()
                             }
                             if let unit = ExpenseEditView.BillUnitMap[name] {
                                 HStack {
@@ -427,7 +426,6 @@ struct ExpenseEditView: View {
             case .Bill(let details):
                 type = .Bill
                 bills = details.bills
-                billTax = details.tax.toCents()
             case .Fuel(let details):
                 type = .Fuel
                 fuel = details
@@ -451,7 +449,7 @@ struct ExpenseEditView: View {
         case .Items:
             expense.details = .Items(list: .init(items: items))
         case .Bill:
-            expense.details = .Bill(details: .init(bills: bills, tax: .Cents(billTax)))
+            expense.details = .Bill(details: .init(bills: bills))
         case .Fuel:
             expense.details = .Fuel(details: fuel)
         default:
@@ -524,6 +522,14 @@ struct ExpenseEditView: View {
                     Text("Total:")
                     CurrencyField(value: $item.totalPrice)
                 }
+                Toggle(isOn: $item.sale) {
+                    HStack {
+                        Text("Savings:")
+                        if item.sale {
+                            CurrencyField(value: $item.salePrice)
+                        }
+                    }
+                }
                 Picker("", selection: $item.quantityType) {
                     Text("Individual").tag(AmountType.Discrete)
                     Text("By Unit").tag(AmountType.Unit)
@@ -578,8 +584,10 @@ struct ExpenseEditView: View {
             var unitAmount: Double
             var unit: String
             var totalPrice: Int
+            var sale: Bool
+            var salePrice: Int
             
-            init(name: String = "", brand: String = "", quantityType: AmountType = .Discrete, discrete: Int = 1, unitAmount: Double = 1.0, unit: String = "", totalPrice: Int = 0) {
+            init(name: String = "", brand: String = "", quantityType: AmountType = .Discrete, discrete: Int = 1, unitAmount: Double = 1.0, unit: String = "", totalPrice: Int = 0, sale: Bool = false, salePrice: Int = 0) {
                 self.name = name
                 self.brand = brand
                 self.quantityType = quantityType
@@ -587,23 +595,26 @@ struct ExpenseEditView: View {
                 self.unitAmount = unitAmount
                 self.unit = unit
                 self.totalPrice = totalPrice
+                self.sale = sale
+                self.salePrice = salePrice
             }
             
             static func fromExpenseItem(_ item: Expense.Item) -> Item {
                 switch item.quantity {
                 case .Discrete(let num):
-                    return .init(name: item.name, brand: item.brand, quantityType: .Discrete, discrete: num, totalPrice: item.total.toCents())
+                    return .init(name: item.name, brand: item.brand, quantityType: .Discrete, discrete: num, totalPrice: item.total.toCents(), sale: item.discount != nil, salePrice: item.discount?.toCents() ?? 0)
                 case .Unit(let num, let unit):
-                    return .init(name: item.name, brand: item.brand, quantityType: .Unit, unitAmount: num, unit: unit, totalPrice: item.total.toCents())
+                    return .init(name: item.name, brand: item.brand, quantityType: .Unit, unitAmount: num, unit: unit, totalPrice: item.total.toCents(), sale: item.discount != nil, salePrice: item.discount?.toCents() ?? 0)
                 }
             }
             
             func toExpenseItem() -> Expense.Item {
+                let discount: Price? = sale ? .Cents(salePrice) : nil
                 switch quantityType {
                 case .Discrete:
-                    return .init(name: name, brand: brand, quantity: .Discrete(discrete), total: .Cents(totalPrice))
+                    return .init(name: name, brand: brand, quantity: .Discrete(discrete), total: .Cents(totalPrice), discount: discount)
                 case .Unit:
-                    return .init(name: name, brand: brand, quantity: .Unit(num: unitAmount, unit: unit), total: .Cents(totalPrice))
+                    return .init(name: name, brand: brand, quantity: .Unit(num: unitAmount, unit: unit), total: .Cents(totalPrice), discount: discount)
                 }
             }
             
@@ -734,6 +745,10 @@ struct ExpenseEditView: View {
 #Preview {
     let container = createTestModelContainer()
     return NavigationStack {
-        ExpenseEditView(path: .constant([]), expense: .init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Test run", details: .Bill(details: .init(bills: [.Variable(name: "Electric", base: .Cents(1400), amount: 1451.2, rate: 0.0234)], tax: .Cents(345)))))
+        ExpenseEditView(path: .constant([]), expense: .init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Test run", details: .Items(list: .init(items: [
+            .init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541)),
+            .init(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300)),
+            .init(name: "Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
+        ]))))
     }.modelContainer(container)
 }

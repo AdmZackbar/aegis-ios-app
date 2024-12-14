@@ -97,7 +97,7 @@ struct CategoryListView: View {
     @ViewBuilder
     private func categoryListView(category: String, expenses: [Expense]) -> some View {
         Section(category) {
-            ExpenseListView(path: $path, expenses: expenses.filter(isFiltered), titleComponents: [.Date])
+            ExpenseListView(path: $path, expenses: expenses.filter(isFiltered), omitted: [.Category])
         }
     }
     
