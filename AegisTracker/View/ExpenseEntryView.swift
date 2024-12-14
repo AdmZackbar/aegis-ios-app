@@ -49,12 +49,24 @@ struct ExpenseEntryView: View {
                         .font(.subheadline).italic()
                 }
             case .Fuel(let details):
-                HStack(alignment: .top) {
-                    componentText(.Payee)
-                    Spacer()
-                    Text("\(details.amount.formatted(.number.precision(.fractionLength(0...1)))) gal @ \(details.rate.formatted(.currency(code: "USD")))")
-                }.font(.subheadline).italic()
-                Text(details.user).font(.caption)
+                let amount = details.amount.formatted(.number.precision(.fractionLength(0...1)))
+                let rate = details.rate.formatted(.currency(code: "USD"))
+                if let payee = get(.Payee) {
+                    HStack(alignment: .top) {
+                        Text(payee)
+                        Spacer()
+                        Text("\(amount) gal @ \(rate)")
+                    }.font(.subheadline).italic()
+                } else {
+                    HStack(alignment: .top) {
+                        Text("\(amount) gallons")
+                        Spacer()
+                        Text("\(rate) / gal")
+                    }.font(.subheadline).italic()
+                }
+                if (!details.user.isEmpty) {
+                    Text(details.user).font(.caption)
+                }
             case .Tip(let tip):
                 HStack(alignment: .top) {
                     componentText(.Payee)
