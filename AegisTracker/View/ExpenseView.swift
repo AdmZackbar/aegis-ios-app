@@ -105,22 +105,7 @@ struct ExpenseView: View {
     private func itemDetailView(_ list: Expense.ItemList) -> some View {
         if !list.items.isEmpty {
             Section("Items") {
-                ForEach(list.items, id: \.hashValue) { item in
-                    VStack(alignment: .leading) {
-                        HStack {
-                            Text(item.name).bold()
-                            Spacer()
-                            Text(item.total.toString()).italic()
-                        }
-                        if !item.brand.isEmpty || !item.quantity.summary.isEmpty {
-                            HStack {
-                                Text(item.brand)
-                                Spacer()
-                                Text(item.quantity.summary)
-                            }.font(.subheadline).italic()
-                        }
-                    }
-                }
+                ForEach(list.items, id: \.hashValue, content: ExpenseItemEntryView.init)
             }
         }
     }
@@ -129,31 +114,7 @@ struct ExpenseView: View {
     private func billDetailView(_ details: Expense.BillDetails) -> some View {
         if !details.bills.isEmpty {
             Section("Bills") {
-                ForEach(details.bills, id: \.hashValue) { bill in
-                    switch bill {
-                    case .Flat(let name, _):
-                        HStack {
-                            Text(name).bold()
-                            Spacer()
-                            Text(bill.getTotal().toString()).italic()
-                        }
-                    case .Variable(let name, _, let amount, let rate):
-                        VStack(alignment: .leading) {
-                            HStack {
-                                Text(name).bold()
-                                Spacer()
-                                Text(bill.getTotal().toString()).italic()
-                            }
-                            if let unit = ExpenseEditView.BillUnitMap[name] {
-                                HStack {
-                                    Text("\(amount.formatted()) \(unit)")
-                                    Spacer()
-                                    Text("\(rate.formatted(.currency(code: "USD").precision(.fractionLength(2...7)))) / \(unit)")
-                                }.font(.subheadline).italic()
-                            }
-                        }
-                    }
-                }
+                ForEach(details.bills, id: \.hashValue, content: ExpenseBillEntryView.init)
             }
         }
     }

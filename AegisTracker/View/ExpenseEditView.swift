@@ -224,20 +224,7 @@ struct ExpenseEditView: View {
                 itemSheetShowing = true
             } label: {
                 HStack {
-                    VStack(alignment: .leading) {
-                        HStack {
-                            Text(item.name).bold()
-                            Spacer()
-                            Text(item.total.toString()).italic()
-                        }
-                        if !item.brand.isEmpty || !item.quantity.summary.isEmpty {
-                            HStack {
-                                Text(item.brand)
-                                Spacer()
-                                Text(item.quantity.summary)
-                            }.font(.subheadline).italic()
-                        }
-                    }
+                    ExpenseItemEntryView(item: item)
                     Image(systemName: "pencil.circle")
                         .foregroundStyle(.blue)
                         .padding(.leading, 4)
@@ -294,37 +281,12 @@ struct ExpenseEditView: View {
                 billIndex = bills.firstIndex(of: bill) ?? -1
                 billSheetShowing = true
             } label: {
-                switch bill {
-                case .Flat(let name, _):
-                    HStack {
-                        Text(name).bold()
-                        Spacer()
-                        Text(bill.getTotal().toString()).italic()
-                        Image(systemName: "pencil.circle")
-                            .foregroundStyle(.blue)
-                            .padding(.leading, 4)
-                    }.contentShape(Rectangle())
-                case .Variable(let name, _, let amount, let rate):
-                    HStack {
-                        VStack(alignment: .leading) {
-                            HStack {
-                                Text(name).bold()
-                                Spacer()
-                                Text(bill.getTotal().toString()).italic()
-                            }
-                            if let unit = ExpenseEditView.BillUnitMap[name] {
-                                HStack {
-                                    Text("\(amount.formatted()) \(unit)")
-                                    Spacer()
-                                    Text("\(rate.formatted(.currency(code: "USD").precision(.fractionLength(2...7)))) / \(unit)")
-                                }.font(.subheadline).italic()
-                            }
-                        }
-                        Image(systemName: "pencil.circle")
-                            .foregroundStyle(.blue)
-                            .padding(.leading, 4)
-                    }.contentShape(Rectangle())
-                }
+                HStack {
+                    ExpenseBillEntryView(bill: bill)
+                    Image(systemName: "pencil.circle")
+                        .foregroundStyle(.blue)
+                        .padding(.leading, 4)
+                }.contentShape(Rectangle())
             }.buttonStyle(.plain)
         }
         Button {

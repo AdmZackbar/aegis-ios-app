@@ -93,20 +93,6 @@ extension SchemaV1 {
             enum Amount: Codable, Hashable, Equatable {
                 case Discrete(_ num: Int)
                 case Unit(num: Double, unit: String)
-                
-                var summary: String {
-                    get {
-                        switch self {
-                        case .Discrete(let num):
-                            if num <= 1 {
-                                return ""
-                            }
-                            return "\(num.formatted()) items"
-                        case .Unit(let num, let unit):
-                            return unit.isEmpty ? num.formatted() : "\(num.formatted()) \(unit)"
-                        }
-                    }
-                }
             }
         }
         
