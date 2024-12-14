@@ -27,19 +27,19 @@ struct ExpenseEntryView: View {
             case .none:
                 componentText(.Payee).font(.subheadline).italic()
             case .Tag(let tag):
-                HStack {
+                HStack(alignment: .top) {
                     componentText(.Payee)
                     Spacer()
-                    Text(tag)
+                    Text(tag).multilineTextAlignment(.trailing)
                 }.font(.subheadline).italic()
             case .Items(let list):
                 let itemText = itemsText(list)
                 let payee = get(.Payee)
                 if let payee, let itemText {
-                    HStack {
+                    HStack(alignment: .top) {
                         Text(payee)
                         Spacer()
-                        Text(itemText)
+                        Text(itemText).multilineTextAlignment(.trailing)
                     }.font(.subheadline).italic()
                 } else if let payee {
                     Text(payee)
@@ -55,13 +55,13 @@ struct ExpenseEntryView: View {
                     HStack(alignment: .top) {
                         Text(payee)
                         Spacer()
-                        Text("\(amount) gal @ \(rate)")
+                        Text("\(amount) gal @ \(rate)").multilineTextAlignment(.trailing)
                     }.font(.subheadline).italic()
                 } else {
                     HStack(alignment: .top) {
                         Text("\(amount) gallons")
                         Spacer()
-                        Text("\(rate) / gal")
+                        Text("\(rate) / gal").multilineTextAlignment(.trailing)
                     }.font(.subheadline).italic()
                 }
                 if (!details.user.isEmpty) {
@@ -72,14 +72,18 @@ struct ExpenseEntryView: View {
                     componentText(.Payee)
                     Spacer()
                     if tip.toUsd() > 0 {
-                        Text("\(tip.toString()) tip")
+                        Text("\(tip.toString()) tip").multilineTextAlignment(.trailing)
                     }
                 }.font(.subheadline).italic()
             case .Bill(let details):
-                HStack {
+                HStack(alignment: .top) {
                     componentText(.Payee)
                     Spacer()
-                    Text("\(details.bills.count) bills")
+                    if details.bills.count > 1 {
+                        Text("\(details.bills.count) bills").multilineTextAlignment(.trailing)
+                    } else if !details.bills.isEmpty {
+                        Text(details.bills[0].getName()).multilineTextAlignment(.trailing)
+                    }
                 }.font(.subheadline).italic()
             }
             componentText(.Notes).font(.caption)
