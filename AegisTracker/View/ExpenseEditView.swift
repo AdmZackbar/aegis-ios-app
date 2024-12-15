@@ -40,6 +40,9 @@ struct ExpenseEditView: View {
     @State private var itemSheetShowing: Bool = false
     @State private var item: EditItemView.Item = .init()
     @State private var itemIndex: Int = -1
+    @State private var recentItemSheetShowing: Bool = false
+    @State private var recentItemFilter: String = ""
+    @State private var recentItemSearchShowing: Bool = false
     // Bill
     @State private var bills: [Expense.BillDetails.Bill] = []
     @State private var billSheetShowing: Bool = false
@@ -57,6 +60,17 @@ struct ExpenseEditView: View {
     var body: some View {
         let payees = Set(expenses.map({ $0.payee })).sorted()
         let categories = Set(MainView.ExpenseCategories.values.flatMap({ $0 }) + expenses.map({ $0.category })).sorted()
+        let names = Set(expenses.map(getItemNames).flatMap({ $0 })).sorted()
+        let brands = Set(expenses.map(getItemBrands).flatMap({ $0 })).sorted()
+        let recentItems: [Expense.Item] = {
+            var map: [String : Expense.Item] = [:]
+            expenses.map(getItems).flatMap({ $0 }).filter(isItemFiltered).forEach({ item in
+                if map[item.name] == nil {
+                    map[item.name] = item
+                }
+            })
+            return map.values.sorted(by: { $0.name < $1.name })
+        }()
         Form {
             Section("Details") {
                 DatePicker(selection: $date, displayedComponents: .date) {
@@ -133,8 +147,23 @@ struct ExpenseEditView: View {
             }
             .sheet(isPresented: $itemSheetShowing) {
                 NavigationStack {
-                    itemSheetView()
+                    itemSheetView(names: names, brands: brands)
                 }.presentationDetents([.medium])
+            }
+            .sheet(isPresented: $recentItemSheetShowing) {
+                NavigationStack {
+                    recentItemSheetView(recentItems: recentItems)
+                        .navigationTitle("Create New Item")
+                        .navigationBarTitleDisplayMode(.inline)
+                        .searchable(text: $recentItemFilter, isPresented: $recentItemSearchShowing)
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Cancel") {
+                                    recentItemSheetShowing = false
+                                }
+                            }
+                        }
+                }.presentationDetents([.large])
             }
             .sheet(isPresented: $billSheetShowing) {
                 NavigationStack {
@@ -143,9 +172,43 @@ struct ExpenseEditView: View {
             }
     }
     
+    private func isItemFiltered(_ item: Expense.Item) -> Bool {
+        if recentItemFilter.isEmpty {
+            return true
+        }
+        return item.name.localizedCaseInsensitiveContains(recentItemFilter) || item.brand.localizedCaseInsensitiveContains(recentItemFilter)
+    }
+    
+    private func getItems(_ expense: Expense) -> [Expense.Item] {
+        switch expense.details {
+        case .Items(let list):
+            return list.items
+        default:
+            return []
+        }
+    }
+    
+    private func getItemNames(_ expense: Expense) -> [String] {
+        switch expense.details {
+        case .Items(let list):
+            return list.items.map({ $0.name })
+        default:
+            return []
+        }
+    }
+    
+    private func getItemBrands(_ expense: Expense) -> [String] {
+        switch expense.details {
+        case .Items(let list):
+            return list.items.map({ $0.brand })
+        default:
+            return []
+        }
+    }
+    
     @ViewBuilder
     private func payeeAutoCompleteView(_ payees: [String]) -> some View {
-        if !payee.isEmpty && !isStandard(payee, payees) {
+        if !payee.isEmpty && !payees.contains(payee) {
             let options = getFilteredEntries(payee, payees)
             if !options.isEmpty {
                 ScrollView(.horizontal) {
@@ -184,7 +247,7 @@ struct ExpenseEditView: View {
     
     @ViewBuilder
     private func categoryAutoCompleteView(_ categories: [String]) -> some View {
-        if !category.isEmpty && !isStandard(category, categories) {
+        if !category.isEmpty && !categories.contains(category) {
             let options = getFilteredEntries(category, categories)
             if !options.isEmpty {
                 ScrollView(.horizontal) {
@@ -199,10 +262,6 @@ struct ExpenseEditView: View {
                 }
             }
         }
-    }
-
-    private func isStandard(_ text: String, _ entries: [String]) -> Bool {
-        entries.contains(text)
     }
     
     private func getFilteredEntries(_ text: String, _ entries: [String]) -> [String] {
@@ -244,6 +303,7 @@ struct ExpenseEditView: View {
             Button {
                 self.item = .fromExpenseItem(item)
                 itemIndex = items.firstIndex(of: item) ?? -1
+                recentItemSheetShowing = false
                 itemSheetShowing = true
             } label: {
                 HStack {
@@ -257,6 +317,7 @@ struct ExpenseEditView: View {
                     Button {
                         self.item = .fromExpenseItem(item)
                         itemIndex = items.firstIndex(of: item) ?? -1
+                        recentItemSheetShowing = false
                         itemSheetShowing = true
                     } label: {
                         Label("Edit", systemImage: "pencil.circle")
@@ -273,6 +334,7 @@ struct ExpenseEditView: View {
         Button {
             item = .init()
             itemIndex = -1
+            recentItemSheetShowing = false
             itemSheetShowing = true
         } label: {
             HStack(spacing: 12) {
@@ -280,11 +342,22 @@ struct ExpenseEditView: View {
                 Text("Add Item")
             }.bold()
         }
+        Button {
+            recentItemFilter = ""
+            itemSheetShowing = false
+            recentItemSheetShowing = true
+            recentItemSearchShowing = true
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "plus.circle")
+                Text("Duplicate Other Item")
+            }.bold()
+        }
     }
     
     @ViewBuilder
-    private func itemSheetView() -> some View {
-        EditItemView(item: $item)
+    private func itemSheetView(names: [String], brands: [String]) -> some View {
+        EditItemView(item: $item, names: names, brands: brands)
             .navigationTitle(itemIndex >= 0 ? "Edit Item" : "Add Item")
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden()
@@ -294,7 +367,7 @@ struct ExpenseEditView: View {
                 }
                 ToolbarItem(placement: .primaryAction) {
                     Button("Save", action: saveItem)
-                        .disabled(item.isInvalid())
+                        .disabled(item.invalid)
                 }
             }
     }
@@ -310,6 +383,34 @@ struct ExpenseEditView: View {
             items[itemIndex] = item.toExpenseItem()
         }
         hideItemSheet()
+    }
+    
+    @ViewBuilder
+    private func recentItemSheetView(recentItems: [Expense.Item]) -> some View {
+        Form {
+            if !recentItems.isEmpty {
+                ForEach(recentItems, id: \.hashValue) { i in
+                    Button {
+                        item = .fromExpenseItem(i)
+                        itemIndex = -1
+                        recentItemSheetShowing = false
+                        itemSheetShowing = true
+                    } label: {
+                        ExpenseItemEntryView(item: i)
+                            .contentShape(Rectangle())
+                    }.buttonStyle(.plain)
+                }
+            } else {
+                Button {
+                    item = .init(name: recentItemFilter)
+                    itemIndex = -1
+                    recentItemSheetShowing = false
+                    itemSheetShowing = true
+                } label: {
+                    Text(recentItemFilter.isEmpty ? "Create New Entry" : "Create New Entry: \(recentItemFilter)")
+                }
+            }
+        }
     }
     
     @ViewBuilder
@@ -501,10 +602,15 @@ struct ExpenseEditView: View {
     }
     
     private struct EditItemView: View {
+        let names: [String]
+        let brands: [String]
+        
         @Binding private var item: Item
         
-        init(item: Binding<Item>) {
+        init(item: Binding<Item>, names: [String], brands: [String]) {
             self._item = item
+            self.names = names
+            self.brands = brands
         }
         
         var body: some View {
@@ -514,12 +620,14 @@ struct ExpenseEditView: View {
                     TextField("required", text: $item.name)
                         .textInputAutocapitalization(.words)
                 }
+                nameAutoCompleteView(names)
                 HStack {
                     Text("Brand:")
                     TextField("optional", text: $item.brand)
                         .textInputAutocapitalization(.words)
                         .autocorrectionDisabled()
                 }
+                brandAutoCompleteView(brands)
                 HStack {
                     Text("Total:")
                     CurrencyField(value: $item.totalPrice)
@@ -578,6 +686,48 @@ struct ExpenseEditView: View {
             }
         }
         
+        @ViewBuilder
+        private func nameAutoCompleteView(_ names: [String]) -> some View {
+            if !item.name.isEmpty && !names.contains(item.name) {
+                let options = getFilteredEntries(item.name, names)
+                if !options.isEmpty {
+                    ScrollView(.horizontal) {
+                        HStack {
+                            ForEach(options, id: \.self) { name in
+                                Button(name) {
+                                    item.name = name
+                                }.padding([.leading, .trailing], 4)
+                                Divider()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        @ViewBuilder
+        private func brandAutoCompleteView(_ brands: [String]) -> some View {
+            if !item.brand.isEmpty && !brands.contains(item.brand) {
+                let options = getFilteredEntries(item.brand, brands)
+                if !options.isEmpty {
+                    ScrollView(.horizontal) {
+                        HStack {
+                            ForEach(options, id: \.self) { name in
+                                Button(name) {
+                                    item.brand = name
+                                }.padding([.leading, .trailing], 4)
+                                Divider()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        private func getFilteredEntries(_ text: String, _ entries: [String]) -> [String] {
+            entries.filter({ $0.localizedCaseInsensitiveContains(text) }).sorted()
+        }
+        
         struct Item {
             var name: String
             var brand: String
@@ -588,6 +738,22 @@ struct ExpenseEditView: View {
             var totalPrice: Int
             var sale: Bool
             var salePrice: Int
+            
+            var invalid: Bool {
+                get {
+                    name.isEmpty || quantityInvalid
+                }
+            }
+            var quantityInvalid: Bool {
+                get {
+                    switch quantityType {
+                    case .Discrete:
+                        return discrete <= 0
+                    case .Unit:
+                        return unitAmount <= 0 || unit.isEmpty
+                    }
+                }
+            }
             
             init(name: String = "", brand: String = "", quantityType: AmountType = .Discrete, discrete: Int = 1, unitAmount: Double = 1.0, unit: String = "", totalPrice: Int = 0, sale: Bool = false, salePrice: Int = 0) {
                 self.name = name
@@ -617,19 +783,6 @@ struct ExpenseEditView: View {
                     return .init(name: name, brand: brand, quantity: .Discrete(discrete), total: .Cents(totalPrice), discount: discount)
                 case .Unit:
                     return .init(name: name, brand: brand, quantity: .Unit(num: unitAmount, unit: unit), total: .Cents(totalPrice), discount: discount)
-                }
-            }
-            
-            func isInvalid() -> Bool {
-                name.isEmpty || isQuantityInvalid()
-            }
-            
-            func isQuantityInvalid() -> Bool {
-                switch quantityType {
-                case .Discrete:
-                    return discrete <= 0
-                case .Unit:
-                    return unitAmount <= 0 || unit.isEmpty
                 }
             }
         }
