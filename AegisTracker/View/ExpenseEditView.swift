@@ -8,6 +8,18 @@
 import SwiftData
 import SwiftUI
 
+private enum SheetType: String, Identifiable {
+    case Item
+    case Bill
+    case Recent
+    
+    var id: String {
+        get {
+            rawValue
+        }
+    }
+}
+
 struct ExpenseEditView: View {
     @Environment(\.modelContext) var modelContext
     @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
@@ -33,19 +45,17 @@ struct ExpenseEditView: View {
     @State private var category: String = ""
     @State private var notes: String = ""
     @State private var type: DetailType? = nil
+    @State private var sheetType: SheetType? = nil
     // Tip
     @State private var tip: Int = 0
     // Items
     @State private var items: [Expense.Item] = []
-    @State private var itemSheetShowing: Bool = false
     @State private var item: EditItemView.Item = .init()
     @State private var itemIndex: Int = -1
-    @State private var recentItemSheetShowing: Bool = false
     @State private var recentItemFilter: String = ""
     @State private var recentItemSearchShowing: Bool = false
     // Bill
     @State private var bills: [Expense.BillDetails.Bill] = []
-    @State private var billSheetShowing: Bool = false
     @State private var bill: EditBillView.Bill = .init()
     @State private var billIndex: Int = -1
     // Fuel
@@ -145,30 +155,31 @@ struct ExpenseEditView: View {
                         .disabled(payee.isEmpty || amount <= 0 || category.isEmpty)
                 }
             }
-            .sheet(isPresented: $itemSheetShowing) {
-                NavigationStack {
-                    itemSheetView(names: names, brands: brands)
-                }.presentationDetents([.medium])
-            }
-            .sheet(isPresented: $recentItemSheetShowing) {
-                NavigationStack {
-                    recentItemSheetView(recentItems: recentItems)
-                        .navigationTitle("Create New Item")
-                        .navigationBarTitleDisplayMode(.inline)
-                        .searchable(text: $recentItemFilter, isPresented: $recentItemSearchShowing)
-                        .toolbar {
-                            ToolbarItem(placement: .cancellationAction) {
-                                Button("Cancel") {
-                                    recentItemSheetShowing = false
+            .sheet(item: $sheetType) { sheet in
+                switch sheet {
+                case .Item:
+                    NavigationStack {
+                        itemSheetView(names: names, brands: brands)
+                    }.presentationDetents([.medium])
+                case .Bill:
+                    NavigationStack {
+                        billSheetView()
+                    }.presentationDetents([.medium])
+                case .Recent:
+                    NavigationStack {
+                        recentItemSheetView(recentItems: recentItems)
+                            .navigationTitle("Create New Item")
+                            .navigationBarTitleDisplayMode(.inline)
+                            .searchable(text: $recentItemFilter, isPresented: $recentItemSearchShowing)
+                            .toolbar {
+                                ToolbarItem(placement: .cancellationAction) {
+                                    Button("Cancel") {
+                                        sheetType = nil
+                                    }
                                 }
                             }
-                        }
-                }.presentationDetents([.large])
-            }
-            .sheet(isPresented: $billSheetShowing) {
-                NavigationStack {
-                    billSheetView()
-                }.presentationDetents([.medium])
+                    }.presentationDetents([.large])
+                }
             }
     }
     
@@ -303,8 +314,7 @@ struct ExpenseEditView: View {
             Button {
                 self.item = .fromExpenseItem(item)
                 itemIndex = items.firstIndex(of: item) ?? -1
-                recentItemSheetShowing = false
-                itemSheetShowing = true
+                sheetType = .Item
             } label: {
                 HStack {
                     ExpenseItemEntryView(item: item)
@@ -317,8 +327,7 @@ struct ExpenseEditView: View {
                     Button {
                         self.item = .fromExpenseItem(item)
                         itemIndex = items.firstIndex(of: item) ?? -1
-                        recentItemSheetShowing = false
-                        itemSheetShowing = true
+                        sheetType = .Item
                     } label: {
                         Label("Edit", systemImage: "pencil.circle")
                     }
@@ -334,8 +343,7 @@ struct ExpenseEditView: View {
         Button {
             item = .init()
             itemIndex = -1
-            recentItemSheetShowing = false
-            itemSheetShowing = true
+            sheetType = .Item
         } label: {
             HStack(spacing: 12) {
                 Image(systemName: "plus")
@@ -344,8 +352,7 @@ struct ExpenseEditView: View {
         }
         Button {
             recentItemFilter = ""
-            itemSheetShowing = false
-            recentItemSheetShowing = true
+            sheetType = .Recent
             recentItemSearchShowing = true
         } label: {
             HStack(spacing: 12) {
@@ -373,7 +380,7 @@ struct ExpenseEditView: View {
     }
     
     private func hideItemSheet() {
-        itemSheetShowing = false
+        sheetType = nil
     }
     
     private func saveItem() {
@@ -393,8 +400,7 @@ struct ExpenseEditView: View {
                     Button {
                         item = .fromExpenseItem(i)
                         itemIndex = -1
-                        recentItemSheetShowing = false
-                        itemSheetShowing = true
+                        sheetType = .Item
                     } label: {
                         ExpenseItemEntryView(item: i)
                             .contentShape(Rectangle())
@@ -404,8 +410,7 @@ struct ExpenseEditView: View {
                 Button {
                     item = .init(name: recentItemFilter)
                     itemIndex = -1
-                    recentItemSheetShowing = false
-                    itemSheetShowing = true
+                    sheetType = .Item
                 } label: {
                     Text(recentItemFilter.isEmpty ? "Create New Entry" : "Create New Entry: \(recentItemFilter)")
                 }
@@ -419,7 +424,7 @@ struct ExpenseEditView: View {
             Button {
                 self.bill = .fromExpenseBill(bill)
                 billIndex = bills.firstIndex(of: bill) ?? -1
-                billSheetShowing = true
+                sheetType = .Bill
             } label: {
                 HStack {
                     ExpenseBillEntryView(bill: bill)
@@ -432,7 +437,7 @@ struct ExpenseEditView: View {
                     Button {
                         self.bill = .fromExpenseBill(bill)
                         billIndex = bills.firstIndex(of: bill) ?? -1
-                        billSheetShowing = true
+                        sheetType = .Bill
                     } label: {
                         Label("Edit", systemImage: "pencil.circle")
                     }
@@ -448,7 +453,7 @@ struct ExpenseEditView: View {
         Button {
             bill = .init()
             billIndex = -1
-            billSheetShowing = true
+            sheetType = .Bill
         } label: {
             HStack(spacing: 12) {
                 Image(systemName: "plus")
@@ -475,7 +480,7 @@ struct ExpenseEditView: View {
     }
     
     private func hideBillSheet() {
-        billSheetShowing = false
+        sheetType = nil
     }
     
     private func saveBill() {
