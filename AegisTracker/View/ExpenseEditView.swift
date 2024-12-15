@@ -253,7 +253,23 @@ struct ExpenseEditView: View {
                         .padding(.leading, 4)
                 }.contentShape(Rectangle())
             }.buttonStyle(.plain)
-        }
+                .contextMenu {
+                    Button {
+                        self.item = .fromExpenseItem(item)
+                        itemIndex = items.firstIndex(of: item) ?? -1
+                        itemSheetShowing = true
+                    } label: {
+                        Label("Edit", systemImage: "pencil.circle")
+                    }
+                    Button(role: .destructive) {
+                        items.removeAll(where: { $0 == item })
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                }
+        }.onDelete(perform: { indexSet in
+            items.remove(atOffsets: indexSet)
+        })
         Button {
             item = .init()
             itemIndex = -1
@@ -311,7 +327,23 @@ struct ExpenseEditView: View {
                         .padding(.leading, 4)
                 }.contentShape(Rectangle())
             }.buttonStyle(.plain)
-        }
+                .contextMenu {
+                    Button {
+                        self.bill = .fromExpenseBill(bill)
+                        billIndex = bills.firstIndex(of: bill) ?? -1
+                        billSheetShowing = true
+                    } label: {
+                        Label("Edit", systemImage: "pencil.circle")
+                    }
+                    Button(role: .destructive) {
+                        bills.removeAll(where: { $0 == bill })
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                }
+        }.onDelete(perform: { indexSet in
+            bills.remove(atOffsets: indexSet)
+        })
         Button {
             bill = .init()
             billIndex = -1
