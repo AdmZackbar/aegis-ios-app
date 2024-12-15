@@ -301,6 +301,9 @@ struct ExpenseEditView: View {
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "trash")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 20, height: 20)
                         Text("Remove Additional Details")
                     }.bold()
                 }
@@ -346,8 +349,11 @@ struct ExpenseEditView: View {
             sheetType = .Item
         } label: {
             HStack(spacing: 12) {
-                Image(systemName: "plus")
-                Text("Add Item")
+                Image(systemName: "plus.circle")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 20, height: 20)
+                Text("New Item")
             }.bold()
         }
         Button {
@@ -356,8 +362,11 @@ struct ExpenseEditView: View {
             recentItemSearchShowing = true
         } label: {
             HStack(spacing: 12) {
-                Image(systemName: "plus.circle")
-                Text("Duplicate Other Item")
+                Image(systemName: "doc.on.doc")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 20, height: 20)
+                Text("Existing Item")
             }.bold()
         }
     }
@@ -456,7 +465,10 @@ struct ExpenseEditView: View {
             sheetType = .Bill
         } label: {
             HStack(spacing: 12) {
-                Image(systemName: "plus")
+                Image(systemName: "plus.circle")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 20, height: 20)
                 Text("Add Bill")
             }.bold()
         }
