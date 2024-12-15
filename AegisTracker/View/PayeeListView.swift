@@ -108,7 +108,7 @@ struct PayeeListView: View {
     @ViewBuilder
     private func payeeListView(payee: String, expenses: [Expense]) -> some View {
         Section(payee) {
-            ExpenseListView(path: $path, expenses: expenses.filter(isFiltered), omitted: [.Payee])
+            ExpenseListView(path: $path, expenses: expenses.filter({ isFiltered($0) }), omitted: [.Payee])
         }
     }
     
@@ -117,10 +117,8 @@ struct PayeeListView: View {
     }
 }
 
-#Preview {
-    let container = createTestModelContainer()
-    addTestExpenses(container.mainContext)
-    return NavigationStack {
+#Preview(traits: .modifier(MockDataPreviewModifier())) {
+    NavigationStack {
         PayeeListView(path: .constant([]))
-    }.modelContainer(container)
+    }
 }

@@ -125,8 +125,6 @@ enum ViewType: Hashable {
     case EditExpense(expense: Expense)
 }
 
-#Preview {
-    let container = createTestModelContainer()
-    addTestExpenses(container.mainContext)
-    return MainView().modelContainer(container)
+#Preview(traits: .modifier(MockDataPreviewModifier())) {
+    MainView()
 }

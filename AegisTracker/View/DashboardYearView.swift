@@ -172,10 +172,8 @@ struct DashboardYearView: View {
     }
 }
 
-#Preview {
-    let container = createTestModelContainer()
-    addTestExpenses(container.mainContext)
-    return NavigationStack {
+#Preview(traits: .modifier(MockDataPreviewModifier())) {
+    NavigationStack {
         DashboardYearView(path: .constant([]))
-    }.modelContainer(container)
+    }
 }

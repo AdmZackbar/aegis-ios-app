@@ -74,7 +74,10 @@ struct ExpenseEditView: View {
         let brands = Set(expenses.map(getItemBrands).flatMap({ $0 })).sorted()
         let recentItems: [Expense.Item] = {
             var map: [String : Expense.Item] = [:]
-            expenses.map(getItems).flatMap({ $0 }).filter(isItemFiltered).forEach({ item in
+            expenses.map(getItems)
+                .flatMap({ $0 })
+                .filter({ isItemFiltered($0) })
+                .forEach({ item in
                 if map[item.name] == nil {
                     map[item.name] = item
                 }
@@ -914,14 +917,12 @@ struct ExpenseEditView: View {
     }
 }
 
-#Preview {
-    let container = createTestModelContainer()
-    addTestExpenses(container.mainContext)
-    return NavigationStack {
+#Preview(traits: .modifier(MockDataPreviewModifier())) {
+    NavigationStack {
         ExpenseEditView(path: .constant([]), expense: .init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Test run", details: .Items(list: .init(items: [
             .init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541)),
             .init(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300)),
             .init(name: "Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
         ]))))
-    }.modelContainer(container)
+    }
 }

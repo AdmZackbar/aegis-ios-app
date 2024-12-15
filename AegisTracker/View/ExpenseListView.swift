@@ -90,13 +90,10 @@ struct ExpenseListView: View {
     }
 }
 
-#Preview {
-    let container = createTestModelContainer()
-    addTestExpenses(container.mainContext)
-    let expenses = try! container.mainContext.fetch(FetchDescriptor<Expense>())
-    return NavigationStack {
+#Preview(traits: .modifier(MockDataPreviewModifier())) {
+    NavigationStack {
         Form {
-            ExpenseListView(path: .constant([]), expenses: expenses, omitted: [])
+            ExpenseListView(path: .constant([]), expenses: [], omitted: [])
         }
-    }.modelContainer(container)
+    }
 }

@@ -25,7 +25,7 @@ struct MonthListView: View {
     var body: some View {
         let map: [Date : [Expense]] = {
             var map: [Date : [Expense]] = [:]
-            expenses.filter(validExpense)
+            expenses.filter({ isValid($0) })
                 .sorted(by: { $0.category < $1.category })
                 .sorted(by: { $0.date > $1.date })
                 .forEach({ map[Calendar.current.startOfDay(for: $0.date), default: []].append($0) })
@@ -55,19 +55,17 @@ struct MonthListView: View {
             }
     }
     
-    private func validExpense(expense: Expense) -> Bool {
+    private func isValid(_ expense: Expense) -> Bool {
         let m = Calendar.current.component(.month, from: expense.date)
         let y = Calendar.current.component(.year, from: expense.date)
         return self.month == m && self.year == y
     }
 }
 
-#Preview {
-    let container = createTestModelContainer()
-    addTestExpenses(container.mainContext)
+#Preview(traits: .modifier(MockDataPreviewModifier())) {
     let m = Calendar.current.component(.month, from: .now)
     let y = Calendar.current.component(.year, from: .now)
     return NavigationStack {
         MonthListView(path: .constant([]), month: m, year: y)
-    }.modelContainer(container)
+    }
 }

@@ -167,14 +167,12 @@ struct ExpenseView: View {
     }
 }
 
-#Preview {
-    let container = createTestModelContainer()
-    addTestExpenses(container.mainContext)
-    return NavigationStack {
+#Preview(traits: .modifier(MockDataPreviewModifier())) {
+    NavigationStack {
         ExpenseView(path: .constant([]), expense: .init(date: .now, payee: "Publix", amount: .Cents(34189), category: "Groceries", notes: "November grocery run", details: .Items(list: .init(items: [
             .init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541)),
             .init(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300)),
             .init(name: "Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
         ]))))
-    }.modelContainer(container)
+    }
 }

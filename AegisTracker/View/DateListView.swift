@@ -123,10 +123,8 @@ struct DateListView: View {
     }
 }
 
-#Preview {
-    let container = createTestModelContainer()
-    addTestExpenses(container.mainContext)
-    return NavigationStack {
+#Preview(traits: .modifier(MockDataPreviewModifier())) {
+    NavigationStack {
         DateListView(path: .constant([]))
-    }.modelContainer(container)
+    }
 }
