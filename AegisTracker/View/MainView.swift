@@ -110,7 +110,11 @@ struct MainView: View {
         case .month(let year, let month):
             MonthListView(month: month, year: year)
         case .payee(let name):
-            PayeeListView(selectedPayee: name)
+            if let name {
+                ExpensePayeeView(payee: name)
+            } else {
+                ExpensePayeeListView()
+            }
         case .expense(let expense):
             ExpenseView(expense: expense)
         }
