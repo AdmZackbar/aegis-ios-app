@@ -154,7 +154,6 @@
 				E85AE3CE2D0808BE00CA9D0C /* AegisTracker.entitlements */,
 				E8EB2A662CE063A7000E4B67 /* AegisTrackerApp.swift */,
 				E881646A2D0F90D4005C572E /* NavigationStore.swift */,
-				E88164682D0F5D86005C572E /* MockDataPreview.swift */,
 				E8EB2A922CE06478000E4B67 /* Model */,
 				E8EB2A972CE10630000E4B67 /* View */,
 				E88769992CFA4CE300D989E1 /* UI */,
@@ -167,6 +166,7 @@
 		E8EB2A6E2CE063A9000E4B67 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
+				E88164682D0F5D86005C572E /* MockDataPreview.swift */,
 				E8EB2A6F2CE063A9000E4B67 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
