@@ -25,7 +25,9 @@ struct ExpenseEntryView: View {
             }
             switch expense.details {
             case .none:
-                Text(getSubtitle() ?? "").font(.subheadline).italic()
+                if let subtitle = getSubtitle() {
+                    Text(subtitle).font(.subheadline).italic()
+                }
             case .Items(let list):
                 itemListView(list)
             case .Fuel(let details):
@@ -48,23 +50,34 @@ struct ExpenseEntryView: View {
                     Text(details.user).font(.caption)
                 }
             case .Tip(let tip):
-                HStack(alignment: .top) {
-                    Text(getSubtitle() ?? "")
-                    Spacer()
-                    if tip.toUsd() > 0 {
-                        Text("\(tip.toString()) tip").multilineTextAlignment(.trailing)
-                    }
-                }.font(.subheadline).italic()
+                let subtitle = getSubtitle()
+                let tipText = tip.toUsd() > 0 ? "\(tip.toString()) tip" : nil
+                if subtitle != nil || tipText != nil {
+                    HStack(alignment: .top) {
+                        Text(subtitle ?? "")
+                        Spacer()
+                        if tip.toUsd() > 0 {
+                            Text(tipText ?? "").multilineTextAlignment(.trailing)
+                        }
+                    }.font(.subheadline).italic()
+                }
             case .Bill(let details):
-                HStack(alignment: .top) {
-                    Text(getSubtitle() ?? "")
-                    Spacer()
-                    if details.bills.count > 1 {
-                        Text("\(details.bills.count) bills").multilineTextAlignment(.trailing)
-                    } else if !details.bills.isEmpty {
-                        Text(details.bills[0].getName()).multilineTextAlignment(.trailing)
+                let subtitle = getSubtitle()
+                let billDetails: String? = {
+                    if details.bills.count == 1 {
+                        return details.bills[0].getName()
+                    } else if details.bills.isEmpty {
+                        return "\(details.bills.count) bills"
                     }
-                }.font(.subheadline).italic()
+                    return nil
+                }()
+                if subtitle != nil || billDetails != nil {
+                    HStack(alignment: .top) {
+                        Text(subtitle ?? "")
+                        Spacer()
+                        Text(billDetails ?? "").multilineTextAlignment(.trailing)
+                    }.font(.subheadline).italic()
+                }
             }
             componentText(.Notes).font(.caption)
         }
@@ -89,17 +102,13 @@ struct ExpenseEntryView: View {
                 .font(.caption).italic()
         } else {
             let leftText = subtitle ?? itemText ?? nil
-            HStack(alignment: .top) {
-                if let leftText {
-                    Text(leftText)
-                }
-                Spacer()
-                if let discount {
-                    Text(discount)
-                        .strikethrough()
-                        .multilineTextAlignment(.trailing)
-                }
-            }.font(.subheadline).italic()
+            if leftText != nil || discount != nil {
+                HStack(alignment: .top) {
+                    Text(leftText ?? "")
+                    Spacer()
+                    Text(discount ?? "").strikethrough() .multilineTextAlignment(.trailing)
+                }.font(.subheadline).italic()
+            }
         }
     }
     
@@ -149,9 +158,9 @@ struct ExpenseEntryView: View {
             if let category, let payee {
                 return "\(payee) \(category)"
             }
-            return category ?? payee ?? ""
+            return category ?? payee
         }
-        return payee ?? ""
+        return payee
     }
     
     private func get(_ component: Component) -> String? {
@@ -277,6 +286,9 @@ struct ExpenseBillEntryView: View {
         ExpenseEntryView(expense: .init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Just another run", details: .Items(list: .init(items: [
             chicken, hotChoc, chunks
         ]))))
+        ExpenseEntryView(expense: .init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Just another run", details: .Items(list: .init(items: [
+            chicken, chunks
+        ]))), omitted: [.Payee, .Category])
         ExpenseEntryView(expense: .init(date: Date(), payee: "Greasy Hands", amount: .Cents(4510), category: "Haircut", notes: "With Ryle - Middle Part", details: .Tip(amount: .Cents(1000))))
         ExpenseEntryView(expense: .init(date: Date(), payee: "Valve", amount: .Cents(499), category: "Video Games", notes: ""), omitted: [.Date])
         ExpenseItemEntryView(item: chicken)

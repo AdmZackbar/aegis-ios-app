@@ -94,7 +94,7 @@ struct ExpensePayeeView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        navigationStore.push(RecordType.addExpense)
+                        navigationStore.push(RecordType.addExpense(initial: .init(date: .now, payee: payee, amount: .Cents(0), category: "", notes: "")))
                     } label: {
                         Label("Add", systemImage: "plus")
                     }

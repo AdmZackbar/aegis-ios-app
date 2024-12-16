@@ -53,7 +53,7 @@ struct MainView: View {
                 }
                 Section("Expenses") {
                     Button {
-                        navigationStore.path.append(RecordType.addExpense)
+                        navigationStore.path.append(RecordType.addExpense())
                     } label: {
                         button("Add Expense", icon: "text.badge.plus")
                     }.buttonStyle(.plain)
@@ -129,10 +129,10 @@ struct MainView: View {
     @ViewBuilder
     static func computeDestination(type: RecordType) -> some View {
         switch type {
-        case .addExpense:
-            ExpenseEditView()
+        case .addExpense(let initial):
+            ExpenseEditView(expense: initial, mode: .Add)
         case .editExpense(let expense):
-            ExpenseEditView(expense: expense)
+            ExpenseEditView(expense: expense, mode: .Edit)
         }
     }
 }
@@ -147,7 +147,7 @@ enum ViewType: Hashable {
 }
 
 enum RecordType: Hashable {
-    case addExpense
+    case addExpense(initial: Expense? = nil)
     case editExpense(expense: Expense)
 }
 

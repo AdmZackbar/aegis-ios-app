@@ -60,9 +60,9 @@ struct ExpenseEditView: View {
     // Fuel
     @State private var fuel: Expense.FuelDetails = .init(amount: 0.0, rate: 0.0, user: "")
     
-    init(expense: Expense? = nil) {
+    init(expense: Expense? = nil, mode: Mode? = nil) {
         self.expense = expense ?? Expense(date: Date(), payee: "", amount: .Cents(0), category: "", notes: "", details: nil)
-        mode = expense == nil ? .Add : .Edit
+        self.mode = mode ?? (expense == nil ? .Add : .Edit)
     }
     
     var body: some View {
@@ -146,7 +146,7 @@ struct ExpenseEditView: View {
         }.navigationTitle(mode.getTitle())
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden()
-            .onAppear(perform: tryLoad)
+            .onAppear(perform: load)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Back", action: back)
@@ -535,29 +535,27 @@ struct ExpenseEditView: View {
         }
     }
     
-    private func tryLoad() {
-        if mode == .Edit {
-            date = expense.date
-            payee = expense.payee
-            amount = expense.amount.toCents()
-            category = expense.category
-            notes = expense.notes
-            switch expense.details {
-            case .Tip(let amount):
-                type = .Tip
-                tip = amount.toCents()
-            case .Items(let list):
-                type = .Items
-                items = list.items
-            case .Bill(let details):
-                type = .Bill
-                bills = details.bills
-            case .Fuel(let details):
-                type = .Fuel
-                fuel = details
-            default:
-                type = nil
-            }
+    private func load() {
+        date = expense.date
+        payee = expense.payee
+        amount = expense.amount.toCents()
+        category = expense.category
+        notes = expense.notes
+        switch expense.details {
+        case .Tip(let amount):
+            type = .Tip
+            tip = amount.toCents()
+        case .Items(let list):
+            type = .Items
+            items = list.items
+        case .Bill(let details):
+            type = .Bill
+            bills = details.bills
+        case .Fuel(let details):
+            type = .Fuel
+            fuel = details
+        default:
+            type = nil
         }
     }
     

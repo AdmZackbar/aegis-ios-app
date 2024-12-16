@@ -45,7 +45,7 @@ struct MonthListView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        navigationStore.path.append(RecordType.addExpense)
+                        navigationStore.path.append(RecordType.addExpense())
                     } label: {
                         Label("Add", systemImage: "plus")
                     }
