@@ -14,21 +14,25 @@ struct ExpenseListView: View {
     
     private let expenses: [Expense]
     private let omitted: [ExpenseEntryView.Component]
+    private let allowSwipeActions: Bool
     
     @State private var deleteShowing: Bool = false
     @State private var deleteItem: Expense? = nil
     
-    init(expenses: [Expense], omitted: [ExpenseEntryView.Component] = []) {
+    init(expenses: [Expense], omitted: [ExpenseEntryView.Component] = [], allowSwipeActions: Bool = true) {
         self.expenses = expenses
         self.omitted = omitted
+        self.allowSwipeActions = allowSwipeActions
     }
     
     var body: some View {
         ForEach(expenses, id: \.hashValue) { expense in
             expenseEntry(expense)
                 .swipeActions {
-                    deleteButton(expense)
-                    editButton(expense)
+                    if allowSwipeActions {
+                        deleteButton(expense)
+                        editButton(expense)
+                    }
                 }
                 .contextMenu {
                     if !omitted.contains(.Category) {
