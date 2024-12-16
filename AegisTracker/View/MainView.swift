@@ -107,7 +107,11 @@ struct MainView: View {
         case .dashboard:
             DashboardYearView()
         case .category(let name):
-            CategoryListView(selectedCategory: name)
+            if let name {
+                ExpenseCategoryView(category: name)
+            } else {
+                ExpenseCategoryListView()
+            }
         case .date:
             DateListView()
         case .month(let year, let month):

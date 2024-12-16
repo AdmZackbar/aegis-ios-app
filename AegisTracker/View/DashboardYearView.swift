@@ -39,7 +39,7 @@ struct DashboardYearView: View {
                         }.padding()
                             .background(.secondary.opacity(0.1))
                             .clipShape(RoundedRectangle(cornerRadius: 8))
-                        categoryChart(year: year, expenses: monthMap.values.flatMap { $0 })
+                        categoryChart(monthMap.values.flatMap { $0 })
                             .frame(height: 140)
                             .padding()
                             .background(.secondary.opacity(0.1))
@@ -85,7 +85,7 @@ struct DashboardYearView: View {
     }
     
     @ViewBuilder
-    private func categoryChart(year: Int, expenses: [Expense]) -> some View {
+    private func categoryChart(_ expenses: [Expense]) -> some View {
         let categoryMap: [String : String] = {
             var map: [String : String] = [:]
             MainView.ExpenseCategories.forEach({ header, categories in categories.forEach({ category in map[category] = header }) })

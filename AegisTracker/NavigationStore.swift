@@ -28,4 +28,19 @@ final class NavigationStore: ObservableObject {
             path = NavigationPath()
         }
     }
+    
+    func push(_ value: any Hashable) {
+        path.append(value)
+    }
+    
+    func pop() {
+        if !path.isEmpty {
+            path.removeLast()
+        }
+    }
+    
+    func replace(_ value: any Hashable) {
+        pop()
+        push(value)
+    }
 }

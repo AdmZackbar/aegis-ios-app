@@ -31,11 +31,21 @@ struct ExpenseListView: View {
                     editButton(expense)
                 }
                 .contextMenu {
-                    Button {
-                        navigationStore.path.append(ViewType.category(name: expense.category))
-                    } label: {
-                        Label("View '\(expense.category)'", systemImage: "magnifyingglass")
+                    if !omitted.contains(.Category) {
+                        Button {
+                            navigationStore.path.append(ViewType.category(name: expense.category))
+                        } label: {
+                            Label("View '\(expense.category)'", systemImage: "tag")
+                        }
                     }
+                    if !omitted.contains(.Payee) {
+                        Button {
+                            navigationStore.path.append(ViewType.payee(name: expense.payee))
+                        } label: {
+                            Label("View '\(expense.payee)'", systemImage: "person")
+                        }
+                    }
+                    Divider()
                     editButton(expense)
                     duplicateButton(expense)
                     deleteButton(expense)
