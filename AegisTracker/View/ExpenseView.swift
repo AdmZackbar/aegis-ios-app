@@ -10,15 +10,14 @@ import SwiftUI
 
 struct ExpenseView: View {
     @Environment(\.modelContext) var modelContext
+    @EnvironmentObject private var navigationStore: NavigationStore
     @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
     
     let expense: Expense
-    
-    @Binding private var path: [ViewType]
+   
     @State private var showDelete: Bool = false
     
-    init(path: Binding<[ViewType]>, expense: Expense) {
-        self._path = path
+    init(expense: Expense) {
         self.expense = expense
     }
     
@@ -124,7 +123,7 @@ struct ExpenseView: View {
         Section("\(expense.payee) \(expense.category)") {
             ForEach(expenses, id: \.hashValue) { e in
                 Button {
-                    path.append(.ViewExpense(expense: e))
+                    navigationStore.path.append(ViewType.expense(expense: e))
                 } label: {
                     ExpenseEntryView(expense: e, omitted: [.Category, .Payee])
                         .contentShape(Rectangle())
@@ -138,7 +137,7 @@ struct ExpenseView: View {
         Grid {
             GridRow {
                 Button {
-                    path.append(.EditExpense(expense: expense))
+                    navigationStore.path.append(RecordType.editExpense(expense: expense))
                 } label: {
                     Label("Edit", systemImage: "pencil.circle")
                         .bold()
@@ -161,18 +160,21 @@ struct ExpenseView: View {
     
     private func delete() {
         modelContext.delete(expense)
-        if !path.isEmpty {
-            path.removeLast()
+        if !navigationStore.path.isEmpty {
+            navigationStore.path.removeLast()
         }
     }
 }
 
 #Preview(traits: .modifier(MockDataPreviewModifier())) {
-    NavigationStack {
-        ExpenseView(path: .constant([]), expense: .init(date: .now, payee: "Publix", amount: .Cents(34189), category: "Groceries", notes: "November grocery run", details: .Items(list: .init(items: [
+    @Previewable @StateObject var navigationStore = NavigationStore()
+    return NavigationStack(path: $navigationStore.path) {
+        ExpenseView(expense: .init(date: .now, payee: "Publix", amount: .Cents(34189), category: "Groceries", notes: "November grocery run", details: .Items(list: .init(items: [
             .init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541)),
             .init(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300)),
             .init(name: "Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
         ]))))
-    }
+        .navigationDestination(for: ViewType.self, destination: MainView.computeDestination)
+        .navigationDestination(for: RecordType.self, destination: MainView.computeDestination)
+    }.environmentObject(navigationStore)
 }

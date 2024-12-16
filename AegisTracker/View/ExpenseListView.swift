@@ -10,16 +10,15 @@ import SwiftUI
 
 struct ExpenseListView: View {
     @Environment(\.modelContext) var modelContext
+    @EnvironmentObject private var navigationStore: NavigationStore
     
     private let expenses: [Expense]
     private let omitted: [ExpenseEntryView.Component]
     
-    @Binding private var path: [ViewType]
     @State private var deleteShowing: Bool = false
     @State private var deleteItem: Expense? = nil
     
-    init(path: Binding<[ViewType]>, expenses: [Expense], omitted: [ExpenseEntryView.Component] = []) {
-        self._path = path
+    init(expenses: [Expense], omitted: [ExpenseEntryView.Component] = []) {
         self.expenses = expenses
         self.omitted = omitted
     }
@@ -33,7 +32,7 @@ struct ExpenseListView: View {
                 }
                 .contextMenu {
                     Button {
-                        path.append(.ListByCategory(category: expense.category))
+                        navigationStore.path.append(ViewType.category(name: expense.category))
                     } label: {
                         Label("View '\(expense.category)'", systemImage: "magnifyingglass")
                     }
@@ -54,7 +53,7 @@ struct ExpenseListView: View {
     
     private func editButton(_ expense: Expense) -> some View {
         Button {
-            path.append(.EditExpense(expense: expense))
+            navigationStore.path.append(RecordType.editExpense(expense: expense))
         } label: {
             Label("Edit", systemImage: "pencil.circle").tint(.blue)
         }
@@ -64,7 +63,7 @@ struct ExpenseListView: View {
         Button {
             let duplicate = Expense(date: expense.date, payee: expense.payee, amount: expense.amount, category: expense.category, notes: expense.notes, details: expense.details)
             modelContext.insert(duplicate)
-            path.append(.EditExpense(expense: duplicate))
+            navigationStore.path.append(RecordType.editExpense(expense: duplicate))
         } label: {
             Label("Duplicate", systemImage: "plus.square.on.square")
         }
@@ -82,7 +81,7 @@ struct ExpenseListView: View {
     @ViewBuilder
     private func expenseEntry(_ expense: Expense) -> some View {
         Button {
-            path.append(.ViewExpense(expense: expense))
+            navigationStore.path.append(ViewType.expense(expense: expense))
         } label: {
             ExpenseEntryView(expense: expense, omitted: omitted)
                 .contentShape(Rectangle())
@@ -91,9 +90,16 @@ struct ExpenseListView: View {
 }
 
 #Preview(traits: .modifier(MockDataPreviewModifier())) {
-    NavigationStack {
+    @Previewable @StateObject var navigationStore = NavigationStore()
+    return NavigationStack(path: $navigationStore.path) {
         Form {
-            ExpenseListView(path: .constant([]), expenses: [], omitted: [])
+            ExpenseListView(expenses: [.init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Test run", details: .Items(list: .init(items: [
+                .init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541)),
+                .init(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300)),
+                .init(name: "Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
+            ])))], omitted: [])
         }
-    }
+        .navigationDestination(for: ViewType.self, destination: MainView.computeDestination)
+        .navigationDestination(for: RecordType.self, destination: MainView.computeDestination)
+    }.environmentObject(navigationStore)
 }

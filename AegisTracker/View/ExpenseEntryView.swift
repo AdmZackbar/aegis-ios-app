@@ -27,35 +27,7 @@ struct ExpenseEntryView: View {
             case .none:
                 componentText(.Payee).font(.subheadline).italic()
             case .Items(let list):
-                let itemText = itemsText(list)
-                let payee = get(.Payee)
-                let discount = computeDiscount()
-                if let payee, let itemText {
-                    HStack(alignment: .top) {
-                        Text(payee)
-                        Spacer()
-                        if let discount {
-                            Text(discount)
-                                .strikethrough()
-                                .multilineTextAlignment(.trailing)
-                        }
-                    }.font(.subheadline).italic()
-                    Text(itemText)
-                        .font(.caption).italic()
-                } else {
-                    let leftText = payee ?? itemText ?? nil
-                    HStack(alignment: .top) {
-                        if let leftText {
-                            Text(leftText)
-                        }
-                        Spacer()
-                        if let discount {
-                            Text(discount)
-                                .strikethrough()
-                                .multilineTextAlignment(.trailing)
-                        }
-                    }.font(.subheadline).italic()
-                }
+                itemListView(list)
             case .Fuel(let details):
                 let amount = details.amount.formatted(.number.precision(.fractionLength(0...1)))
                 let rate = details.rate.formatted(.currency(code: "USD"))
@@ -95,6 +67,39 @@ struct ExpenseEntryView: View {
                 }.font(.subheadline).italic()
             }
             componentText(.Notes).font(.caption)
+        }
+    }
+    
+    @ViewBuilder
+    private func itemListView(_ list: Expense.ItemList) -> some View {
+        let itemText = itemsText(list)
+        let payee = get(.Payee)
+        let discount = computeDiscount()
+        if let payee, let itemText {
+            HStack(alignment: .top) {
+                Text(payee)
+                Spacer()
+                if let discount {
+                    Text(discount)
+                        .strikethrough()
+                        .multilineTextAlignment(.trailing)
+                }
+            }.font(.subheadline).italic()
+            Text(itemText)
+                .font(.caption).italic()
+        } else {
+            let leftText = payee ?? itemText ?? nil
+            HStack(alignment: .top) {
+                if let leftText {
+                    Text(leftText)
+                }
+                Spacer()
+                if let discount {
+                    Text(discount)
+                        .strikethrough()
+                        .multilineTextAlignment(.trailing)
+                }
+            }.font(.subheadline).italic()
         }
     }
     

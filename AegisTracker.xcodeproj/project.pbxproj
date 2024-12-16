@@ -12,6 +12,7 @@
 		E86CB3412D0D1CE100DE38FF /* ExpenseEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86CB3402D0D1CE100DE38FF /* ExpenseEntryView.swift */; };
 		E86CB3432D0E1E9000DE38FF /* PayeeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86CB3422D0E1E9000DE38FF /* PayeeListView.swift */; };
 		E88164692D0F5D95005C572E /* MockDataPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88164682D0F5D86005C572E /* MockDataPreview.swift */; };
+		E881646B2D0F90D4005C572E /* NavigationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E881646A2D0F90D4005C572E /* NavigationStore.swift */; };
 		E88769772CE3FF4600D989E1 /* Expense.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769762CE3FF4600D989E1 /* Expense.swift */; };
 		E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769782CE3FF7400D989E1 /* Revenue.swift */; };
 		E887697D2CE4672F00D989E1 /* DateListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887697C2CE4672F00D989E1 /* DateListView.swift */; };
@@ -57,6 +58,7 @@
 		E86CB3402D0D1CE100DE38FF /* ExpenseEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseEntryView.swift; sourceTree = "<group>"; };
 		E86CB3422D0E1E9000DE38FF /* PayeeListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayeeListView.swift; sourceTree = "<group>"; };
 		E88164682D0F5D86005C572E /* MockDataPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDataPreview.swift; sourceTree = "<group>"; };
+		E881646A2D0F90D4005C572E /* NavigationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationStore.swift; sourceTree = "<group>"; };
 		E88769762CE3FF4600D989E1 /* Expense.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Expense.swift; sourceTree = "<group>"; };
 		E88769782CE3FF7400D989E1 /* Revenue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Revenue.swift; sourceTree = "<group>"; };
 		E887697C2CE4672F00D989E1 /* DateListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateListView.swift; sourceTree = "<group>"; };
@@ -151,6 +153,7 @@
 				E85AE3CF2D0808DE00CA9D0C /* Info.plist */,
 				E85AE3CE2D0808BE00CA9D0C /* AegisTracker.entitlements */,
 				E8EB2A662CE063A7000E4B67 /* AegisTrackerApp.swift */,
+				E881646A2D0F90D4005C572E /* NavigationStore.swift */,
 				E88164682D0F5D86005C572E /* MockDataPreview.swift */,
 				E8EB2A922CE06478000E4B67 /* Model */,
 				E8EB2A972CE10630000E4B67 /* View */,
@@ -349,6 +352,7 @@
 				E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */,
 				E887698E2CEE684700D989E1 /* MonthListView.swift in Sources */,
 				E8EB2A672CE063A7000E4B67 /* AegisTrackerApp.swift in Sources */,
+				E881646B2D0F90D4005C572E /* NavigationStore.swift in Sources */,
 				E88769902CEFC21B00D989E1 /* DashboardYearView.swift in Sources */,
 				E887697D2CE4672F00D989E1 /* DateListView.swift in Sources */,
 				E88769862CE91E5800D989E1 /* ExpenseListView.swift in Sources */,

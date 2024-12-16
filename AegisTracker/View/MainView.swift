@@ -36,14 +36,17 @@ struct MainView: View {
         "Other": Color.gray
     ]
     
-    @State private var path: [ViewType] = []
+    @StateObject private var navigationStore = NavigationStore()
+    
+    @SceneStorage("navigation")
+    private var navigationData: Data?
     
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack(path: $navigationStore.path) {
             List {
                 Section("View") {
                     Button {
-                        path.append(.Dashboard)
+                        navigationStore.path.append(ViewType.dashboard)
                     } label: {
                         HStack {
                             Label("Dashboard", systemImage: "house")
@@ -51,7 +54,7 @@ struct MainView: View {
                         }.frame(height: 36).contentShape(Rectangle())
                     }.buttonStyle(.plain)
                     Button {
-                        path.append(.ListByCategory())
+                        navigationStore.path.append(ViewType.category())
                     } label: {
                         HStack {
                             Label("List By Category", systemImage: "folder")
@@ -59,7 +62,7 @@ struct MainView: View {
                         }.frame(height: 36).contentShape(Rectangle())
                     }.buttonStyle(.plain)
                     Button {
-                        path.append(.ListByDate)
+                        navigationStore.path.append(ViewType.date)
                     } label: {
                         HStack {
                             Label("List By Date", systemImage: "calendar")
@@ -67,7 +70,7 @@ struct MainView: View {
                         }.frame(height: 36).contentShape(Rectangle())
                     }.buttonStyle(.plain)
                     Button {
-                        path.append(.ListByPayee())
+                        navigationStore.path.append(ViewType.payee())
                     } label: {
                         HStack {
                             Label("List By Payee", systemImage: "person")
@@ -77,7 +80,7 @@ struct MainView: View {
                 }
                 Section("Record") {
                     Button {
-                        path.append(.AddExpense)
+                        navigationStore.path.append(RecordType.addExpense)
                     } label: {
                         HStack {
                             Label("Add Expense", systemImage: "cart.badge.plus")
@@ -87,42 +90,64 @@ struct MainView: View {
                 }
             }.navigationTitle("Aegis")
                 .navigationBarTitleDisplayMode(.inline)
-                .navigationDestination(for: ViewType.self, destination: computeDestination)
+                .navigationDestination(for: ViewType.self, destination: Self.computeDestination)
+                .navigationDestination(for: RecordType.self, destination: Self.computeDestination)
+        }.environmentObject(navigationStore)
+    }
+    
+    @ViewBuilder
+    static func computeDestination(type: ViewType, navigationStore: NavigationStore) -> some View {
+        Self.computeDestination(type: type)
+            .environmentObject(navigationStore)
+    }
+    
+    @ViewBuilder
+    static func computeDestination(type: ViewType) -> some View {
+        switch type {
+        case .dashboard:
+            DashboardYearView()
+        case .category(let name):
+            CategoryListView(selectedCategory: name)
+        case .date:
+            DateListView()
+        case .month(let year, let month):
+            MonthListView(month: month, year: year)
+        case .payee(let name):
+            PayeeListView(selectedPayee: name)
+        case .expense(let expense):
+            ExpenseView(expense: expense)
         }
     }
     
     @ViewBuilder
-    private func computeDestination(viewType: ViewType) -> some View {
-        switch viewType {
-        case .Dashboard:
-            DashboardYearView(path: $path)
-        case .ListByCategory(let category):
-            CategoryListView(path: $path, selectedCategory: category)
-        case .ListByDate:
-            DateListView(path: $path)
-        case .ListByMonth(let month, let year):
-            MonthListView(path: $path, month: month, year: year)
-        case .ListByPayee(let payee):
-            PayeeListView(path: $path, selectedPayee: payee)
-        case .ViewExpense(let expense):
-            ExpenseView(path: $path, expense: expense)
-        case .AddExpense:
-            ExpenseEditView(path: $path)
-        case .EditExpense(let expense):
-            ExpenseEditView(path: $path, expense: expense)
+    static func computeDestination(type: RecordType, navigationStore: NavigationStore) -> some View {
+        Self.computeDestination(type: type)
+            .environmentObject(navigationStore)
+    }
+    
+    @ViewBuilder
+    static func computeDestination(type: RecordType) -> some View {
+        switch type {
+        case .addExpense:
+            ExpenseEditView()
+        case .editExpense(let expense):
+            ExpenseEditView(expense: expense)
         }
     }
 }
 
 enum ViewType: Hashable {
-    case Dashboard
-    case ListByCategory(category: String? = nil)
-    case ListByDate
-    case ListByMonth(month: Int, year: Int)
-    case ListByPayee(payee: String? = nil)
-    case ViewExpense(expense: Expense)
-    case AddExpense
-    case EditExpense(expense: Expense)
+    case dashboard
+    case category(name: String? = nil)
+    case date
+    case month(year: Int, month: Int)
+    case payee(name: String? = nil)
+    case expense(expense: Expense)
+}
+
+enum RecordType: Hashable {
+    case addExpense
+    case editExpense(expense: Expense)
 }
 
 #Preview(traits: .modifier(MockDataPreviewModifier())) {

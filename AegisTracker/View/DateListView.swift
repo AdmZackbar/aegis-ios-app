@@ -11,13 +11,8 @@ import SwiftUI
 
 struct DateListView: View {
     @Environment(\.modelContext) var modelContext
+    @EnvironmentObject private var navigationStore: NavigationStore
     @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
-    
-    @Binding private var path: [ViewType]
-    
-    init(path: Binding<[ViewType]>) {
-        self._path = path
-    }
     
     var body: some View {
         let map: [Int : [Int : [Expense]]] = {
@@ -34,7 +29,7 @@ struct DateListView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        path.append(.AddExpense)
+                        navigationStore.path.append(RecordType.addExpense)
                     } label: {
                         Label("Add", systemImage: "plus")
                     }
@@ -55,7 +50,7 @@ struct DateListView: View {
     private func monthButton(month: Int, expenses: [Expense], year: Int) -> some View {
         let m = DateFormatter().monthSymbols[month - 1]
         Button {
-            path.append(.ListByMonth(month: month, year: year))
+            navigationStore.path.append(ViewType.month(year: year, month: month))
         } label: {
             VStack(alignment: .leading, spacing: 4) {
                 Text(m).font(.headline)
@@ -69,7 +64,7 @@ struct DateListView: View {
         }.buttonStyle(.plain)
             .contextMenu {
                 Button("View") {
-                    path.append(.ListByMonth(month: month, year: year))
+                    navigationStore.path.append(ViewType.month(year: year, month: month))
                 }
             } preview: {
                 monthPreview(month: month, expenses: expenses, year: year)
@@ -124,7 +119,10 @@ struct DateListView: View {
 }
 
 #Preview(traits: .modifier(MockDataPreviewModifier())) {
-    NavigationStack {
-        DateListView(path: .constant([]))
-    }
+    @Previewable @StateObject var navigationStore = NavigationStore()
+    return NavigationStack(path: $navigationStore.path) {
+        DateListView()
+            .navigationDestination(for: ViewType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: RecordType.self, destination: MainView.computeDestination)
+    }.environmentObject(navigationStore)
 }

@@ -22,6 +22,7 @@ private enum SheetType: String, Identifiable {
 
 struct ExpenseEditView: View {
     @Environment(\.modelContext) var modelContext
+    @EnvironmentObject private var navigationStore: NavigationStore
     @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
     
     static let BillNames: [String] = ["Electric", "Water", "Sewer", "Trash", "Internet", "Other"]
@@ -35,8 +36,6 @@ struct ExpenseEditView: View {
     
     private let expense: Expense
     private let mode: Mode
-    
-    @Binding private var path: [ViewType]
     
     // Main
     @State private var date: Date = .now
@@ -61,8 +60,7 @@ struct ExpenseEditView: View {
     // Fuel
     @State private var fuel: Expense.FuelDetails = .init(amount: 0.0, rate: 0.0, user: "")
     
-    init(path: Binding<[ViewType]>, expense: Expense? = nil) {
-        self._path = path
+    init(expense: Expense? = nil) {
         self.expense = expense ?? Expense(date: Date(), payee: "", amount: .Cents(0), category: "", notes: "", details: nil)
         mode = expense == nil ? .Add : .Edit
     }
@@ -532,8 +530,8 @@ struct ExpenseEditView: View {
     }
     
     private func back() {
-        if !path.isEmpty {
-            path.removeLast()
+        if !navigationStore.path.isEmpty {
+            navigationStore.path.removeLast()
         }
     }
     
@@ -918,11 +916,14 @@ struct ExpenseEditView: View {
 }
 
 #Preview(traits: .modifier(MockDataPreviewModifier())) {
-    NavigationStack {
-        ExpenseEditView(path: .constant([]), expense: .init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Test run", details: .Items(list: .init(items: [
+    @Previewable @StateObject var navigationStore = NavigationStore()
+    return NavigationStack(path: $navigationStore.path) {
+        ExpenseEditView(expense: .init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Test run", details: .Items(list: .init(items: [
             .init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541)),
             .init(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300)),
             .init(name: "Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
         ]))))
-    }
+        .navigationDestination(for: ViewType.self, destination: MainView.computeDestination)
+        .navigationDestination(for: RecordType.self, destination: MainView.computeDestination)
+    }.environmentObject(navigationStore)
 }

@@ -10,17 +10,16 @@ import SwiftUI
 
 struct PayeeListView: View {
     @Environment(\.modelContext) var modelContext
+    @EnvironmentObject private var navigationStore: NavigationStore
     @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
     
     private var selectedPayee: String?
     
-    @Binding private var path: [ViewType]
     @State private var searchText: String = ""
     @State private var showEditAlert: Bool = false
     @State private var editName: String = ""
     
-    init(path: Binding<[ViewType]>, selectedPayee: String? = nil) {
-        self._path = path
+    init(selectedPayee: String? = nil) {
         self.selectedPayee = selectedPayee
     }
     
@@ -44,7 +43,7 @@ struct PayeeListView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        path.append(.AddExpense)
+                        navigationStore.path.append(RecordType.addExpense)
                     } label: {
                         Label("Add", systemImage: "plus")
                     }
@@ -71,9 +70,9 @@ struct PayeeListView: View {
     private func changePayeeName() {
         expenses.filter({ $0.payee == selectedPayee }).forEach({ $0.payee = editName })
         try? modelContext.save()
-        if !path.isEmpty {
-            path.removeLast()
-            path.append(.ListByPayee(payee: editName))
+        if !navigationStore.path.isEmpty {
+            navigationStore.path.removeLast()
+            navigationStore.path.append(ViewType.payee(name: editName))
         }
     }
     
@@ -92,7 +91,7 @@ struct PayeeListView: View {
     @ViewBuilder
     private func payeeButton(map: [String: [Expense]], payee: String) -> some View {
         Button {
-            path.append(.ListByPayee(payee: payee))
+            navigationStore.path.append(ViewType.payee(name: payee))
         } label: {
             VStack(alignment: .leading, spacing: 4) {
                 Text(payee).font(.headline)
@@ -108,7 +107,7 @@ struct PayeeListView: View {
     @ViewBuilder
     private func payeeListView(payee: String, expenses: [Expense]) -> some View {
         Section(payee) {
-            ExpenseListView(path: $path, expenses: expenses.filter({ isFiltered($0) }), omitted: [.Payee])
+            ExpenseListView(expenses: expenses.filter({ isFiltered($0) }), omitted: [.Payee])
         }
     }
     
@@ -118,7 +117,10 @@ struct PayeeListView: View {
 }
 
 #Preview(traits: .modifier(MockDataPreviewModifier())) {
-    NavigationStack {
-        PayeeListView(path: .constant([]))
-    }
+    @Previewable @StateObject var navigationStore = NavigationStore()
+    return NavigationStack(path: $navigationStore.path) {
+        PayeeListView()
+            .navigationDestination(for: ViewType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: RecordType.self, destination: MainView.computeDestination)
+    }.environmentObject(navigationStore)
 }

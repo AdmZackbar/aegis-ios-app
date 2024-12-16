@@ -10,17 +10,16 @@ import SwiftUI
 
 struct CategoryListView: View {
     @Environment(\.modelContext) var modelContext
+    @EnvironmentObject private var navigationStore: NavigationStore
     @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
     
     private var selectedCategory: String?
     
-    @Binding private var path: [ViewType]
     @State private var searchText: String = ""
     @State private var showEditAlert: Bool = false
     @State private var editName: String = ""
     
-    init(path: Binding<[ViewType]>, selectedCategory: String? = nil) {
-        self._path = path
+    init(selectedCategory: String? = nil) {
         self.selectedCategory = selectedCategory
     }
     
@@ -44,7 +43,7 @@ struct CategoryListView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        path.append(.AddExpense)
+                        navigationStore.path.append(RecordType.addExpense)
                     } label: {
                         Label("Add", systemImage: "plus")
                     }
@@ -71,9 +70,9 @@ struct CategoryListView: View {
     private func changeName() {
         expenses.filter({ $0.category == selectedCategory }).forEach({ $0.category = editName })
         try? modelContext.save()
-        if !path.isEmpty {
-            path.removeLast()
-            path.append(.ListByCategory(category: editName))
+        if !navigationStore.path.isEmpty {
+            navigationStore.path.removeLast()
+            navigationStore.path.append(ViewType.category(name: editName))
         }
     }
     
@@ -92,7 +91,7 @@ struct CategoryListView: View {
     @ViewBuilder
     private func categoryButton(map: [String: [Expense]], category: String) -> some View {
         Button {
-            path.append(.ListByCategory(category: category))
+            navigationStore.path.append(ViewType.category(name: category))
         } label: {
             VStack(alignment: .leading, spacing: 4) {
                 Text(category).font(.headline)
@@ -108,7 +107,7 @@ struct CategoryListView: View {
     @ViewBuilder
     private func categoryListView(category: String, expenses: [Expense]) -> some View {
         Section(category) {
-            ExpenseListView(path: $path, expenses: expenses.filter({ isFiltered($0) }), omitted: [.Category])
+            ExpenseListView(expenses: expenses.filter({ isFiltered($0) }), omitted: [.Category])
         }
     }
     
@@ -118,7 +117,10 @@ struct CategoryListView: View {
 }
 
 #Preview(traits: .modifier(MockDataPreviewModifier())) {
-    NavigationStack {
-        CategoryListView(path: .constant([]))
-    }
+    @Previewable @StateObject var navigationStore = NavigationStore()
+    return NavigationStack(path: $navigationStore.path) {
+        CategoryListView()
+            .navigationDestination(for: ViewType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: RecordType.self, destination: MainView.computeDestination)
+    }.environmentObject(navigationStore)
 }

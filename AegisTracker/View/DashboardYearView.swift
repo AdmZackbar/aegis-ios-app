@@ -10,15 +10,11 @@ import SwiftData
 import SwiftUI
 
 struct DashboardYearView: View {
+    @EnvironmentObject private var navigationStore: NavigationStore
     @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
     
-    @Binding private var path: [ViewType]
     @State private var selectedYear: Int = Calendar.current.component(.year, from: .now)
     @State private var viewType: ListViewType = .Category
-    
-    init(path: Binding<[ViewType]>) {
-        self._path = path
-    }
     
     var body: some View {
         let yearMap: [Int : [Int : [Expense]]] = {
@@ -148,7 +144,7 @@ struct DashboardYearView: View {
         VStack(spacing: 16) {
             ForEach(MainView.ExpenseCategories.sorted(by: { $0.key < $1.key }), id: \.key.hashValue) { header, categories in
                 Button {
-                    path.append(.ListByCategory(category: header))
+                    navigationStore.path.append(ViewType.category(name: header))
                 } label: {
                     // TODO
                     HStack(alignment: .top) {
@@ -173,7 +169,10 @@ struct DashboardYearView: View {
 }
 
 #Preview(traits: .modifier(MockDataPreviewModifier())) {
-    NavigationStack {
-        DashboardYearView(path: .constant([]))
-    }
+    @Previewable @StateObject var navigationStore = NavigationStore()
+    return NavigationStack(path: $navigationStore.path) {
+        DashboardYearView()
+            .navigationDestination(for: ViewType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: RecordType.self, destination: MainView.computeDestination)
+    }.environmentObject(navigationStore)
 }

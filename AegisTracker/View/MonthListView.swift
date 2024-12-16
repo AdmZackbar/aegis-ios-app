@@ -9,15 +9,13 @@ import SwiftData
 import SwiftUI
 
 struct MonthListView: View {
+    @EnvironmentObject private var navigationStore: NavigationStore
     @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
-    
-    @Binding private var path: [ViewType]
     
     let month: Int
     let year: Int
     
-    init(path: Binding<[ViewType]>, month: Int, year: Int) {
-        self._path = path
+    init(month: Int, year: Int) {
         self.month = month
         self.year = year
     }
@@ -39,7 +37,7 @@ struct MonthListView: View {
         Form {
             ForEach(map.sorted(by: { $0.key > $1.key }), id: \.key.hashValue) { day, expenses in
                 Section(dayFormatter.string(for: day)!) {
-                    ExpenseListView(path: $path, expenses: expenses, omitted: [.Date])
+                    ExpenseListView(expenses: expenses, omitted: [.Date])
                 }
             }
         }.navigationTitle("\(DateFormatter().monthSymbols[month - 1]) \(year.formatted(.number.grouping(.never)))")
@@ -47,7 +45,7 @@ struct MonthListView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        path.append(.AddExpense)
+                        navigationStore.path.append(RecordType.addExpense)
                     } label: {
                         Label("Add", systemImage: "plus")
                     }
@@ -63,9 +61,12 @@ struct MonthListView: View {
 }
 
 #Preview(traits: .modifier(MockDataPreviewModifier())) {
+    @Previewable @StateObject var navigationStore = NavigationStore()
     let m = Calendar.current.component(.month, from: .now)
     let y = Calendar.current.component(.year, from: .now)
-    return NavigationStack {
-        MonthListView(path: .constant([]), month: m, year: y)
-    }
+    return NavigationStack(path: $navigationStore.path) {
+        MonthListView(month: m, year: y)
+            .navigationDestination(for: ViewType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: RecordType.self, destination: MainView.computeDestination)
+    }.environmentObject(navigationStore)
 }
