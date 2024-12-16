@@ -44,48 +44,33 @@ struct MainView: View {
     var body: some View {
         NavigationStack(path: $navigationStore.path) {
             List {
-                Section("View") {
+                Section {
                     Button {
                         navigationStore.path.append(ViewType.dashboard)
                     } label: {
-                        HStack {
-                            Label("Dashboard", systemImage: "house")
-                            Spacer()
-                        }.frame(height: 36).contentShape(Rectangle())
+                        button("Dashboard", icon: "house")
                     }.buttonStyle(.plain)
+                }
+                Section("Expenses") {
                     Button {
-                        navigationStore.path.append(ViewType.category())
+                        navigationStore.path.append(RecordType.addExpense)
                     } label: {
-                        HStack {
-                            Label("List By Category", systemImage: "folder")
-                            Spacer()
-                        }.frame(height: 36).contentShape(Rectangle())
+                        button("Add Expense", icon: "text.badge.plus")
                     }.buttonStyle(.plain)
                     Button {
                         navigationStore.path.append(ViewType.date)
                     } label: {
-                        HStack {
-                            Label("List By Date", systemImage: "calendar")
-                            Spacer()
-                        }.frame(height: 36).contentShape(Rectangle())
+                        button("View By Date", icon: "calendar")
+                    }.buttonStyle(.plain)
+                    Button {
+                        navigationStore.path.append(ViewType.category())
+                    } label: {
+                        button("View By Category", icon: "folder")
                     }.buttonStyle(.plain)
                     Button {
                         navigationStore.path.append(ViewType.payee())
                     } label: {
-                        HStack {
-                            Label("List By Payee", systemImage: "person")
-                            Spacer()
-                        }.frame(height: 36).contentShape(Rectangle())
-                    }.buttonStyle(.plain)
-                }
-                Section("Record") {
-                    Button {
-                        navigationStore.path.append(RecordType.addExpense)
-                    } label: {
-                        HStack {
-                            Label("Add Expense", systemImage: "cart.badge.plus")
-                            Spacer()
-                        }.frame(height: 36).contentShape(Rectangle())
+                        button("View By Payee", icon: "person")
                     }.buttonStyle(.plain)
                 }
             }.navigationTitle("Aegis")
@@ -93,6 +78,14 @@ struct MainView: View {
                 .navigationDestination(for: ViewType.self, destination: Self.computeDestination)
                 .navigationDestination(for: RecordType.self, destination: Self.computeDestination)
         }.environmentObject(navigationStore)
+    }
+    
+    @ViewBuilder
+    func button(_ text: String, icon: String) -> some View {
+        HStack {
+            Label(text, systemImage: icon)
+            Spacer()
+        }.frame(height: 36).contentShape(Rectangle())
     }
     
     @ViewBuilder

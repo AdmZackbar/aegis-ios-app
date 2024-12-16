@@ -53,15 +53,6 @@ struct ExpenseCategoryListView: View {
         }.navigationTitle("Select Category")
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $searchText)
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        navigationStore.push(RecordType.addExpense)
-                    } label: {
-                        Label("Add", systemImage: "plus")
-                    }
-                }
-            }
     }
     
     @ViewBuilder
