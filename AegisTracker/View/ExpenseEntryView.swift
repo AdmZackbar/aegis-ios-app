@@ -25,7 +25,7 @@ struct ExpenseEntryView: View {
             }
             switch expense.details {
             case .none:
-                componentText(.Payee).font(.subheadline).italic()
+                Text(getSubtitle() ?? "").font(.subheadline).italic()
             case .Items(let list):
                 itemListView(list)
             case .Fuel(let details):
@@ -49,7 +49,7 @@ struct ExpenseEntryView: View {
                 }
             case .Tip(let tip):
                 HStack(alignment: .top) {
-                    componentText(.Payee)
+                    Text(getSubtitle() ?? "")
                     Spacer()
                     if tip.toUsd() > 0 {
                         Text("\(tip.toString()) tip").multilineTextAlignment(.trailing)
@@ -57,7 +57,7 @@ struct ExpenseEntryView: View {
                 }.font(.subheadline).italic()
             case .Bill(let details):
                 HStack(alignment: .top) {
-                    componentText(.Payee)
+                    Text(getSubtitle() ?? "")
                     Spacer()
                     if details.bills.count > 1 {
                         Text("\(details.bills.count) bills").multilineTextAlignment(.trailing)
@@ -73,11 +73,11 @@ struct ExpenseEntryView: View {
     @ViewBuilder
     private func itemListView(_ list: Expense.ItemList) -> some View {
         let itemText = itemsText(list)
-        let payee = get(.Payee)
+        let subtitle = getSubtitle()
         let discount = computeDiscount()
-        if let payee, let itemText {
+        if let subtitle, let itemText {
             HStack(alignment: .top) {
-                Text(payee)
+                Text(subtitle)
                 Spacer()
                 if let discount {
                     Text(discount)
@@ -88,7 +88,7 @@ struct ExpenseEntryView: View {
             Text(itemText)
                 .font(.caption).italic()
         } else {
-            let leftText = payee ?? itemText ?? nil
+            let leftText = subtitle ?? itemText ?? nil
             HStack(alignment: .top) {
                 if let leftText {
                     Text(leftText)
@@ -141,6 +141,19 @@ struct ExpenseEntryView: View {
         return ""
     }
     
+    private func getSubtitle() -> String? {
+        let date = get(.Date)
+        let category = get(.Category)
+        let payee = get(.Payee)
+        if date != nil {
+            if let category, let payee {
+                return "\(payee) \(category)"
+            }
+            return category ?? payee ?? ""
+        }
+        return payee ?? ""
+    }
+    
     private func get(_ component: Component) -> String? {
         guard !omitted.contains([component]) else {
             return nil
@@ -190,10 +203,12 @@ struct ExpenseItemEntryView: View {
     var body: some View {
         HStack(alignment: .top) {
             VStack(alignment: .leading) {
-                HStack (alignment: .center, spacing: 4) {
+                HStack (alignment: .top, spacing: 4) {
                     Text(item.name)
                     if !item.quantity.summary.isEmpty {
-                        Text("(\(item.quantity.summary))").font(.subheadline)
+                        Text("(\(item.quantity.summary))")
+                            .font(.subheadline)
+                            .padding(.top, 1)
                     }
                 }.bold()
                 if !item.brand.isEmpty {
@@ -256,6 +271,9 @@ struct ExpenseBillEntryView: View {
     let hotChoc = Expense.Item(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300))
     let chunks = Expense.Item(name: "Lightly Breaded Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
     return Form {
+        ExpenseEntryView(expense: .init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Just another run", details: .Items(list: .init(items: [
+            chicken, hotChoc, chunks
+        ]))), omitted: [])
         ExpenseEntryView(expense: .init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Just another run", details: .Items(list: .init(items: [
             chicken, hotChoc, chunks
         ]))))
