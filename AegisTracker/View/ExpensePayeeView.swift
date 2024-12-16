@@ -176,7 +176,7 @@ struct ExpensePayeeView: View {
                         .font(.title3)
                         .bold()
                 } else {
-                    VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 12) {
                         chartHeader(expenses)
                         if let year {
                             byMonthBarChart(expenses: expenses, year: year)
