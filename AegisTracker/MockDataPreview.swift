@@ -8,6 +8,9 @@
 import SwiftData
 import SwiftUI
 
+// Ideally this should reside in Preview Content, but
+// because the dead code stripper doesn't work with the
+// preview modifier, this has to stay in the main codebase...
 struct MockDataPreviewModifier: PreviewModifier {
     static func makeSharedContext() throws -> ModelContainer {
         let container = try ModelContainer(

@@ -12,9 +12,7 @@ import SwiftData
 struct AegisApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema(CurrentSchema.models)
-        let isPreview = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: isPreview)
-
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
