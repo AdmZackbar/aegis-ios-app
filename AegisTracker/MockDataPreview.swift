@@ -54,13 +54,13 @@ struct MockDataPreviewModifier: PreviewModifier {
         ]
         expenses.forEach({ container.mainContext.insert($0) })
         let asset: Asset = .init(name: "332 Dovington Drive Mortgage",
-                                 purchaseDate: Date(), totalCost: .Cents(30523199),
+                                 totalCost: .Cents(30523199),
+                                 metaData: .init(category: "House", notes: "First house"),
                                  valuations: [.init(date: Date(), amount: .Cents(31023199))],
                                  loan: .init(
                                     amount: .Cents(24531223),
                                     payments: [
-                                        .init(date: .now,
-                                              type: .Regular(
+                                        .init(type: .Regular(
                                                 details: .init(
                                                     principal: .Cents(30141),
                                                     interest: .Cents(158323),
@@ -70,8 +70,7 @@ struct MockDataPreviewModifier: PreviewModifier {
                                     metaData: .init(
                                         lender: "NBKC Bank",
                                         rate: 6.625,
-                                        term: .Years(num: 30),
-                                        category: "Housing")))
+                                        term: .Years(num: 30))))
         container.mainContext.insert(asset)
     }
     

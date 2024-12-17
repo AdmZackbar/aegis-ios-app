@@ -25,7 +25,7 @@ struct AssetListView: View {
         Form {
             ForEach(assets, id: \.hashValue) { asset in
                 Button {
-                    // TODO
+                    navigationStore.push(AssetViewType.view(asset: asset))
                 } label: {
                     assetView(asset).contentShape(Rectangle())
                 }.buttonStyle(.plain)
@@ -34,7 +34,7 @@ struct AssetListView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        // TODO
+                        navigationStore.push(AssetViewType.add)
                     } label: {
                         Label("Add Asset", systemImage: "plus")
                     }
@@ -66,7 +66,7 @@ struct AssetListView: View {
                 VStack(alignment: .leading) {
                     HStack(alignment: .center) {
                         Image(systemName: "tag.fill")
-                        Text(loan.metaData.category)
+                        Text(asset.metaData.category)
                             .bold()
                     }
                     Text(loan.metaData.lender)

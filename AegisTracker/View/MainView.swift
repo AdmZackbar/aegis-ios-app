@@ -51,6 +51,18 @@ struct MainView: View {
                         button("Dashboard", icon: "house")
                     }.buttonStyle(.plain)
                 }
+                Section("Assets") {
+                    Button {
+                        navigationStore.push(AssetViewType.add)
+                    } label: {
+                        button("Add Asset", icon: "plus")
+                    }.buttonStyle(.plain)
+                    Button {
+                        navigationStore.push(AssetViewType.list)
+                    } label: {
+                        button("View Assets", icon: "folder")
+                    }.buttonStyle(.plain)
+                }
                 Section("Expenses") {
                     Button {
                         navigationStore.push(RecordType.addExpense())
@@ -145,16 +157,15 @@ struct MainView: View {
     
     @ViewBuilder
     static func computeDestination(type: AssetViewType) -> some View {
-        // TODO
         switch type {
         case .list:
             AssetListView()
         case .view(let asset):
             AssetView(asset: asset)
         case .add:
-            EmptyView()
+            AssetEditView()
         case .edit(let asset):
-            EmptyView()
+            AssetEditView(asset: asset)
         }
     }
 }

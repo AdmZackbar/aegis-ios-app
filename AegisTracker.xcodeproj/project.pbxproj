@@ -19,6 +19,7 @@
 		E88164752D111584005C572E /* MainUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88164742D111581005C572E /* MainUtilities.swift */; };
 		E88164772D112EE9005C572E /* AssetListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88164762D112EDE005C572E /* AssetListView.swift */; };
 		E88164792D113681005C572E /* AssetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88164782D113679005C572E /* AssetView.swift */; };
+		E881647B2D114AE3005C572E /* AssetEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E881647A2D114ADA005C572E /* AssetEditView.swift */; };
 		E88769772CE3FF4600D989E1 /* Expense.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769762CE3FF4600D989E1 /* Expense.swift */; };
 		E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769782CE3FF7400D989E1 /* Revenue.swift */; };
 		E88769802CE7DD9D00D989E1 /* Price.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887697F2CE7DD9D00D989E1 /* Price.swift */; };
@@ -68,6 +69,7 @@
 		E88164742D111581005C572E /* MainUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainUtilities.swift; sourceTree = "<group>"; };
 		E88164762D112EDE005C572E /* AssetListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListView.swift; sourceTree = "<group>"; };
 		E88164782D113679005C572E /* AssetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetView.swift; sourceTree = "<group>"; };
+		E881647A2D114ADA005C572E /* AssetEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetEditView.swift; sourceTree = "<group>"; };
 		E88769762CE3FF4600D989E1 /* Expense.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Expense.swift; sourceTree = "<group>"; };
 		E88769782CE3FF7400D989E1 /* Revenue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Revenue.swift; sourceTree = "<group>"; };
 		E887697E2CE6881600D989E1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -221,6 +223,7 @@
 				E8F863FC2D066E8600A3EBCC /* ExpenseEditView.swift */,
 				E88164762D112EDE005C572E /* AssetListView.swift */,
 				E88164782D113679005C572E /* AssetView.swift */,
+				E881647A2D114ADA005C572E /* AssetEditView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -365,6 +368,7 @@
 				E88164792D113681005C572E /* AssetView.swift in Sources */,
 				E88164732D11139E005C572E /* ExpenseUtilities.swift in Sources */,
 				E881646B2D0F90D4005C572E /* NavigationStore.swift in Sources */,
+				E881647B2D114AE3005C572E /* AssetEditView.swift in Sources */,
 				E88164772D112EE9005C572E /* AssetListView.swift in Sources */,
 				E88769902CEFC21B00D989E1 /* DashboardYearView.swift in Sources */,
 				E88769862CE91E5800D989E1 /* ExpenseListView.swift in Sources */,
