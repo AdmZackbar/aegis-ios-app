@@ -20,7 +20,12 @@ extension SchemaV1 {
         var notes: String = ""
         var details: Details? = nil
         
-        init(date: Date, payee: String, amount: Price, category: String, notes: String, details: Details? = nil) {
+        init(date: Date = Date(),
+             payee: String = "",
+             amount: Price = .Cents(0),
+             category: String = "",
+             notes: String = "",
+             details: Details? = nil) {
             self.date = date
             self.payee = payee
             self.amount = amount

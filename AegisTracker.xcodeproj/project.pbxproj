@@ -15,6 +15,8 @@
 		E881646D2D0FB6F5005C572E /* ExpenseCategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E881646C2D0FB6D1005C572E /* ExpenseCategoryView.swift */; };
 		E881646F2D109056005C572E /* ExpensePayeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E881646E2D109050005C572E /* ExpensePayeeView.swift */; };
 		E88164712D10BC3C005C572E /* ExpenseDateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88164702D10BC35005C572E /* ExpenseDateView.swift */; };
+		E88164732D11139E005C572E /* ExpenseUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88164722D11138C005C572E /* ExpenseUtilities.swift */; };
+		E88164752D111584005C572E /* MainUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88164742D111581005C572E /* MainUtilities.swift */; };
 		E88769772CE3FF4600D989E1 /* Expense.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769762CE3FF4600D989E1 /* Expense.swift */; };
 		E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769782CE3FF7400D989E1 /* Revenue.swift */; };
 		E88769802CE7DD9D00D989E1 /* Price.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887697F2CE7DD9D00D989E1 /* Price.swift */; };
@@ -60,6 +62,8 @@
 		E881646C2D0FB6D1005C572E /* ExpenseCategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseCategoryView.swift; sourceTree = "<group>"; };
 		E881646E2D109050005C572E /* ExpensePayeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpensePayeeView.swift; sourceTree = "<group>"; };
 		E88164702D10BC35005C572E /* ExpenseDateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseDateView.swift; sourceTree = "<group>"; };
+		E88164722D11138C005C572E /* ExpenseUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseUtilities.swift; sourceTree = "<group>"; };
+		E88164742D111581005C572E /* MainUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainUtilities.swift; sourceTree = "<group>"; };
 		E88769762CE3FF4600D989E1 /* Expense.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Expense.swift; sourceTree = "<group>"; };
 		E88769782CE3FF7400D989E1 /* Revenue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Revenue.swift; sourceTree = "<group>"; };
 		E887697E2CE6881600D989E1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -200,6 +204,8 @@
 		E8EB2A972CE10630000E4B67 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				E88164742D111581005C572E /* MainUtilities.swift */,
+				E88164722D11138C005C572E /* ExpenseUtilities.swift */,
 				E8EB2A9A2CE1074F000E4B67 /* MainView.swift */,
 				E887698F2CEFC21B00D989E1 /* DashboardYearView.swift */,
 				E881646C2D0FB6D1005C572E /* ExpenseCategoryView.swift */,
@@ -350,9 +356,11 @@
 				E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */,
 				E881646D2D0FB6F5005C572E /* ExpenseCategoryView.swift in Sources */,
 				E8EB2A672CE063A7000E4B67 /* AegisTrackerApp.swift in Sources */,
+				E88164732D11139E005C572E /* ExpenseUtilities.swift in Sources */,
 				E881646B2D0F90D4005C572E /* NavigationStore.swift in Sources */,
 				E88769902CEFC21B00D989E1 /* DashboardYearView.swift in Sources */,
 				E88769862CE91E5800D989E1 /* ExpenseListView.swift in Sources */,
+				E88164752D111584005C572E /* MainUtilities.swift in Sources */,
 				E86CB3412D0D1CE100DE38FF /* ExpenseEntryView.swift in Sources */,
 				E8EB2A9B2CE1074F000E4B67 /* MainView.swift in Sources */,
 				E85AE3D32D0B77E200CA9D0C /* ExpenseView.swift in Sources */,

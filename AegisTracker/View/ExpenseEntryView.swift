@@ -87,7 +87,7 @@ struct ExpenseEntryView: View {
     private func itemListView(_ list: Expense.ItemList) -> some View {
         let itemText = itemsText(list)
         let subtitle = getSubtitle()
-        let discount = computeDiscount()
+        let discount = expense.fullPriceText()
         if let subtitle, let itemText {
             HStack(alignment: .top) {
                 Text(subtitle)
@@ -109,16 +109,6 @@ struct ExpenseEntryView: View {
                     Text(discount ?? "").strikethrough() .multilineTextAlignment(.trailing)
                 }.font(.subheadline).italic()
             }
-        }
-    }
-    
-    private func computeDiscount() -> String? {
-        switch expense.details {
-        case .Items(let list):
-            let discount = list.items.map({ $0.discount ?? .Cents(0) }).reduce(.Cents(0), +)
-            return discount.toCents() > 0 ? (expense.amount + discount).toString() : nil
-        default:
-            return nil
         }
     }
     
@@ -280,17 +270,17 @@ struct ExpenseBillEntryView: View {
     let hotChoc = Expense.Item(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300))
     let chunks = Expense.Item(name: "Lightly Breaded Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
     return Form {
-        ExpenseEntryView(expense: .init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Just another run", details: .Items(list: .init(items: [
+        ExpenseEntryView(expense: .init(payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Just another run", details: .Items(list: .init(items: [
             chicken, hotChoc, chunks
         ]))), omitted: [])
-        ExpenseEntryView(expense: .init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Just another run", details: .Items(list: .init(items: [
+        ExpenseEntryView(expense: .init(payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Just another run", details: .Items(list: .init(items: [
             chicken, hotChoc, chunks
         ]))))
-        ExpenseEntryView(expense: .init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Just another run", details: .Items(list: .init(items: [
+        ExpenseEntryView(expense: .init(payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Just another run", details: .Items(list: .init(items: [
             chicken, chunks
         ]))), omitted: [.Payee, .Category])
-        ExpenseEntryView(expense: .init(date: Date(), payee: "Greasy Hands", amount: .Cents(4510), category: "Haircut", notes: "With Ryle - Middle Part", details: .Tip(amount: .Cents(1000))))
-        ExpenseEntryView(expense: .init(date: Date(), payee: "Valve", amount: .Cents(499), category: "Video Games", notes: ""), omitted: [.Date])
+        ExpenseEntryView(expense: .init(payee: "Greasy Hands", amount: .Cents(4510), category: "Haircut", notes: "With Ryle - Middle Part", details: .Tip(amount: .Cents(1000))))
+        ExpenseEntryView(expense: .init(payee: "Valve", amount: .Cents(499), category: "Video Games"), omitted: [.Date])
         ExpenseItemEntryView(item: chicken)
         ExpenseItemEntryView(item: hotChoc)
         ExpenseItemEntryView(item: chunks)

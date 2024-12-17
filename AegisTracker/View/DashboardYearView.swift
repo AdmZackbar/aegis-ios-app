@@ -19,18 +19,19 @@ struct DashboardYearView: View {
     var body: some View {
         let yearMap: [Int : [Int : [Expense]]] = {
             var map: [Int : [Int : [Expense]]] = [:]
-            expenses.forEach({ map[Calendar.current.component(.year, from: $0.date), default: [:]][Calendar.current.component(.month, from: $0.date), default: []].append($0) })
+            expenses.forEach({ map[$0.date.year, default: [:]][$0.date.month, default: []].append($0) })
             return map
         }()
         TabView(selection: $selectedYear) {
             ForEach(yearMap.sorted(by: { $0.key < $1.key }), id: \.key) { year, monthMap in
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("\(year.formatted(.number.grouping(.never)))").font(.system(size: 40.0, weight: .heavy))
+                        Text("\(year.yearText())")
+                            .font(.system(size: 40.0, weight: .heavy))
                         HStack {
                             VStack(alignment: .leading) {
                                 Text("Total Expenses").font(.caption).italic().opacity(0.7)
-                                Text(monthMap.values.flatMap { $0 }.map({ $0.amount }).reduce(Price.Cents(0), +).toString())
+                                Text(monthMap.values.flatMap { $0 }.total.toString())
                                     .font(.title2).fontWeight(.semibold)
                                 yearBarChart(year: year, map: monthMap)
                                     .frame(height: 140)
@@ -144,7 +145,7 @@ struct DashboardYearView: View {
         VStack(spacing: 16) {
             ForEach(MainView.ExpenseCategories.sorted(by: { $0.key < $1.key }), id: \.key.hashValue) { header, categories in
                 Button {
-                    navigationStore.path.append(ViewType.category(name: header))
+                    navigationStore.push(ViewType.category(name: header))
                 } label: {
                     // TODO
                     HStack(alignment: .top) {

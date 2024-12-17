@@ -46,29 +46,29 @@ struct MainView: View {
             List {
                 Section {
                     Button {
-                        navigationStore.path.append(ViewType.dashboard)
+                        navigationStore.push(ViewType.dashboard)
                     } label: {
                         button("Dashboard", icon: "house")
                     }.buttonStyle(.plain)
                 }
                 Section("Expenses") {
                     Button {
-                        navigationStore.path.append(RecordType.addExpense())
+                        navigationStore.push(RecordType.addExpense())
                     } label: {
                         button("Add Expense", icon: "text.badge.plus")
                     }.buttonStyle(.plain)
                     Button {
-                        navigationStore.path.append(ViewType.date)
+                        navigationStore.push(ViewType.date)
                     } label: {
                         button("View By Date", icon: "calendar")
                     }.buttonStyle(.plain)
                     Button {
-                        navigationStore.path.append(ViewType.category())
+                        navigationStore.push(ViewType.category())
                     } label: {
                         button("View By Category", icon: "folder")
                     }.buttonStyle(.plain)
                     Button {
-                        navigationStore.path.append(ViewType.payee())
+                        navigationStore.push(ViewType.payee())
                     } label: {
                         button("View By Payee", icon: "person")
                     }.buttonStyle(.plain)

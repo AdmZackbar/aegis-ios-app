@@ -94,7 +94,7 @@ struct ExpensePayeeView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        navigationStore.push(RecordType.addExpense(initial: .init(date: .now, payee: payee, amount: .Cents(0), category: "", notes: "")))
+                        navigationStore.push(RecordType.addExpense(initial: .init(payee: payee)))
                     } label: {
                         Label("Add", systemImage: "plus")
                     }
@@ -204,14 +204,14 @@ struct ExpensePayeeView: View {
     @ViewBuilder
     private func chartHeader(_ expenses: [Expense]) -> some View {
         HStack(alignment: .bottom) {
-            Text(expenses.map({ $0.amount }).reduce(.Cents(0), +).toString())
+            Text(expenses.total.toString())
                 .font(.title)
                 .fontWeight(.bold)
                 .fontDesign(.rounded)
             Spacer()
             if let date = chartSelection {
                 VStack(alignment: .trailing, spacing: 0) {
-                    Text(year != nil ? date.monthStr.uppercased() : date.yearStr)
+                    Text(year != nil ? date.month.monthText().uppercased() : date.year.yearText())
                         .font(.caption)
                         .fontWeight(.light)
                     Text((year != nil ? computeMonthAmount(expenses, month: date.month) : computeYearAmount(expenses, year: date.year)).toString())

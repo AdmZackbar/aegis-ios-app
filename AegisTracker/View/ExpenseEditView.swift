@@ -61,7 +61,7 @@ struct ExpenseEditView: View {
     @State private var fuel: Expense.FuelDetails = .init(amount: 0.0, rate: 0.0, user: "")
     
     init(expense: Expense? = nil, mode: Mode? = nil) {
-        self.expense = expense ?? Expense(date: Date(), payee: "", amount: .Cents(0), category: "", notes: "", details: nil)
+        self.expense = expense ?? .init()
         self.mode = mode ?? (expense == nil ? .Add : .Edit)
     }
     
@@ -530,9 +530,7 @@ struct ExpenseEditView: View {
     }
     
     private func back() {
-        if !navigationStore.path.isEmpty {
-            navigationStore.path.removeLast()
-        }
+        navigationStore.pop()
     }
     
     private func load() {
@@ -916,7 +914,7 @@ struct ExpenseEditView: View {
 #Preview(traits: .modifier(MockDataPreviewModifier())) {
     @Previewable @StateObject var navigationStore = NavigationStore()
     return NavigationStack(path: $navigationStore.path) {
-        ExpenseEditView(expense: .init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Test run", details: .Items(list: .init(items: [
+        ExpenseEditView(expense: .init(payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Test run", details: .Items(list: .init(items: [
             .init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541)),
             .init(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300)),
             .init(name: "Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))

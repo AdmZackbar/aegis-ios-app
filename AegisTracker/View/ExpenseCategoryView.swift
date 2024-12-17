@@ -9,29 +9,6 @@ import Charts
 import SwiftData
 import SwiftUI
 
-extension Date {
-    var year: Int {
-        get {
-            Calendar.current.component(.year, from: self)
-        }
-    }
-    var yearStr: String {
-        get {
-            year.formatted(.number.grouping(.never))
-        }
-    }
-    var month: Int {
-        get {
-            Calendar.current.component(.month, from: self)
-        }
-    }
-    var monthStr: String {
-        get {
-            Calendar.current.monthSymbols[month - 1]
-        }
-    }
-}
-
 // Lists all categories
 struct ExpenseCategoryListView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
@@ -65,7 +42,7 @@ struct ExpenseCategoryListView: View {
                 HStack {
                     Text("\(map[category, default: []].count) expenses")
                     Spacer()
-                    Text(map[category, default: []].map({ $0.amount }).reduce(Price.Cents(0), +).toString())
+                    Text(map[category, default: []].total.toString())
                 }.font(.subheadline).italic()
             }.contentShape(Rectangle())
         }.buttonStyle(.plain)
@@ -117,7 +94,7 @@ struct ExpenseCategoryView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        navigationStore.push(RecordType.addExpense(initial: .init(date: .now, payee: "", amount: .Cents(0), category: category, notes: "")))
+                        navigationStore.push(RecordType.addExpense(initial: .init(category: category)))
                     } label: {
                         Label("Add", systemImage: "plus")
                     }
@@ -227,14 +204,14 @@ struct ExpenseCategoryView: View {
     @ViewBuilder
     private func chartHeader(_ expenses: [Expense]) -> some View {
         HStack(alignment: .bottom) {
-            Text(expenses.map({ $0.amount }).reduce(.Cents(0), +).toString())
+            Text(expenses.total.toString())
                 .font(.title)
                 .fontWeight(.bold)
                 .fontDesign(.rounded)
             Spacer()
             if let date = chartSelection {
                 VStack(alignment: .trailing, spacing: 0) {
-                    Text(year != nil ? date.monthStr.uppercased() : date.yearStr)
+                    Text(year != nil ? date.month.monthText().uppercased() : date.year.yearText())
                         .font(.caption)
                         .fontWeight(.light)
                     Text((year != nil ? computeMonthAmount(expenses, month: date.month) : computeYearAmount(expenses, year: date.year)).toString())
@@ -253,15 +230,11 @@ struct ExpenseCategoryView: View {
     }
     
     private func computeMonthAmount(_ expenses: [Expense], month: Int) -> Price {
-        return expenses.filter({ month == $0.date.month })
-            .map({ $0.amount })
-            .reduce(.Cents(0), +)
+        return expenses.filter({ month == $0.date.month }).total
     }
     
     private func computeYearAmount(_ expenses: [Expense], year: Int) -> Price {
-        return expenses.filter({ year == $0.date.year })
-            .map({ $0.amount })
-            .reduce(.Cents(0), +)
+        return expenses.filter({ year == $0.date.year }).total
     }
     
     private func isFiltered(_ expense: Expense) -> Bool {

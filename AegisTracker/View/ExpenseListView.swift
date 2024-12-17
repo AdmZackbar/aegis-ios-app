@@ -37,14 +37,14 @@ struct ExpenseListView: View {
                 .contextMenu {
                     if !omitted.contains(.Category) {
                         Button {
-                            navigationStore.path.append(ViewType.category(name: expense.category))
+                            navigationStore.push(ViewType.category(name: expense.category))
                         } label: {
                             Label("View '\(expense.category)'", systemImage: "tag")
                         }
                     }
                     if !omitted.contains(.Payee) {
                         Button {
-                            navigationStore.path.append(ViewType.payee(name: expense.payee))
+                            navigationStore.push(ViewType.payee(name: expense.payee))
                         } label: {
                             Label("View '\(expense.payee)'", systemImage: "person")
                         }
@@ -67,7 +67,7 @@ struct ExpenseListView: View {
     
     private func editButton(_ expense: Expense) -> some View {
         Button {
-            navigationStore.path.append(RecordType.editExpense(expense: expense))
+            navigationStore.push(RecordType.editExpense(expense: expense))
         } label: {
             Label("Edit", systemImage: "pencil.circle").tint(.blue)
         }
@@ -77,7 +77,7 @@ struct ExpenseListView: View {
         Button {
             let duplicate = Expense(date: expense.date, payee: expense.payee, amount: expense.amount, category: expense.category, notes: expense.notes, details: expense.details)
             modelContext.insert(duplicate)
-            navigationStore.path.append(RecordType.editExpense(expense: duplicate))
+            navigationStore.push(RecordType.editExpense(expense: duplicate))
         } label: {
             Label("Duplicate", systemImage: "plus.square.on.square")
         }
@@ -95,7 +95,7 @@ struct ExpenseListView: View {
     @ViewBuilder
     private func expenseEntry(_ expense: Expense) -> some View {
         Button {
-            navigationStore.path.append(ViewType.expense(expense: expense))
+            navigationStore.push(ViewType.expense(expense: expense))
         } label: {
             ExpenseEntryView(expense: expense, omitted: omitted)
                 .contentShape(Rectangle())
@@ -107,7 +107,7 @@ struct ExpenseListView: View {
     @Previewable @StateObject var navigationStore = NavigationStore()
     return NavigationStack(path: $navigationStore.path) {
         Form {
-            ExpenseListView(expenses: [.init(date: Date(), payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Test run", details: .Items(list: .init(items: [
+            ExpenseListView(expenses: [.init(payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Test run", details: .Items(list: .init(items: [
                 .init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541)),
                 .init(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300)),
                 .init(name: "Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))

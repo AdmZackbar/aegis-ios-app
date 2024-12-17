@@ -9,20 +9,6 @@ import Charts
 import SwiftData
 import SwiftUI
 
-extension [Expense] {
-    var total: Price {
-        return self.map({ $0.amount }).reduce(.Cents(0), +)
-    }
-}
-
-extension Date {
-    var day: Int {
-        get {
-            Calendar.current.component(.day, from: self)
-        }
-    }
-}
-
 struct ExpenseDateView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
     @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
@@ -52,7 +38,7 @@ struct ExpenseDateView: View {
                 }
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        navigationStore.path.append(RecordType.addExpense())
+                        navigationStore.push(RecordType.addExpense())
                     } label: {
                         Label("Add", systemImage: "plus")
                     }
@@ -107,7 +93,7 @@ struct ExpenseDateView: View {
                         .frame(height: 140)
                 }
             } header: {
-                Text("\(Calendar.current.monthSymbols[month - 1]) \(year.formatted(.number.grouping(.never)))")
+                Text("\(month.monthText()) \(year.yearText())")
                     .font(.title)
                     .bold()
             }.headerProminence(.increased)
@@ -117,7 +103,7 @@ struct ExpenseDateView: View {
                 return map
             }()
             ForEach(dayMap.sorted(by: { $0.key > $1.key }), id: \.key) { day, dayExpenses in
-                Section("\(Calendar.current.monthSymbols[month - 1]) \(day)") {
+                Section("\(month.monthText()) \(day)") {
                     ExpenseListView(expenses: dayExpenses, omitted: [.Date], allowSwipeActions: false)
                 }
             }
@@ -229,21 +215,21 @@ struct ExpenseDateView: View {
     private func monthButton(year: Int, month: Int, expenses: [Expense]) -> some View {
         let m = DateFormatter().monthSymbols[month - 1]
         Button {
-            navigationStore.path.append(ViewType.month(year: year, month: month))
+            navigationStore.push(ViewType.month(year: year, month: month))
         } label: {
             VStack(alignment: .leading, spacing: 4) {
                 Text(m).font(.headline)
                 HStack {
                     Text("\(expenses.count) expenses")
                     Spacer()
-                    Text("\(expenses.map({ $0.amount }).reduce(Price.Cents(0), +).toString())")
+                    Text("\(expenses.total.toString())")
                 }.font(.subheadline).italic()
             }.contentShape(Rectangle())
                 .frame(height: 48)
         }.buttonStyle(.plain)
             .contextMenu {
                 Button("View") {
-                    navigationStore.path.append(ViewType.month(year: year, month: month))
+                    navigationStore.push(ViewType.month(year: year, month: month))
                 }
             }
     }
@@ -296,12 +282,12 @@ struct ExpenseMonthView: View {
                     ExpenseListView(expenses: expenses, omitted: [.Date])
                 }
             }
-        }.navigationTitle("\(DateFormatter().monthSymbols[month - 1]) \(year.formatted(.number.grouping(.never)))")
+        }.navigationTitle("\(month.monthText()) \(year.yearText())")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        navigationStore.path.append(RecordType.addExpense())
+                        navigationStore.push(RecordType.addExpense())
                     } label: {
                         Label("Add", systemImage: "plus")
                     }
