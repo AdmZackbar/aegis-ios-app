@@ -14,9 +14,9 @@
 		E881646B2D0F90D4005C572E /* NavigationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E881646A2D0F90D4005C572E /* NavigationStore.swift */; };
 		E881646D2D0FB6F5005C572E /* ExpenseCategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E881646C2D0FB6D1005C572E /* ExpenseCategoryView.swift */; };
 		E881646F2D109056005C572E /* ExpensePayeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E881646E2D109050005C572E /* ExpensePayeeView.swift */; };
+		E88164712D10BC3C005C572E /* ExpenseDateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88164702D10BC35005C572E /* ExpenseDateView.swift */; };
 		E88769772CE3FF4600D989E1 /* Expense.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769762CE3FF4600D989E1 /* Expense.swift */; };
 		E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769782CE3FF7400D989E1 /* Revenue.swift */; };
-		E887697D2CE4672F00D989E1 /* DateListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887697C2CE4672F00D989E1 /* DateListView.swift */; };
 		E88769802CE7DD9D00D989E1 /* Price.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887697F2CE7DD9D00D989E1 /* Price.swift */; };
 		E88769862CE91E5800D989E1 /* ExpenseListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769852CE91E5800D989E1 /* ExpenseListView.swift */; };
 		E88769902CEFC21B00D989E1 /* DashboardYearView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887698F2CEFC21B00D989E1 /* DashboardYearView.swift */; };
@@ -59,9 +59,9 @@
 		E881646A2D0F90D4005C572E /* NavigationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationStore.swift; sourceTree = "<group>"; };
 		E881646C2D0FB6D1005C572E /* ExpenseCategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseCategoryView.swift; sourceTree = "<group>"; };
 		E881646E2D109050005C572E /* ExpensePayeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpensePayeeView.swift; sourceTree = "<group>"; };
+		E88164702D10BC35005C572E /* ExpenseDateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseDateView.swift; sourceTree = "<group>"; };
 		E88769762CE3FF4600D989E1 /* Expense.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Expense.swift; sourceTree = "<group>"; };
 		E88769782CE3FF7400D989E1 /* Revenue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Revenue.swift; sourceTree = "<group>"; };
-		E887697C2CE4672F00D989E1 /* DateListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateListView.swift; sourceTree = "<group>"; };
 		E887697E2CE6881600D989E1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E887697F2CE7DD9D00D989E1 /* Price.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Price.swift; sourceTree = "<group>"; };
 		E88769852CE91E5800D989E1 /* ExpenseListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseListView.swift; sourceTree = "<group>"; };
@@ -202,8 +202,8 @@
 			children = (
 				E8EB2A9A2CE1074F000E4B67 /* MainView.swift */,
 				E887698F2CEFC21B00D989E1 /* DashboardYearView.swift */,
-				E887697C2CE4672F00D989E1 /* DateListView.swift */,
 				E881646C2D0FB6D1005C572E /* ExpenseCategoryView.swift */,
+				E88164702D10BC35005C572E /* ExpenseDateView.swift */,
 				E881646E2D109050005C572E /* ExpensePayeeView.swift */,
 				E85AE3D22D0B77E200CA9D0C /* ExpenseView.swift */,
 				E88769852CE91E5800D989E1 /* ExpenseListView.swift */,
@@ -343,6 +343,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E88164712D10BC3C005C572E /* ExpenseDateView.swift in Sources */,
 				E881646F2D109056005C572E /* ExpensePayeeView.swift in Sources */,
 				E88769772CE3FF4600D989E1 /* Expense.swift in Sources */,
 				E85AE3D12D09483C00CA9D0C /* Asset.swift in Sources */,
@@ -351,7 +352,6 @@
 				E8EB2A672CE063A7000E4B67 /* AegisTrackerApp.swift in Sources */,
 				E881646B2D0F90D4005C572E /* NavigationStore.swift in Sources */,
 				E88769902CEFC21B00D989E1 /* DashboardYearView.swift in Sources */,
-				E887697D2CE4672F00D989E1 /* DateListView.swift in Sources */,
 				E88769862CE91E5800D989E1 /* ExpenseListView.swift in Sources */,
 				E86CB3412D0D1CE100DE38FF /* ExpenseEntryView.swift in Sources */,
 				E8EB2A9B2CE1074F000E4B67 /* MainView.swift in Sources */,

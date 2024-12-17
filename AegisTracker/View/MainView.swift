@@ -106,9 +106,9 @@ struct MainView: View {
                 ExpenseCategoryListView()
             }
         case .date:
-            DateListView()
+            ExpenseDateView()
         case .month(let year, let month):
-            MonthListView(month: month, year: year)
+            ExpenseMonthView(year: year, month: month)
         case .payee(let name):
             if let name {
                 ExpensePayeeView(payee: name)
