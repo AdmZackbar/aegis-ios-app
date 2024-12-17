@@ -145,22 +145,29 @@ struct AssetView: View {
     @ViewBuilder
     private func paymentsView(_ loan: Asset.Loan) -> some View {
         Section("Payments") {
-            ForEach(loan.payments, id: \.hashValue) { payment in
-                paymentEntry(payment)
-                    .contextMenu {
-                        Button("Edit") {
-                            self.payment = .fromAsset(payment)
-                            paymentIndex = asset.loan!.payments.firstIndex(where: { $0 == payment })!
-                            showPaymentSheet = true
-                        }
-                    }
-            }
             Button {
                 payment = .init()
                 paymentIndex = -1
                 showPaymentSheet = true
             } label: {
                 Label("Add Payment", systemImage: "plus")
+            }
+            ForEach(loan.payments.sorted(by: { $0.date > $1.date }), id: \.hashValue) { payment in
+                paymentEntry(payment)
+                    .contextMenu {
+                        Button {
+                            self.payment = .fromAsset(payment)
+                            paymentIndex = asset.loan!.payments.firstIndex(where: { $0 == payment })!
+                            showPaymentSheet = true
+                        } label: {
+                            Label("Edit", systemImage: "pencil.circle")
+                        }
+                        Button {
+                            asset.loan!.payments.removeAll(where: { $0 == payment })
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
             }
         }
     }
