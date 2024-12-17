@@ -47,6 +47,11 @@ extension SchemaV1 {
                     payments.map({ $0.getPrincipal() }).reduce(.Cents(0), +)
                 }
             }
+            var interestPaid: Price {
+                get {
+                    payments.map({ $0.getInterest() }).reduce(.Cents(0), +)
+                }
+            }
             var remainingAmount: Price {
                 get {
                     amount - principalPaid
@@ -96,6 +101,33 @@ extension SchemaV1 {
                         return details.principal
                     case .Principal(let principal):
                         return principal
+                    }
+                }
+                
+                func getInterest() -> Price {
+                    switch type {
+                    case .Regular(let details):
+                        return details.interest
+                    case .Principal(_):
+                        return .Cents(0)
+                    }
+                }
+                
+                func getEscrow() -> Price {
+                    switch type {
+                    case .Regular(let details):
+                        return details.escrow
+                    case .Principal(_):
+                        return .Cents(0)
+                    }
+                }
+                
+                func getOther() -> Price {
+                    switch type {
+                    case .Regular(let details):
+                        return details.other
+                    case .Principal(_):
+                        return .Cents(0)
                     }
                 }
                 

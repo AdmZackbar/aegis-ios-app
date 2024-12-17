@@ -77,6 +77,7 @@ struct MainView: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationDestination(for: ViewType.self, destination: Self.computeDestination)
                 .navigationDestination(for: RecordType.self, destination: Self.computeDestination)
+                .navigationDestination(for: AssetViewType.self, destination: Self.computeDestination)
         }.environmentObject(navigationStore)
     }
     
@@ -135,6 +136,27 @@ struct MainView: View {
             ExpenseEditView(expense: expense, mode: .Edit)
         }
     }
+    
+    @ViewBuilder
+    static func computeDestination(type: AssetViewType, navigationStore: NavigationStore) -> some View {
+        Self.computeDestination(type: type)
+            .environmentObject(navigationStore)
+    }
+    
+    @ViewBuilder
+    static func computeDestination(type: AssetViewType) -> some View {
+        // TODO
+        switch type {
+        case .list:
+            AssetListView()
+        case .view(let asset):
+            AssetView(asset: asset)
+        case .add:
+            EmptyView()
+        case .edit(let asset):
+            EmptyView()
+        }
+    }
 }
 
 enum ViewType: Hashable {
@@ -144,6 +166,13 @@ enum ViewType: Hashable {
     case month(year: Int, month: Int)
     case payee(name: String? = nil)
     case expense(expense: Expense)
+}
+
+enum AssetViewType: Hashable {
+    case list
+    case view(asset: Asset)
+    case add
+    case edit(asset: Asset)
 }
 
 enum RecordType: Hashable {
