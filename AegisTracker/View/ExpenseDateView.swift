@@ -263,10 +263,10 @@ struct ExpenseMonthView: View {
     }
     
     var body: some View {
+        let expenses = expenses.filter({ $0.date.month == month && $0.date.year == year })
         let map: [Date : [Expense]] = {
             var map: [Date : [Expense]] = [:]
-            expenses.filter({ $0.date.month == month && $0.date.year == year })
-                .sorted(by: { $0.category < $1.category })
+            expenses.sorted(by: { $0.category < $1.category })
                 .sorted(by: { $0.date > $1.date })
                 .forEach({ map[Calendar.current.startOfDay(for: $0.date), default: []].append($0) })
             return map
@@ -277,13 +277,27 @@ struct ExpenseMonthView: View {
             return formatter
         }()
         Form {
+            Section {
+                VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("Total Spending")
+                            .font(.subheadline)
+                            .opacity(0.6)
+                        Text(expenses.total.toString())
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .fontDesign(.rounded)
+                    }
+                    byMonthChart(year: year, month: month, expenses: expenses)
+                        .frame(height: 140)
+                }
+            }
             ForEach(map.sorted(by: { $0.key > $1.key }), id: \.key.hashValue) { day, expenses in
                 Section(dayFormatter.string(for: day)!) {
                     ExpenseListView(expenses: expenses, omitted: [.Date])
                 }
             }
         }.navigationTitle("\(month.monthText()) \(year.yearText())")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
@@ -293,6 +307,38 @@ struct ExpenseMonthView: View {
                     }
                 }
             }
+    }
+    
+    @ViewBuilder
+    private func byMonthChart(year: Int, month: Int, expenses: [Expense]) -> some View {
+        Chart(expenses.map({ (date: $0.date, amount: $0.amount.toUsd()) }), id: \.date.hashValue) { item in
+            BarMark(x: .value("Date", item.date, unit: .day), y: .value("Amount", item.amount))
+                .cornerRadius(4)
+        }.chartXScale(domain: createDate(year: year, month: month, day: 1)...createDate(year: year, month: month, day: Calendar.current.range(of: .day, in: .month, for: createDate(year: year, month: month))?.upperBound))
+            .chartXAxis {
+                AxisMarks(values: .stride(by: .day)) { date in
+                    if date.index % 4 == 0 {
+                        AxisValueLabel(format: .dateTime.day(), centered: true)
+                    }
+                    if date.index % 2 == 0 {
+                        AxisGridLine()
+                    }
+                }
+            }
+            .chartYAxis {
+                AxisMarks(format: .currency(code: "USD").precision(.fractionLength(0)),
+                          values: .automatic(desiredCount: 4))
+            }
+    }
+    
+    private func createDate(year: Int, month: Int = 12, day: Int? = nil) -> Date {
+        return {
+            var d = DateComponents()
+            d.year = year
+            d.month = month
+            d.day = day
+            return Calendar.current.date(from: d)!
+        }()
     }
 }
 
