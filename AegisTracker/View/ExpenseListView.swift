@@ -37,14 +37,14 @@ struct ExpenseListView: View {
                 .contextMenu {
                     if !omitted.contains(.Category) {
                         Button {
-                            navigationStore.push(ViewType.category(name: expense.category))
+                            navigationStore.push(ExpenseViewType.byCategory(name: expense.category))
                         } label: {
                             Label("View '\(expense.category)'", systemImage: "tag")
                         }
                     }
                     if !omitted.contains(.Payee) {
                         Button {
-                            navigationStore.push(ViewType.payee(name: expense.payee))
+                            navigationStore.push(ExpenseViewType.byPayee(name: expense.payee))
                         } label: {
                             Label("View '\(expense.payee)'", systemImage: "person")
                         }
@@ -67,7 +67,7 @@ struct ExpenseListView: View {
     
     private func editButton(_ expense: Expense) -> some View {
         Button {
-            navigationStore.push(RecordType.editExpense(expense: expense))
+            navigationStore.push(ExpenseViewType.edit(expense: expense))
         } label: {
             Label("Edit", systemImage: "pencil.circle").tint(.blue)
         }
@@ -77,7 +77,7 @@ struct ExpenseListView: View {
         Button {
             let duplicate = Expense(date: expense.date, payee: expense.payee, amount: expense.amount, category: expense.category, notes: expense.notes, details: expense.details)
             modelContext.insert(duplicate)
-            navigationStore.push(RecordType.editExpense(expense: duplicate))
+            navigationStore.push(ExpenseViewType.edit(expense: duplicate))
         } label: {
             Label("Duplicate", systemImage: "plus.square.on.square")
         }
@@ -95,7 +95,7 @@ struct ExpenseListView: View {
     @ViewBuilder
     private func expenseEntry(_ expense: Expense) -> some View {
         Button {
-            navigationStore.push(ViewType.expense(expense: expense))
+            navigationStore.push(ExpenseViewType.view(expense: expense))
         } label: {
             ExpenseEntryView(expense: expense, omitted: omitted)
                 .contentShape(Rectangle())
@@ -112,8 +112,8 @@ struct ExpenseListView: View {
                 .init(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300)),
                 .init(name: "Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
             ])))], omitted: [])
-        }
-        .navigationDestination(for: ViewType.self, destination: MainView.computeDestination)
-        .navigationDestination(for: RecordType.self, destination: MainView.computeDestination)
+        }.navigationDestination(for: ExpenseViewType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: RevenueViewType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: AssetViewType.self, destination: MainView.computeDestination)
     }.environmentObject(navigationStore)
 }

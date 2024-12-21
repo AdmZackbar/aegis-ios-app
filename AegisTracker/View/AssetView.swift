@@ -441,8 +441,8 @@ struct PaymentEditSheet: View {
                                       lender: "NBKC Bank",
                                       rate: 6.625,
                                       term: .Years(num: 30)))))
-            .navigationDestination(for: ViewType.self, destination: MainView.computeDestination)
-            .navigationDestination(for: RecordType.self, destination: MainView.computeDestination)
-            .navigationDestination(for: AssetViewType.self, destination: MainView.computeDestination)
+        .navigationDestination(for: ExpenseViewType.self, destination: MainView.computeDestination)
+        .navigationDestination(for: RevenueViewType.self, destination: MainView.computeDestination)
+        .navigationDestination(for: AssetViewType.self, destination: MainView.computeDestination)
     }.environmentObject(navigationStore)
 }

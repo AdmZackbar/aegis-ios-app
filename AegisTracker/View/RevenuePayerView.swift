@@ -1,8 +1,8 @@
 //
-//  ExpensePayeeView.swift
+//  RevenuePayerView.swift
 //  AegisTracker
 //
-//  Created by Zach Wassynger on 12/16/24.
+//  Created by Zach Wassynger on 12/20/24.
 //
 
 import Charts
@@ -10,39 +10,39 @@ import SwiftData
 import SwiftUI
 
 // Lists all payees
-struct ExpensePayeeListView: View {
+struct RevenuePayerListView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
+    @Query(sort: \Revenue.date, order: .reverse) var revenues: [Revenue]
     
     @State private var searchText: String = ""
     
     var body: some View {
-        let map: [String : [Expense]] = {
-            var map: [String : [Expense]] = [:]
-            expenses.forEach({ map[$0.payee, default: []].append($0) })
+        let map: [String : [Revenue]] = {
+            var map: [String : [Revenue]] = [:]
+            revenues.forEach({ map[$0.payer, default: []].append($0) })
             return map
         }()
         Form {
             ForEach(map.filter({ isFiltered($0.key) })
-                .sorted(by: { $0.key < $1.key }), id: \.key.hashValue) { payee, expenses in
-                    createButton(map, payee: payee)
+                .sorted(by: { $0.key < $1.key }), id: \.key.hashValue) { payer, revenues in
+                    createButton(map, payer: payer)
                 }
-        }.navigationTitle("Select Payee")
+        }.navigationTitle("Select Payer")
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $searchText)
     }
     
     @ViewBuilder
-    private func createButton(_ map: [String: [Expense]], payee: String) -> some View {
+    private func createButton(_ map: [String: [Revenue]], payer: String) -> some View {
         Button {
-            navigationStore.push(ExpenseViewType.byPayee(name: payee))
+            navigationStore.push(RevenueViewType.byPayer(name: payer))
         } label: {
             VStack(alignment: .leading, spacing: 4) {
-                Text(payee).font(.headline)
+                Text(payer).font(.headline)
                 HStack {
-                    Text("\(map[payee, default: []].count) expenses")
+                    Text("\(map[payer, default: []].count) entries")
                     Spacer()
-                    Text(map[payee, default: []].map({ $0.amount }).reduce(Price.Cents(0), +).toString())
+                    Text(map[payer, default: []].map({ $0.amount }).reduce(Price.Cents(0), +).toString())
                 }.font(.subheadline).italic()
             }.contentShape(Rectangle())
         }.buttonStyle(.plain)
@@ -54,12 +54,12 @@ struct ExpensePayeeListView: View {
 }
 
 // Shows specific payees
-struct ExpensePayeeView: View {
+struct RevenuePayerView: View {
     @Environment(\.modelContext) var modelContext
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
+    @Query(sort: \Revenue.date, order: .reverse) var revenues: [Revenue]
     
-    private var payee: String
+    private var payer: String
     
     @State private var searchText: String = ""
     @State private var showEditAlert: Bool = false
@@ -67,26 +67,26 @@ struct ExpensePayeeView: View {
     @State private var year: Int? = nil
     @State private var chartSelection: Date? = nil
     
-    init(payee: String) {
-        self.payee = payee
+    init(payer: String) {
+        self.payer = payer
     }
     
     var body: some View {
-        let yearMap: [Int : [Expense]] = {
-            var map: [Int : [Expense]] = [:]
-            expenses.filter({ $0.payee == payee && isFiltered($0) })
+        let yearMap: [Int : [Revenue]] = {
+            var map: [Int : [Revenue]] = [:]
+            revenues.filter({ $0.payer == payer && isFiltered($0) })
                 .forEach({ map[$0.date.year, default: []].append($0) })
             return map
         }()
         TabView(selection: $year) {
             // This skips years with no entries, which could be good or bad
-            ForEach(yearMap.sorted(by: { $0.key < $1.key }), id: \.key) { y, e in
-                sectionView(expenses: e, year: y)
+            ForEach(yearMap.sorted(by: { $0.key < $1.key }), id: \.key) { y, r in
+                sectionView(revenues: r, year: y)
                     .tag(y as Int?)
             }
-            sectionView(expenses: expenses.filter({ $0.payee == payee && isFiltered($0) }), year: nil)
+            sectionView(revenues: revenues.filter({ $0.payer == payer && isFiltered($0) }), year: nil)
                 .tag(nil as Int?)
-        }.navigationTitle(payee)
+        }.navigationTitle(payer)
             .navigationBarTitleDisplayMode(.inline)
             .tabViewStyle(.page(indexDisplayMode: .never))
             .background(Color.init(uiColor: UIColor.systemGroupedBackground))
@@ -94,34 +94,34 @@ struct ExpensePayeeView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        navigationStore.push(ExpenseViewType.add(initial: .init(payee: payee)))
+                        navigationStore.push(RevenueViewType.add(initial: .init(payer: payer)))
                     } label: {
                         Label("Add", systemImage: "plus")
                     }
                 }
                 ToolbarItem(placement: .secondaryAction) {
                     Button {
-                        editName = payee
+                        editName = payer
                         showEditAlert = true
                     } label: {
-                        Label("Change Payee Name...", systemImage: "pencil.circle")
+                        Label("Change Payer Name...", systemImage: "pencil.circle")
                     }
                 }
             }
-            .alert("Edit payee name", isPresented: $showEditAlert) {
+            .alert("Edit payer name", isPresented: $showEditAlert) {
                 TextField("New Name", text: $editName)
                 Button("Cancel") {
                     showEditAlert = false
                 }
-                Button("Save", action: updateAllPayeeNames)
+                Button("Save", action: updateAllPayerNames)
                     .disabled(editName.isEmpty)
             } message: {
-                Text("This will update all expenses")
+                Text("This will update all revenues")
             }
     }
     
     @ViewBuilder
-    private func byMonthBarChart(expenses: [Expense], year: Int) -> some View {
+    private func byMonthBarChart(revenues: [Revenue], year: Int) -> some View {
         let domain = {
             var start = DateComponents()
             start.year = year
@@ -131,7 +131,7 @@ struct ExpensePayeeView: View {
             end.month = 1
             return Calendar.current.date(from: start)!...Calendar.current.date(from: end)!
         }()
-        Chart(expenses.map({ (date: $0.date, amount: $0.amount.toUsd()) }), id: \.date.hashValue) { item in
+        Chart(revenues.map({ (date: $0.date, amount: $0.amount.toUsd()) }), id: \.date.hashValue) { item in
             BarMark(x: .value("Date", item.date, unit: .month), y: .value("Amount", item.amount))
                 .cornerRadius(4)
                 .foregroundStyle(chartSelection == nil || item.date.month == chartSelection!.month ? .accent : .gray)
@@ -149,8 +149,8 @@ struct ExpensePayeeView: View {
     }
     
     @ViewBuilder
-    private func byYearBarChart(expenses: [Expense]) -> some View {
-        Chart(expenses.map({ (date: $0.date, amount: $0.amount.toUsd()) }), id: \.date.hashValue) { item in
+    private func byYearBarChart(revenues: [Revenue]) -> some View {
+        Chart(revenues.map({ (date: $0.date, amount: $0.amount.toUsd()) }), id: \.date.hashValue) { item in
             BarMark(x: .value("Date", item.date, unit: .year), y: .value("Amount", item.amount))
                 .cornerRadius(4)
                 .foregroundStyle(chartSelection == nil || item.date.year == chartSelection!.year ? .accent : .gray)
@@ -168,21 +168,21 @@ struct ExpensePayeeView: View {
     }
     
     @ViewBuilder
-    private func sectionView(expenses: [Expense], year: Int?) -> some View {
+    private func sectionView(revenues: [Revenue], year: Int?) -> some View {
         Form {
             Section {
-                if expenses.isEmpty {
+                if revenues.isEmpty {
                     Text("No Filtered Entries")
                         .font(.title3)
                         .bold()
                 } else {
                     VStack(alignment: .leading, spacing: 12) {
-                        chartHeader(expenses)
+                        chartHeader(revenues)
                         if let year {
-                            byMonthBarChart(expenses: expenses, year: year)
+                            byMonthBarChart(revenues: revenues, year: year)
                                 .frame(height: 100)
                         } else {
-                            byYearBarChart(expenses: expenses)
+                            byYearBarChart(revenues: revenues)
                                 .frame(height: 100)
                         }
                     }
@@ -193,18 +193,18 @@ struct ExpensePayeeView: View {
                     .fontWeight(.heavy)
                     .fontDesign(.rounded)
             }.headerProminence(.increased)
-            if !expenses.isEmpty {
-                Section("\(expenses.count) Expenses") {
-                    ExpenseListView(expenses: expenses, omitted: [.Payee], allowSwipeActions: false)
+            if !revenues.isEmpty {
+                Section("\(revenues.count) Entries") {
+                    RevenueListView(revenues: revenues)
                 }
             }
         }.scrollContentBackground(.hidden)
     }
     
     @ViewBuilder
-    private func chartHeader(_ expenses: [Expense]) -> some View {
+    private func chartHeader(_ revenues: [Revenue]) -> some View {
         HStack(alignment: .bottom) {
-            Text(expenses.total.toString())
+            Text(revenues.total.toString())
                 .font(.title)
                 .fontWeight(.bold)
                 .fontDesign(.rounded)
@@ -214,7 +214,7 @@ struct ExpensePayeeView: View {
                     Text(year != nil ? date.month.monthText().uppercased() : date.year.yearText())
                         .font(.caption)
                         .fontWeight(.light)
-                    Text((year != nil ? computeMonthAmount(expenses, month: date.month) : computeYearAmount(expenses, year: date.year)).toString())
+                    Text((year != nil ? computeMonthAmount(revenues, month: date.month) : computeYearAmount(revenues, year: date.year)).toString())
                         .font(.subheadline)
                         .fontWeight(.semibold)
                 }
@@ -229,56 +229,42 @@ struct ExpensePayeeView: View {
         return "All"
     }
     
-    private func computeMonthAmount(_ expenses: [Expense], month: Int) -> Price {
-        return expenses.filter({ month == $0.date.month })
+    private func computeMonthAmount(_ revenues: [Revenue], month: Int) -> Price {
+        return revenues.filter({ month == $0.date.month })
             .map({ $0.amount })
             .reduce(.Cents(0), +)
     }
     
-    private func computeYearAmount(_ expenses: [Expense], year: Int) -> Price {
-        return expenses.filter({ year == $0.date.year })
+    private func computeYearAmount(_ revenues: [Revenue], year: Int) -> Price {
+        return revenues.filter({ year == $0.date.year })
             .map({ $0.amount })
             .reduce(.Cents(0), +)
     }
     
-    private func isFiltered(_ expense: Expense) -> Bool {
+    private func isFiltered(_ revenue: Revenue) -> Bool {
         searchText.isEmpty ||
-        isFiltered(expense.payee) ||
-        isFiltered(expense.notes) ||
-        isDetailFiltered(expense.details)
-    }
-    
-    private func isDetailFiltered(_ details: Expense.Details?) -> Bool {
-        switch details {
-        case .Items(let list):
-            return list.items.contains(where: { isFiltered($0.name) ||
-                isFiltered($0.brand) })
-        case .Bill(let details):
-            return details.bills.contains(where: { isFiltered($0.getName()) })
-        case .Fuel(let details):
-            return isFiltered(details.user)
-        default:
-            return false
-        }
+        isFiltered(revenue.payer) ||
+        isFiltered(revenue.notes)
     }
     
     private func isFiltered(_ str: String) -> Bool {
         str.localizedCaseInsensitiveContains(searchText)
     }
     
-    private func updateAllPayeeNames() {
-        expenses.filter({ $0.payee == payee }).forEach({ $0.payee = editName })
+    private func updateAllPayerNames() {
+        revenues.filter({ $0.payer == payer }).forEach({ $0.payer = editName })
         try? modelContext.save()
-        navigationStore.replace(ExpenseViewType.byPayee(name: editName))
+        navigationStore.replace(RevenueViewType.byPayer(name: editName))
     }
 }
 
 #Preview(traits: .modifier(MockDataPreviewModifier())) {
     @Previewable @StateObject var navigationStore = NavigationStore()
     return NavigationStack(path: $navigationStore.path) {
-        ExpensePayeeView(payee: "Costco")
+        RevenuePayerView(payer: "RMCI")
             .navigationDestination(for: ExpenseViewType.self, destination: MainView.computeDestination)
             .navigationDestination(for: RevenueViewType.self, destination: MainView.computeDestination)
             .navigationDestination(for: AssetViewType.self, destination: MainView.computeDestination)
     }.environmentObject(navigationStore)
 }
+

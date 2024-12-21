@@ -35,7 +35,7 @@ struct ExpenseCategoryListView: View {
     @ViewBuilder
     private func createButton(_ map: [String: [Expense]], category: String) -> some View {
         Button {
-            navigationStore.push(ViewType.category(name: category))
+            navigationStore.push(ExpenseViewType.byCategory(name: category))
         } label: {
             VStack(alignment: .leading, spacing: 4) {
                 Text(category).font(.headline)
@@ -94,7 +94,7 @@ struct ExpenseCategoryView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        navigationStore.push(RecordType.addExpense(initial: .init(category: category)))
+                        navigationStore.push(ExpenseViewType.add(initial: .init(category: category)))
                     } label: {
                         Label("Add", systemImage: "plus")
                     }
@@ -265,7 +265,7 @@ struct ExpenseCategoryView: View {
     private func updateAllCategoryNames() {
         expenses.filter({ $0.category == category }).forEach({ $0.category = editName })
         try? modelContext.save()
-        navigationStore.replace(ViewType.category(name: editName))
+        navigationStore.replace(ExpenseViewType.byCategory(name: editName))
     }
 }
 
@@ -273,7 +273,8 @@ struct ExpenseCategoryView: View {
     @Previewable @StateObject var navigationStore = NavigationStore()
     return NavigationStack(path: $navigationStore.path) {
         ExpenseCategoryView(category: "Gas")
-            .navigationDestination(for: ViewType.self, destination: MainView.computeDestination)
-            .navigationDestination(for: RecordType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: ExpenseViewType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: RevenueViewType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: AssetViewType.self, destination: MainView.computeDestination)
     }.environmentObject(navigationStore)
 }

@@ -1,5 +1,5 @@
 //
-//  ExpenseUtilities.swift
+//  ModelUtilities.swift
 //  AegisTracker
 //
 //  Created by Zach Wassynger on 12/16/24.
@@ -28,6 +28,12 @@ extension Expense {
 }
 
 extension [Expense] {
+    var total: Price {
+        return self.map({ $0.amount }).reduce(.Cents(0), +)
+    }
+}
+
+extension [Revenue] {
     var total: Price {
         return self.map({ $0.amount }).reduce(.Cents(0), +)
     }

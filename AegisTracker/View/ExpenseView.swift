@@ -123,7 +123,7 @@ struct ExpenseView: View {
         Section("\(expense.payee) \(expense.category)") {
             ForEach(expenses, id: \.hashValue) { e in
                 Button {
-                    navigationStore.push(ViewType.expense(expense: e))
+                    navigationStore.push(ExpenseViewType.view(expense: e))
                 } label: {
                     ExpenseEntryView(expense: e, omitted: [.Category, .Payee])
                         .contentShape(Rectangle())
@@ -137,7 +137,7 @@ struct ExpenseView: View {
         Grid {
             GridRow {
                 Button {
-                    navigationStore.push(RecordType.editExpense(expense: expense))
+                    navigationStore.push(ExpenseViewType.edit(expense: expense))
                 } label: {
                     Label("Edit", systemImage: "pencil.circle")
                         .bold()
@@ -171,8 +171,8 @@ struct ExpenseView: View {
             .init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541)),
             .init(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300)),
             .init(name: "Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
-        ]))))
-        .navigationDestination(for: ViewType.self, destination: MainView.computeDestination)
-        .navigationDestination(for: RecordType.self, destination: MainView.computeDestination)
+        ])))).navigationDestination(for: ExpenseViewType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: RevenueViewType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: AssetViewType.self, destination: MainView.computeDestination)
     }.environmentObject(navigationStore)
 }

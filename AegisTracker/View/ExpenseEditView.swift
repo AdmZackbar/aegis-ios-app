@@ -904,7 +904,7 @@ struct ExpenseEditView: View {
                 case .Flat:
                     return name.isEmpty || base <= 0
                 case .Variable:
-                    return name.isEmpty || base <= 0 || amount <= 0 || rate <= 0
+                    return name.isEmpty || amount <= 0 || rate <= 0
                 }
             }
         }
@@ -918,8 +918,8 @@ struct ExpenseEditView: View {
             .init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541)),
             .init(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300)),
             .init(name: "Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
-        ]))))
-        .navigationDestination(for: ViewType.self, destination: MainView.computeDestination)
-        .navigationDestination(for: RecordType.self, destination: MainView.computeDestination)
+        ])))).navigationDestination(for: ExpenseViewType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: RevenueViewType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: AssetViewType.self, destination: MainView.computeDestination)
     }.environmentObject(navigationStore)
 }

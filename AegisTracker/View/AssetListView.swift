@@ -90,8 +90,8 @@ struct AssetListView: View {
     @Previewable @StateObject var navigationStore = NavigationStore()
     return NavigationStack(path: $navigationStore.path) {
         AssetListView()
-            .navigationDestination(for: ViewType.self, destination: MainView.computeDestination)
-            .navigationDestination(for: RecordType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: ExpenseViewType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: RevenueViewType.self, destination: MainView.computeDestination)
             .navigationDestination(for: AssetViewType.self, destination: MainView.computeDestination)
     }.environmentObject(navigationStore)
 }

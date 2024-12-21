@@ -19,7 +19,11 @@ extension SchemaV1 {
         var category: String = ""
         var notes: String = ""
         
-        init(date: Date, payer: String, amount: Price, category: String, notes: String) {
+        init(date: Date = .now,
+             payer: String = "",
+             amount: Price = .Cents(0),
+             category: String = "",
+             notes: String = "") {
             self.date = date
             self.payer = payer
             self.amount = amount

@@ -22,6 +22,14 @@ struct MainView: View {
         map["Other"] = ["Gift", "Charity", "Taxes", "Contributions"]
         return map
     }()
+    static let RevenueCategories: [String] = [
+        "Paycheck",
+        "Gift",
+        "Bonus",
+        "Retirement",
+        "Reimbursement",
+        "Dividend"
+    ]
     
     static let ExpenseCategoryColors: [String : Color] = [
         "Car": Color.indigo,
@@ -46,9 +54,48 @@ struct MainView: View {
             List {
                 Section {
                     Button {
-                        navigationStore.push(ViewType.dashboard)
+                        navigationStore.push(ExpenseViewType.dashboard)
                     } label: {
                         button("Dashboard", icon: "house")
+                    }.buttonStyle(.plain)
+                }
+                Section("Expenses") {
+                    Button {
+                        navigationStore.push(ExpenseViewType.add())
+                    } label: {
+                        button("Add Expense", icon: "text.badge.plus")
+                    }.buttonStyle(.plain)
+                    Button {
+                        navigationStore.push(ExpenseViewType.byDate)
+                    } label: {
+                        button("View By Date", icon: "calendar")
+                    }.buttonStyle(.plain)
+                    Button {
+                        navigationStore.push(ExpenseViewType.byCategory())
+                    } label: {
+                        button("View By Category", icon: "folder")
+                    }.buttonStyle(.plain)
+                    Button {
+                        navigationStore.push(ExpenseViewType.byPayee())
+                    } label: {
+                        button("View By Payee", icon: "person")
+                    }.buttonStyle(.plain)
+                }
+                Section("Revenue") {
+                    Button {
+                        navigationStore.push(RevenueViewType.add())
+                    } label: {
+                        button("Add Revenue", icon: "text.badge.plus")
+                    }.buttonStyle(.plain)
+                    Button {
+                        navigationStore.push(RevenueViewType.byDate)
+                    } label: {
+                        button("View By Date", icon: "calendar")
+                    }.buttonStyle(.plain)
+                    Button {
+                        navigationStore.push(RevenueViewType.byPayer())
+                    } label: {
+                        button("View By Payer", icon: "person")
                     }.buttonStyle(.plain)
                 }
                 Section("Assets") {
@@ -63,32 +110,10 @@ struct MainView: View {
                         button("View Assets", icon: "folder")
                     }.buttonStyle(.plain)
                 }
-                Section("Expenses") {
-                    Button {
-                        navigationStore.push(RecordType.addExpense())
-                    } label: {
-                        button("Add Expense", icon: "text.badge.plus")
-                    }.buttonStyle(.plain)
-                    Button {
-                        navigationStore.push(ViewType.date)
-                    } label: {
-                        button("View By Date", icon: "calendar")
-                    }.buttonStyle(.plain)
-                    Button {
-                        navigationStore.push(ViewType.category())
-                    } label: {
-                        button("View By Category", icon: "folder")
-                    }.buttonStyle(.plain)
-                    Button {
-                        navigationStore.push(ViewType.payee())
-                    } label: {
-                        button("View By Payee", icon: "person")
-                    }.buttonStyle(.plain)
-                }
             }.navigationTitle("Aegis")
                 .navigationBarTitleDisplayMode(.inline)
-                .navigationDestination(for: ViewType.self, destination: Self.computeDestination)
-                .navigationDestination(for: RecordType.self, destination: Self.computeDestination)
+                .navigationDestination(for: ExpenseViewType.self, destination: Self.computeDestination)
+                .navigationDestination(for: RevenueViewType.self, destination: Self.computeDestination)
                 .navigationDestination(for: AssetViewType.self, destination: Self.computeDestination)
         }.environmentObject(navigationStore)
     }
@@ -102,49 +127,63 @@ struct MainView: View {
     }
     
     @ViewBuilder
-    static func computeDestination(type: ViewType, navigationStore: NavigationStore) -> some View {
+    static func computeDestination(type: RevenueViewType, navigationStore: NavigationStore) -> some View {
         Self.computeDestination(type: type)
             .environmentObject(navigationStore)
     }
     
     @ViewBuilder
-    static func computeDestination(type: ViewType) -> some View {
+    static func computeDestination(type: RevenueViewType) -> some View {
+        switch type {
+        case .byDate:
+            RevenueDateView()
+        case .byPayer(let name):
+            if let name {
+                RevenuePayerView(payer: name)
+            } else {
+                RevenuePayerListView()
+            }
+        case .view(let revenue):
+            RevenueView(revenue: revenue)
+        case .add(let initial):
+            RevenueEditView(revenue: initial, mode: .Add)
+        case .edit(let revenue):
+            RevenueEditView(revenue: revenue)
+        }
+    }
+    
+    @ViewBuilder
+    static func computeDestination(type: ExpenseViewType, navigationStore: NavigationStore) -> some View {
+        Self.computeDestination(type: type)
+            .environmentObject(navigationStore)
+    }
+    
+    @ViewBuilder
+    static func computeDestination(type: ExpenseViewType) -> some View {
         switch type {
         case .dashboard:
             DashboardYearView()
-        case .category(let name):
+        case .byCategory(let name):
             if let name {
                 ExpenseCategoryView(category: name)
             } else {
                 ExpenseCategoryListView()
             }
-        case .date:
+        case .byDate:
             ExpenseDateView()
-        case .month(let year, let month):
+        case .byMonth(let year, let month):
             ExpenseMonthView(year: year, month: month)
-        case .payee(let name):
+        case .byPayee(let name):
             if let name {
                 ExpensePayeeView(payee: name)
             } else {
                 ExpensePayeeListView()
             }
-        case .expense(let expense):
+        case .view(let expense):
             ExpenseView(expense: expense)
-        }
-    }
-    
-    @ViewBuilder
-    static func computeDestination(type: RecordType, navigationStore: NavigationStore) -> some View {
-        Self.computeDestination(type: type)
-            .environmentObject(navigationStore)
-    }
-    
-    @ViewBuilder
-    static func computeDestination(type: RecordType) -> some View {
-        switch type {
-        case .addExpense(let initial):
+        case .add(let initial):
             ExpenseEditView(expense: initial, mode: .Add)
-        case .editExpense(let expense):
+        case .edit(let expense):
             ExpenseEditView(expense: expense, mode: .Edit)
         }
     }
@@ -170,13 +209,23 @@ struct MainView: View {
     }
 }
 
-enum ViewType: Hashable {
+enum ExpenseViewType: Hashable {
     case dashboard
-    case category(name: String? = nil)
-    case date
-    case month(year: Int, month: Int)
-    case payee(name: String? = nil)
-    case expense(expense: Expense)
+    case byCategory(name: String? = nil)
+    case byDate
+    case byMonth(year: Int, month: Int)
+    case byPayee(name: String? = nil)
+    case view(expense: Expense)
+    case add(initial: Expense? = nil)
+    case edit(expense: Expense)
+}
+
+enum RevenueViewType: Hashable {
+    case byDate
+    case byPayer(name: String? = nil)
+    case view(revenue: Revenue)
+    case add(initial: Revenue? = nil)
+    case edit(revenue: Revenue)
 }
 
 enum AssetViewType: Hashable {
@@ -184,11 +233,6 @@ enum AssetViewType: Hashable {
     case view(asset: Asset)
     case add
     case edit(asset: Asset)
-}
-
-enum RecordType: Hashable {
-    case addExpense(initial: Expense? = nil)
-    case editExpense(expense: Expense)
 }
 
 #Preview(traits: .modifier(MockDataPreviewModifier())) {

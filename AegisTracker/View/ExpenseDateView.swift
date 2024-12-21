@@ -38,7 +38,7 @@ struct ExpenseDateView: View {
                 }
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        navigationStore.push(RecordType.addExpense())
+                        navigationStore.push(ExpenseViewType.add())
                     } label: {
                         Label("Add", systemImage: "plus")
                     }
@@ -215,7 +215,7 @@ struct ExpenseDateView: View {
     private func monthButton(year: Int, month: Int, expenses: [Expense]) -> some View {
         let m = DateFormatter().monthSymbols[month - 1]
         Button {
-            navigationStore.push(ViewType.month(year: year, month: month))
+            navigationStore.push(ExpenseViewType.byMonth(year: year, month: month))
         } label: {
             VStack(alignment: .leading, spacing: 4) {
                 Text(m).font(.headline)
@@ -229,7 +229,7 @@ struct ExpenseDateView: View {
         }.buttonStyle(.plain)
             .contextMenu {
                 Button("View") {
-                    navigationStore.push(ViewType.month(year: year, month: month))
+                    navigationStore.push(ExpenseViewType.byMonth(year: year, month: month))
                 }
             }
     }
@@ -301,7 +301,7 @@ struct ExpenseMonthView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        navigationStore.push(RecordType.addExpense())
+                        navigationStore.push(ExpenseViewType.add())
                     } label: {
                         Label("Add", systemImage: "plus")
                     }
@@ -346,7 +346,8 @@ struct ExpenseMonthView: View {
     @Previewable @StateObject var navigationStore = NavigationStore()
     return NavigationStack(path: $navigationStore.path) {
         ExpenseDateView()
-            .navigationDestination(for: ViewType.self, destination: MainView.computeDestination)
-            .navigationDestination(for: RecordType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: ExpenseViewType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: RevenueViewType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: AssetViewType.self, destination: MainView.computeDestination)
     }.environmentObject(navigationStore)
 }

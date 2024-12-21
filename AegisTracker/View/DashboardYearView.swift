@@ -145,7 +145,7 @@ struct DashboardYearView: View {
         VStack(spacing: 16) {
             ForEach(MainView.ExpenseCategories.sorted(by: { $0.key < $1.key }), id: \.key.hashValue) { header, categories in
                 Button {
-                    navigationStore.push(ViewType.category(name: header))
+                    navigationStore.push(ExpenseViewType.byCategory(name: header))
                 } label: {
                     // TODO
                     HStack(alignment: .top) {
@@ -173,7 +173,8 @@ struct DashboardYearView: View {
     @Previewable @StateObject var navigationStore = NavigationStore()
     return NavigationStack(path: $navigationStore.path) {
         DashboardYearView()
-            .navigationDestination(for: ViewType.self, destination: MainView.computeDestination)
-            .navigationDestination(for: RecordType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: ExpenseViewType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: RevenueViewType.self, destination: MainView.computeDestination)
+            .navigationDestination(for: AssetViewType.self, destination: MainView.computeDestination)
     }.environmentObject(navigationStore)
 }

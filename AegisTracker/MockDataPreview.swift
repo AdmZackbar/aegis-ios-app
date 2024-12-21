@@ -53,6 +53,15 @@ struct MockDataPreviewModifier: PreviewModifier {
                   ])))
         ]
         expenses.forEach({ container.mainContext.insert($0) })
+        let revenues: [Revenue] = [
+            .init(payer: "RMCI", amount: .Cents(233412), category: "Paycheck"),
+            .init(payer: "Ruth Wassynger", amount: .Cents(2341), category: "Gift", notes: "Birthday"),
+            .init(payer: "Fidelity", amount: .Cents(231), category: "Dividend", notes: "Apple divident"),
+            .init(payer: "Carmax", amount: .Cents(250000), category: "Sale", notes: "Sold 2002 MDX"),
+            .init(payer: "RMCI", amount: .Cents(200000), category: "Bonus", notes: "Christmas bonue"),
+            .init(date: .distantPast, payer: "RMCI", amount: .Cents(170412), category: "Paycheck"),
+        ]
+        revenues.forEach({ container.mainContext.insert($0) })
         let asset: Asset = .init(name: "332 Dovington Drive Mortgage",
                                  totalCost: .Cents(30523199),
                                  metaData: .init(category: "House", notes: "First house"),
