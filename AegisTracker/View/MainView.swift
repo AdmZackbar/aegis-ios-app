@@ -8,20 +8,16 @@
 import SwiftUI
 
 struct MainView: View {
-    static let ExpenseCategories: [String : [String]] = {
-        var map: [String : [String]] = [:]
-        map["Car"] = ["Gas", "Car Maintenance", "Car Insurance", "Car Payment", "Parking"]
-        map["Food"] = ["Groceries", "Snacks", "Restaurant", "Fast Food", "Cookware", "Grocery Membership"]
-        map["Housing"] = ["Rent", "Mortgage Bill", "Housing Payment", "Utility Bill", "Housing Maintenance", "Appliances", "Furniture", "Decor", "Fuel"]
-        map["Media"] = ["Video Games", "Music", "TV", "Books", "Games", "Other Media"]
-        map["Medicine"] = ["Dental", "Vision", "Medicine", "Clinic", "Physical Therapy", "Hospital"]
-        map["Personal"] = ["Apparel", "Hygiene", "Haircut"]
-        map["Recreation"] = ["Sports Facility", "Sports Gear", "Sports Event", "Recreation Event"]
-        map["Technology"] = ["Tech Devices", "Device Accessories", "Computer Parts", "Peripherals", "Software", "Tech Service", "Digital Assets"]
-        map["Travel"] = ["Accomodations", "Rental Car", "Airfare", "Rideshare"]
-        map["Other"] = ["Gift", "Charity", "Taxes", "Contributions"]
-        return map
-    }()
+    static let MainExpenseCategories: [String] = [
+        "Housing",
+        "Food",
+        "Transportation",
+        "Utilities",
+        "Healthcare",
+        "Personal",
+        "Entertainment",
+        "Other"
+    ]
     static let RevenueCategories: [String] = [
         "Paycheck",
         "Gift",
@@ -52,13 +48,6 @@ struct MainView: View {
     var body: some View {
         NavigationStack(path: $navigationStore.path) {
             List {
-                Section {
-                    Button {
-                        navigationStore.push(ExpenseViewType.dashboard)
-                    } label: {
-                        button("Dashboard", icon: "house")
-                    }.buttonStyle(.plain)
-                }
                 Section("Expenses") {
                     Button {
                         navigationStore.push(ExpenseViewType.add())
@@ -161,8 +150,6 @@ struct MainView: View {
     @ViewBuilder
     static func computeDestination(type: ExpenseViewType) -> some View {
         switch type {
-        case .dashboard:
-            DashboardYearView()
         case .byCategory(let name):
             if let name {
                 ExpenseCategoryView(category: name)
@@ -210,7 +197,6 @@ struct MainView: View {
 }
 
 enum ExpenseViewType: Hashable {
-    case dashboard
     case byCategory(name: String? = nil)
     case byDate
     case byMonth(year: Int, month: Int)

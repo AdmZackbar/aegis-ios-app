@@ -67,7 +67,7 @@ struct ExpenseEditView: View {
     
     var body: some View {
         let payees = Set(expenses.map({ $0.payee })).sorted()
-        let categories = Set(MainView.ExpenseCategories.values.flatMap({ $0 }) + expenses.map({ $0.category })).sorted()
+        let categories = Set(MainView.MainExpenseCategories + expenses.map({ $0.category })).sorted()
         let names = Set(expenses.map(getItemNames).flatMap({ $0 })).sorted()
         let brands = Set(expenses.map(getItemBrands).flatMap({ $0 })).sorted()
         let recentItems: [Expense.Item] = {
@@ -239,13 +239,9 @@ struct ExpenseEditView: View {
     
     private func categoryDropDownMenu() -> some View {
         Menu {
-            ForEach(MainView.ExpenseCategories.sorted(by: { $0.key < $1.key }), id: \.key.hashValue) { category, children in
-                Menu(category) {
-                    ForEach(children, id: \.hashValue) { child in
-                        Button(child) {
-                            self.category = child
-                        }
-                    }
+            ForEach(MainView.MainExpenseCategories, id: \.hashValue) { category in
+                Button(category) {
+                    self.category = category
                 }
             }
         } label: {
@@ -914,11 +910,7 @@ struct ExpenseEditView: View {
 #Preview(traits: .modifier(MockDataPreviewModifier())) {
     @Previewable @StateObject var navigationStore = NavigationStore()
     return NavigationStack(path: $navigationStore.path) {
-        ExpenseEditView(expense: .init(payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Test run", details: .Items(list: .init(items: [
-            .init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541)),
-            .init(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300)),
-            .init(name: "Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
-        ])))).navigationDestination(for: ExpenseViewType.self, destination: MainView.computeDestination)
+        ExpenseEditView().navigationDestination(for: ExpenseViewType.self, destination: MainView.computeDestination)
             .navigationDestination(for: RevenueViewType.self, destination: MainView.computeDestination)
             .navigationDestination(for: AssetViewType.self, destination: MainView.computeDestination)
     }.environmentObject(navigationStore)

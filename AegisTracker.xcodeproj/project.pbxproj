@@ -30,7 +30,6 @@
 		E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769782CE3FF7400D989E1 /* Revenue.swift */; };
 		E88769802CE7DD9D00D989E1 /* Price.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887697F2CE7DD9D00D989E1 /* Price.swift */; };
 		E88769862CE91E5800D989E1 /* ExpenseListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769852CE91E5800D989E1 /* ExpenseListView.swift */; };
-		E88769902CEFC21B00D989E1 /* DashboardYearView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887698F2CEFC21B00D989E1 /* DashboardYearView.swift */; };
 		E887699B2CFA4CF800D989E1 /* CurrencyField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887699A2CFA4CF800D989E1 /* CurrencyField.swift */; };
 		E8EB2A672CE063A7000E4B67 /* AegisTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A662CE063A7000E4B67 /* AegisTrackerApp.swift */; };
 		E8EB2A6D2CE063A9000E4B67 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */; };
@@ -87,7 +86,6 @@
 		E887697E2CE6881600D989E1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E887697F2CE7DD9D00D989E1 /* Price.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Price.swift; sourceTree = "<group>"; };
 		E88769852CE91E5800D989E1 /* ExpenseListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseListView.swift; sourceTree = "<group>"; };
-		E887698F2CEFC21B00D989E1 /* DashboardYearView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardYearView.swift; sourceTree = "<group>"; };
 		E887699A2CFA4CF800D989E1 /* CurrencyField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyField.swift; sourceTree = "<group>"; };
 		E8EB2A632CE063A7000E4B67 /* AegisTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AegisTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8EB2A662CE063A7000E4B67 /* AegisTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisTrackerApp.swift; sourceTree = "<group>"; };
@@ -225,7 +223,6 @@
 				E88164742D111581005C572E /* MainUtilities.swift */,
 				E88164722D11138C005C572E /* ModelUtilities.swift */,
 				E8EB2A9A2CE1074F000E4B67 /* MainView.swift */,
-				E887698F2CEFC21B00D989E1 /* DashboardYearView.swift */,
 				E881646C2D0FB6D1005C572E /* ExpenseCategoryView.swift */,
 				E88164702D10BC35005C572E /* ExpenseDateView.swift */,
 				E881646E2D109050005C572E /* ExpensePayeeView.swift */,
@@ -390,7 +387,6 @@
 				E881647D2D162CF1005C572E /* RevenueEditView.swift in Sources */,
 				E88164772D112EE9005C572E /* AssetListView.swift in Sources */,
 				E88164832D163DE8005C572E /* RevenueView.swift in Sources */,
-				E88769902CEFC21B00D989E1 /* DashboardYearView.swift in Sources */,
 				E88769862CE91E5800D989E1 /* ExpenseListView.swift in Sources */,
 				E88164752D111584005C572E /* MainUtilities.swift in Sources */,
 				E86CB3412D0D1CE100DE38FF /* ExpenseEntryView.swift in Sources */,
