@@ -121,53 +121,6 @@ struct ExpensePayeeView: View {
     }
     
     @ViewBuilder
-    private func byMonthBarChart(expenses: [Expense], year: Int) -> some View {
-        let domain = {
-            var start = DateComponents()
-            start.year = year
-            start.month = 1
-            var end = DateComponents()
-            end.year = year + 1
-            end.month = 1
-            return Calendar.current.date(from: start)!...Calendar.current.date(from: end)!
-        }()
-        Chart(expenses.map({ (date: $0.date, amount: $0.amount.toUsd()) }), id: \.date.hashValue) { item in
-            BarMark(x: .value("Date", item.date, unit: .month), y: .value("Amount", item.amount))
-                .cornerRadius(4)
-                .foregroundStyle(chartSelection == nil || item.date.month == chartSelection!.month ? .accent : .gray)
-        }.chartXScale(domain: domain)
-            .chartXAxis {
-                AxisMarks(values: .stride(by: .month)) { date in
-                    AxisValueLabel(format: .dateTime.month(.narrow), centered: true)
-                }
-            }
-            .chartYAxis {
-                AxisMarks(format: .currency(code: "USD").precision(.fractionLength(0)),
-                          values: .automatic(desiredCount: 4))
-            }
-            .chartXSelection(value: $chartSelection)
-    }
-    
-    @ViewBuilder
-    private func byYearBarChart(expenses: [Expense]) -> some View {
-        Chart(expenses.map({ (date: $0.date, amount: $0.amount.toUsd()) }), id: \.date.hashValue) { item in
-            BarMark(x: .value("Date", item.date, unit: .year), y: .value("Amount", item.amount))
-                .cornerRadius(4)
-                .foregroundStyle(chartSelection == nil || item.date.year == chartSelection!.year ? .accent : .gray)
-        }
-        .chartXAxis {
-            AxisMarks(values: .stride(by: .year)) { date in
-                AxisValueLabel(format: .dateTime.year(), centered: true)
-            }
-        }
-        .chartYAxis {
-            AxisMarks(format: .currency(code: "USD").precision(.fractionLength(0)),
-                      values: .automatic(desiredCount: 4))
-        }
-        .chartXSelection(value: $chartSelection)
-    }
-    
-    @ViewBuilder
     private func sectionView(expenses: [Expense], year: Int?) -> some View {
         Form {
             Section {
@@ -179,10 +132,10 @@ struct ExpensePayeeView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         chartHeader(expenses)
                         if let year {
-                            byMonthBarChart(expenses: expenses, year: year)
+                            FinanceYearChart(data: expenses.map(FinanceData.expense), year: year, selection: $chartSelection)
                                 .frame(height: 100)
                         } else {
-                            byYearBarChart(expenses: expenses)
+                            FinanceMultiYearChart(data: expenses.map(FinanceData.expense), selection: $chartSelection)
                                 .frame(height: 100)
                         }
                     }

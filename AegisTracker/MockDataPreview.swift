@@ -59,7 +59,7 @@ struct MockDataPreviewModifier: PreviewModifier {
             .init(payer: "Fidelity", amount: .Cents(231), category: "Dividend", notes: "Apple divident"),
             .init(payer: "Carmax", amount: .Cents(250000), category: "Sale", notes: "Sold 2002 MDX"),
             .init(payer: "RMCI", amount: .Cents(200000), category: "Bonus", notes: "Christmas bonue"),
-            .init(date: .distantPast, payer: "RMCI", amount: .Cents(170412), category: "Paycheck"),
+            .init(date: Calendar.current.date(byAdding: .year, value: -1, to: .now)!, payer: "RMCI", amount: .Cents(170412), category: "Paycheck"),
         ]
         revenues.forEach({ container.mainContext.insert($0) })
         let asset: Asset = .init(name: "332 Dovington Drive Mortgage",

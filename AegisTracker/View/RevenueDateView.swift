@@ -14,6 +14,7 @@ struct RevenueDateView: View {
     @Query(sort: \Revenue.date, order: .reverse) var revenues: [Revenue]
     
     @State private var yearSelection: Int? = nil
+    @State private var chartSelection: Date? = nil
     
     var body: some View {
         mainView()
@@ -48,15 +49,15 @@ struct RevenueDateView: View {
                     Section {
                         VStack(alignment: .leading, spacing: 12) {
                             VStack(alignment: .leading, spacing: 0) {
-                                Text("Total Income")
+                                Text(chartSelection == nil ? "Total Income" : chartSelection!.month.monthText())
                                     .font(.subheadline)
                                     .opacity(0.6)
-                                Text(yearRevenues.total.toString())
+                                Text(yearRevenues.filter({ chartSelection == nil || $0.date.month == chartSelection!.month }).total.toString())
                                     .font(.title)
                                     .fontWeight(.bold)
                                     .fontDesign(.rounded)
                             }
-                            byYearBarChart(revenues: yearRevenues, year: year)
+                            FinanceYearChart(data: yearRevenues.map(FinanceData.revenue), year: year, selection: $chartSelection)
                                 .frame(height: 140)
                         }
                     } header: {
@@ -71,32 +72,6 @@ struct RevenueDateView: View {
                     .scrollContentBackground(.hidden)
             }
         }
-    }
-    
-    @ViewBuilder
-    private func byYearBarChart(revenues: [Revenue], year: Int) -> some View {
-        let domain = {
-            var start = DateComponents()
-            start.year = year
-            start.month = 1
-            var end = DateComponents()
-            end.year = year + 1
-            end.month = 1
-            return Calendar.current.date(from: start)!...Calendar.current.date(from: end)!
-        }()
-        Chart(revenues.map({ (date: $0.date, amount: $0.amount.toUsd()) }), id: \.date.hashValue) { item in
-            BarMark(x: .value("Date", item.date, unit: .month), y: .value("Amount", item.amount))
-                .cornerRadius(4)
-        }.chartXScale(domain: domain)
-            .chartXAxis {
-                AxisMarks(values: .stride(by: .month)) { date in
-                    AxisValueLabel(format: .dateTime.month(.narrow), centered: true)
-                }
-            }
-            .chartYAxis {
-                AxisMarks(format: .currency(code: "USD").precision(.fractionLength(0)),
-                          values: .automatic(desiredCount: 4))
-            }
     }
 }
 

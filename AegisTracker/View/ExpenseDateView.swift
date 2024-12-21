@@ -16,6 +16,7 @@ struct ExpenseDateView: View {
     @State private var dateType: DateType = .Year
     @State private var monthSelection: DateTag? = nil
     @State private var yearSelection: Int? = nil
+    @State private var chartSelection: Date? = nil
     
     var body: some View {
         mainView()
@@ -89,7 +90,7 @@ struct ExpenseDateView: View {
                             .fontWeight(.bold)
                             .fontDesign(.rounded)
                     }
-                    byMonthChart(year: year, month: month, expenses: monthExpenses)
+                    FinanceMonthChart(data: monthExpenses.map(FinanceData.expense), year: year, month: month, selection: $chartSelection)
                         .frame(height: 140)
                 }
             } header: {
@@ -111,38 +112,6 @@ struct ExpenseDateView: View {
     }
     
     @ViewBuilder
-    private func byMonthChart(year: Int, month: Int, expenses: [Expense]) -> some View {
-        Chart(expenses.map({ (date: $0.date, amount: $0.amount.toUsd()) }), id: \.date.hashValue) { item in
-            BarMark(x: .value("Date", item.date, unit: .day), y: .value("Amount", item.amount))
-                .cornerRadius(4)
-        }.chartXScale(domain: createDate(year: year, month: month, day: 1)...createDate(year: year, month: month, day: Calendar.current.range(of: .day, in: .month, for: createDate(year: year, month: month))?.upperBound))
-            .chartXAxis {
-                AxisMarks(values: .stride(by: .day)) { date in
-                    if date.index % 4 == 0 {
-                        AxisValueLabel(format: .dateTime.day(), centered: true)
-                    }
-                    if date.index % 2 == 0 {
-                        AxisGridLine()
-                    }
-                }
-            }
-            .chartYAxis {
-                AxisMarks(format: .currency(code: "USD").precision(.fractionLength(0)),
-                          values: .automatic(desiredCount: 4))
-            }
-    }
-    
-    private func createDate(year: Int, month: Int = 12, day: Int? = nil) -> Date {
-        return {
-            var d = DateComponents()
-            d.year = year
-            d.month = month
-            d.day = day
-            return Calendar.current.date(from: d)!
-        }()
-    }
-    
-    @ViewBuilder
     private func byYearView() -> some View {
         let map: [Int : [Expense]] = {
             var map: [Int : [Expense]] = [:]
@@ -154,15 +123,15 @@ struct ExpenseDateView: View {
                 Section {
                     VStack(alignment: .leading, spacing: 12) {
                         VStack(alignment: .leading, spacing: 0) {
-                            Text("Total Spending")
+                            Text(chartSelection == nil ? "Total Spending" : chartSelection!.month.monthText())
                                 .font(.subheadline)
                                 .opacity(0.6)
-                            Text(yearExpenses.total.toString())
+                            Text(yearExpenses.filter({ chartSelection == nil || $0.date.month == chartSelection!.month }).total.toString())
                                 .font(.title)
                                 .fontWeight(.bold)
                                 .fontDesign(.rounded)
                         }
-                        byYearBarChart(expenses: yearExpenses, year: year)
+                        FinanceYearChart(data: yearExpenses.map(FinanceData.expense), year: year, selection: $chartSelection)
                             .frame(height: 140)
                     }
                 } header: {
@@ -183,32 +152,6 @@ struct ExpenseDateView: View {
             }.tag(year)
                 .scrollContentBackground(.hidden)
         }
-    }
-    
-    @ViewBuilder
-    private func byYearBarChart(expenses: [Expense], year: Int) -> some View {
-        let domain = {
-            var start = DateComponents()
-            start.year = year
-            start.month = 1
-            var end = DateComponents()
-            end.year = year + 1
-            end.month = 1
-            return Calendar.current.date(from: start)!...Calendar.current.date(from: end)!
-        }()
-        Chart(expenses.map({ (date: $0.date, amount: $0.amount.toUsd()) }), id: \.date.hashValue) { item in
-            BarMark(x: .value("Date", item.date, unit: .month), y: .value("Amount", item.amount))
-                .cornerRadius(4)
-        }.chartXScale(domain: domain)
-            .chartXAxis {
-                AxisMarks(values: .stride(by: .month)) { date in
-                    AxisValueLabel(format: .dateTime.month(.narrow), centered: true)
-                }
-            }
-            .chartYAxis {
-                AxisMarks(format: .currency(code: "USD").precision(.fractionLength(0)),
-                          values: .automatic(desiredCount: 4))
-            }
     }
     
     @ViewBuilder
@@ -254,6 +197,8 @@ struct ExpenseMonthView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
     @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
     
+    @State private var chartSelection: Date? = nil
+    
     let year: Int
     let month: Int
     
@@ -288,7 +233,7 @@ struct ExpenseMonthView: View {
                             .fontWeight(.bold)
                             .fontDesign(.rounded)
                     }
-                    byMonthChart(year: year, month: month, expenses: expenses)
+                    FinanceMonthChart(data: expenses.map(FinanceData.expense), year: year, month: month, selection: $chartSelection)
                         .frame(height: 140)
                 }
             }
@@ -307,38 +252,6 @@ struct ExpenseMonthView: View {
                     }
                 }
             }
-    }
-    
-    @ViewBuilder
-    private func byMonthChart(year: Int, month: Int, expenses: [Expense]) -> some View {
-        Chart(expenses.map({ (date: $0.date, amount: $0.amount.toUsd()) }), id: \.date.hashValue) { item in
-            BarMark(x: .value("Date", item.date, unit: .day), y: .value("Amount", item.amount))
-                .cornerRadius(4)
-        }.chartXScale(domain: createDate(year: year, month: month, day: 1)...createDate(year: year, month: month, day: Calendar.current.range(of: .day, in: .month, for: createDate(year: year, month: month))?.upperBound))
-            .chartXAxis {
-                AxisMarks(values: .stride(by: .day)) { date in
-                    if date.index % 4 == 0 {
-                        AxisValueLabel(format: .dateTime.day(), centered: true)
-                    }
-                    if date.index % 2 == 0 {
-                        AxisGridLine()
-                    }
-                }
-            }
-            .chartYAxis {
-                AxisMarks(format: .currency(code: "USD").precision(.fractionLength(0)),
-                          values: .automatic(desiredCount: 4))
-            }
-    }
-    
-    private func createDate(year: Int, month: Int = 12, day: Int? = nil) -> Date {
-        return {
-            var d = DateComponents()
-            d.year = year
-            d.month = month
-            d.day = day
-            return Calendar.current.date(from: d)!
-        }()
     }
 }
 
