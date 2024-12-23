@@ -31,6 +31,8 @@
 		E88164942D1768A3005C572E /* FinanceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88164932D176891005C572E /* FinanceData.swift */; };
 		E88164962D1769C1005C572E /* FinanceMultiYearChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88164952D1769AE005C572E /* FinanceMultiYearChart.swift */; };
 		E88164982D176ED6005C572E /* FinanceMonthChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88164972D176ED2005C572E /* FinanceMonthChart.swift */; };
+		E88164A22D19B765005C572E /* BudgetCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88164A12D19B75D005C572E /* BudgetCategory.swift */; };
+		E88164A42D19BDC1005C572E /* BudgetCategoryEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88164A32D19BDBA005C572E /* BudgetCategoryEditView.swift */; };
 		E88769772CE3FF4600D989E1 /* Expense.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769762CE3FF4600D989E1 /* Expense.swift */; };
 		E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769782CE3FF7400D989E1 /* Revenue.swift */; };
 		E88769802CE7DD9D00D989E1 /* Price.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887697F2CE7DD9D00D989E1 /* Price.swift */; };
@@ -91,6 +93,8 @@
 		E88164932D176891005C572E /* FinanceData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinanceData.swift; sourceTree = "<group>"; };
 		E88164952D1769AE005C572E /* FinanceMultiYearChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinanceMultiYearChart.swift; sourceTree = "<group>"; };
 		E88164972D176ED2005C572E /* FinanceMonthChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinanceMonthChart.swift; sourceTree = "<group>"; };
+		E88164A12D19B75D005C572E /* BudgetCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetCategory.swift; sourceTree = "<group>"; };
+		E88164A32D19BDBA005C572E /* BudgetCategoryEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetCategoryEditView.swift; sourceTree = "<group>"; };
 		E88769762CE3FF4600D989E1 /* Expense.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Expense.swift; sourceTree = "<group>"; };
 		E88769782CE3FF7400D989E1 /* Revenue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Revenue.swift; sourceTree = "<group>"; };
 		E887697E2CE6881600D989E1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -153,6 +157,7 @@
 				E88769762CE3FF4600D989E1 /* Expense.swift */,
 				E88769782CE3FF7400D989E1 /* Revenue.swift */,
 				E85AE3D02D09483C00CA9D0C /* Asset.swift */,
+				E88164A12D19B75D005C572E /* BudgetCategory.swift */,
 			);
 			path = V1;
 			sourceTree = "<group>";
@@ -246,6 +251,7 @@
 				E88164722D11138C005C572E /* ModelUtilities.swift */,
 				E8EB2A9A2CE1074F000E4B67 /* MainView.swift */,
 				E881648E2D174F66005C572E /* FinanceSummaryView.swift */,
+				E88164A32D19BDBA005C572E /* BudgetCategoryEditView.swift */,
 				E881646C2D0FB6D1005C572E /* ExpenseCategoryView.swift */,
 				E88164702D10BC35005C572E /* ExpenseDateView.swift */,
 				E881646E2D109050005C572E /* ExpensePayeeView.swift */,
@@ -400,6 +406,7 @@
 				E881646F2D109056005C572E /* ExpensePayeeView.swift in Sources */,
 				E88769772CE3FF4600D989E1 /* Expense.swift in Sources */,
 				E88164982D176ED6005C572E /* FinanceMonthChart.swift in Sources */,
+				E88164A42D19BDC1005C572E /* BudgetCategoryEditView.swift in Sources */,
 				E85AE3D12D09483C00CA9D0C /* Asset.swift in Sources */,
 				E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */,
 				E881646D2D0FB6F5005C572E /* ExpenseCategoryView.swift in Sources */,
@@ -424,6 +431,7 @@
 				E88164962D1769C1005C572E /* FinanceMultiYearChart.swift in Sources */,
 				E88164692D0F5D95005C572E /* MockDataPreview.swift in Sources */,
 				E881648F2D174F77005C572E /* FinanceSummaryView.swift in Sources */,
+				E88164A22D19B765005C572E /* BudgetCategory.swift in Sources */,
 				E8EB2A962CE06617000E4B67 /* Schema.swift in Sources */,
 				E88164942D1768A3005C572E /* FinanceData.swift in Sources */,
 				E887699B2CFA4CF800D989E1 /* CurrencyField.swift in Sources */,

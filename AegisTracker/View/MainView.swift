@@ -5,6 +5,7 @@
 //  Created by Zach Wassynger on 11/10/24.
 //
 
+import SwiftData
 import SwiftUI
 
 struct MainView: View {
@@ -40,6 +41,7 @@ struct MainView: View {
         "Other": Color.gray
     ]
     
+    @Query(filter: #Predicate<BudgetCategory> { $0.parent == nil }) var budgets: [BudgetCategory]
     @StateObject private var navigationStore = NavigationStore()
     
     @SceneStorage("navigation")
@@ -69,6 +71,17 @@ struct MainView: View {
                     } label: {
                         button("View By Payee", icon: "person")
                     }.buttonStyle(.plain)
+                    if !budgets.isEmpty {
+                        Menu {
+                            ForEach(budgets, id: \.hashValue) { budget in
+                                Button(budget.name) {
+                                    navigationStore.push(ExpenseViewType.editCategory(category: budget))
+                                }
+                            }
+                        } label: {
+                            button("Edit Budget Categories", icon: "pencil.circle")
+                        }.buttonStyle(.plain)
+                    }
                 }
                 Section("Revenue") {
                     Button {
@@ -150,6 +163,8 @@ struct MainView: View {
     @ViewBuilder
     static func computeDestination(type: ExpenseViewType) -> some View {
         switch type {
+        case .editCategory(let category):
+            BudgetCategoryEditView(category: category)
         case .byCategory(let name):
             if let name {
                 ExpenseCategoryView(category: name)
@@ -197,6 +212,7 @@ struct MainView: View {
 }
 
 enum ExpenseViewType: Hashable {
+    case editCategory(category: BudgetCategory)
     case byCategory(name: String? = nil)
     case byDate
     case byMonth(year: Int, month: Int)

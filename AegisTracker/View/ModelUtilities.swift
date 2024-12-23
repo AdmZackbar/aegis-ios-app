@@ -38,3 +38,10 @@ extension [Revenue] {
         return self.map({ $0.amount }).reduce(.Cents(0), +)
     }
 }
+
+extension [BudgetCategory] {
+    var total: Price? {
+        let amounts = self.filter({ $0.monthlyBudget != nil }).map({ $0.monthlyBudget! })
+        return amounts.isEmpty ? nil : amounts.reduce(.Cents(0), +)
+    }
+}
