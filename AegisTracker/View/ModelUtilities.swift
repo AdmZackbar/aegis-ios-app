@@ -44,4 +44,30 @@ extension [BudgetCategory] {
         let amounts = self.filter({ $0.monthlyBudget != nil }).map({ $0.monthlyBudget! })
         return amounts.isEmpty ? nil : amounts.reduce(.Cents(0), +)
     }
+    
+    func find(_ name: String) -> BudgetCategory? {
+        for category in self {
+            if category.contains(name) {
+                return category
+            }
+        }
+        return nil
+    }
+}
+
+extension BudgetCategory {
+    func contains(_ name: String) -> Bool {
+        if self.name == name {
+            return true
+        }
+        if let assetType = self.assetType, assetType == name {
+            return true
+        }
+        if let children = self.children {
+            if children.find(name) != nil {
+                return true
+            }
+        }
+        return false
+    }
 }

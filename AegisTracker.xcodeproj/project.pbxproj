@@ -38,6 +38,9 @@
 		E88769802CE7DD9D00D989E1 /* Price.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887697F2CE7DD9D00D989E1 /* Price.swift */; };
 		E88769862CE91E5800D989E1 /* ExpenseListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769852CE91E5800D989E1 /* ExpenseListView.swift */; };
 		E887699B2CFA4CF800D989E1 /* CurrencyField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887699A2CFA4CF800D989E1 /* CurrencyField.swift */; };
+		E8E7023C2D1B0DC600FB7013 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E7023B2D1B0DB600FB7013 /* DashboardView.swift */; };
+		E8E7023F2D1B2FC100FB7013 /* CategoryData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E7023E2D1B2FBB00FB7013 /* CategoryData.swift */; };
+		E8E702412D1B304E00FB7013 /* CategoryPieChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E702402D1B303800FB7013 /* CategoryPieChart.swift */; };
 		E8EB2A672CE063A7000E4B67 /* AegisTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A662CE063A7000E4B67 /* AegisTrackerApp.swift */; };
 		E8EB2A6D2CE063A9000E4B67 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */; };
 		E8EB2A702CE063A9000E4B67 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8EB2A6F2CE063A9000E4B67 /* Preview Assets.xcassets */; };
@@ -101,6 +104,9 @@
 		E887697F2CE7DD9D00D989E1 /* Price.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Price.swift; sourceTree = "<group>"; };
 		E88769852CE91E5800D989E1 /* ExpenseListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseListView.swift; sourceTree = "<group>"; };
 		E887699A2CFA4CF800D989E1 /* CurrencyField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyField.swift; sourceTree = "<group>"; };
+		E8E7023B2D1B0DB600FB7013 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		E8E7023E2D1B2FBB00FB7013 /* CategoryData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryData.swift; sourceTree = "<group>"; };
+		E8E702402D1B303800FB7013 /* CategoryPieChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryPieChart.swift; sourceTree = "<group>"; };
 		E8EB2A632CE063A7000E4B67 /* AegisTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AegisTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8EB2A662CE063A7000E4B67 /* AegisTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisTrackerApp.swift; sourceTree = "<group>"; };
 		E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -143,6 +149,8 @@
 		E88164902D175921005C572E /* Chart */ = {
 			isa = PBXGroup;
 			children = (
+				E8E702402D1B303800FB7013 /* CategoryPieChart.swift */,
+				E8E7023E2D1B2FBB00FB7013 /* CategoryData.swift */,
 				E88164932D176891005C572E /* FinanceData.swift */,
 				E88164952D1769AE005C572E /* FinanceMultiYearChart.swift */,
 				E88164912D17592B005C572E /* FinanceYearChart.swift */,
@@ -250,6 +258,7 @@
 				E88164742D111581005C572E /* MainUtilities.swift */,
 				E88164722D11138C005C572E /* ModelUtilities.swift */,
 				E8EB2A9A2CE1074F000E4B67 /* MainView.swift */,
+				E8E7023B2D1B0DB600FB7013 /* DashboardView.swift */,
 				E881648E2D174F66005C572E /* FinanceSummaryView.swift */,
 				E88164A32D19BDBA005C572E /* BudgetCategoryEditView.swift */,
 				E881646C2D0FB6D1005C572E /* ExpenseCategoryView.swift */,
@@ -411,10 +420,13 @@
 				E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */,
 				E881646D2D0FB6F5005C572E /* ExpenseCategoryView.swift in Sources */,
 				E8EB2A672CE063A7000E4B67 /* AegisTrackerApp.swift in Sources */,
+				E8E702412D1B304E00FB7013 /* CategoryPieChart.swift in Sources */,
 				E88164792D113681005C572E /* AssetView.swift in Sources */,
 				E88164732D11139E005C572E /* ModelUtilities.swift in Sources */,
+				E8E7023F2D1B2FC100FB7013 /* CategoryData.swift in Sources */,
 				E881646B2D0F90D4005C572E /* NavigationStore.swift in Sources */,
 				E881647B2D114AE3005C572E /* AssetEditView.swift in Sources */,
+				E8E7023C2D1B0DC600FB7013 /* DashboardView.swift in Sources */,
 				E881647D2D162CF1005C572E /* RevenueEditView.swift in Sources */,
 				E88164772D112EE9005C572E /* AssetListView.swift in Sources */,
 				E88164832D163DE8005C572E /* RevenueView.swift in Sources */,

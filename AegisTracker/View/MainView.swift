@@ -52,6 +52,11 @@ struct MainView: View {
             List {
                 Section("Expenses") {
                     Button {
+                        navigationStore.push(ExpenseViewType.dashboard)
+                    } label: {
+                        button("Dashboard", icon: "house")
+                    }.buttonStyle(.plain)
+                    Button {
                         navigationStore.push(ExpenseViewType.add())
                     } label: {
                         button("Add Expense", icon: "text.badge.plus")
@@ -163,6 +168,8 @@ struct MainView: View {
     @ViewBuilder
     static func computeDestination(type: ExpenseViewType) -> some View {
         switch type {
+        case .dashboard:
+            DashboardView()
         case .editCategory(let category):
             BudgetCategoryEditView(category: category)
         case .byCategory(let name):
@@ -212,6 +219,7 @@ struct MainView: View {
 }
 
 enum ExpenseViewType: Hashable {
+    case dashboard
     case editCategory(category: BudgetCategory)
     case byCategory(name: String? = nil)
     case byDate

@@ -10,13 +10,6 @@ import Foundation
 enum Price: Codable, Equatable, Hashable, Comparable {
     case Cents(_ amount: Int)
     
-    static let formatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.maximumFractionDigits = 2
-        return formatter
-    }()
-    
     func toCents() -> Int {
         switch self {
         case .Cents(let amount):
@@ -31,8 +24,21 @@ enum Price: Codable, Equatable, Hashable, Comparable {
         }
     }
     
-    func toString() -> String {
-        return Price.formatter.string(for: toUsd())!
+    func abs() -> Price {
+        switch self {
+        case .Cents(let value):
+            return Price.Cents(Swift.abs(value))
+        }
+    }
+    
+    func toString(maxDigits: Int = 2) -> String {
+        let formatter: NumberFormatter = {
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .currency
+            formatter.maximumFractionDigits = maxDigits
+            return formatter
+        }()
+        return formatter.string(for: toUsd())!
     }
     
     static func < (lhs: Price, rhs: Price) -> Bool {

@@ -29,11 +29,11 @@ struct MockDataPreviewModifier: PreviewModifier {
                   details: .Fuel(details: .init(amount: 11.2, rate: 2.561, user: "CX-5"))),
             .init(payee: "NBKC Bank",
                   amount: .Cents(600),
-                  category: "Housing Payment",
+                  category: "Mortgage",
                   notes: "November payment"),
             .init(payee: "HSV Utils",
                   amount: .Cents(10234),
-                  category: "Utility Bill",
+                  category: "Housing Utilities",
                   notes: "November bill",
                   details: .Bill(details: .init(bills: [
                     .Variable(name: "Electric", base: .Cents(3552), amount: 462, rate: 0.00231),
@@ -50,7 +50,11 @@ struct MockDataPreviewModifier: PreviewModifier {
                     .init(name: "Chicken breast", brand: "Kirkland Signature", quantity: .Unit(num: 2.4, unit: "lb"), total: .Cents(1230)),
                     .init(name: "Apples", brand: "Publix", quantity: .Discrete(6), total: .Cents(190)),
                     .init(name: "Root beer", brand: "IBC", quantity: .Discrete(1), total: .Cents(699))
-                  ])))
+                  ]))),
+            .init(date: Calendar.current.date(byAdding: .month, value: -4, to: .now)!,
+                  payee: "Chick-Fil-A",
+                  amount: .Cents(1345),
+                  category: "Fast Food"),
         ]
         expenses.forEach({ container.mainContext.insert($0) })
         let revenues: [Revenue] = [
@@ -59,6 +63,7 @@ struct MockDataPreviewModifier: PreviewModifier {
             .init(payer: "Fidelity", amount: .Cents(231), category: "Dividend", notes: "Apple divident"),
             .init(payer: "Carmax", amount: .Cents(250000), category: "Sale", notes: "Sold 2002 MDX"),
             .init(payer: "RMCI", amount: .Cents(200000), category: "Bonus", notes: "Christmas bonue"),
+            .init(date: Calendar.current.date(byAdding: .month, value: -8, to: .now)!, payer: "RMCI", amount: .Cents(190412), category: "Paycheck"),
             .init(date: Calendar.current.date(byAdding: .year, value: -1, to: .now)!, payer: "RMCI", amount: .Cents(170412), category: "Paycheck"),
         ]
         revenues.forEach({ container.mainContext.insert($0) })
@@ -91,11 +96,20 @@ struct MockDataPreviewModifier: PreviewModifier {
             .init(name: "Entertainment", amount: .Cents(25000), colorValue: Color.init(hex: "#D357FE").hexValue),
             .init(name: "Other", colorValue: Color.gray.hexValue)
         ]
+        let mortgage = BudgetCategory(name: "Mortgage", assetType: "House")
+        mortgage.parent = categories[0]
+        let fastFood = BudgetCategory(name: "Fast Food")
+        fastFood.parent = categories[1]
+        let groceries = BudgetCategory(name: "Fast Food")
+        groceries.parent = categories[1]
         container.mainContext.insert(mainCategory)
         categories.forEach { category in
             category.parent = mainCategory
             container.mainContext.insert(category)
         }
+        container.mainContext.insert(mortgage)
+        container.mainContext.insert(fastFood)
+        container.mainContext.insert(groceries)
     }
     
     func body(content: Content, context: ModelContainer) -> some View {
