@@ -49,9 +49,20 @@ struct DashboardCategoryView: View {
     
     var body: some View {
         let expenses = allExpenses.filter({ category.contains($0.category) && dateInterval.contains($0.date) })
-        let data = expenses.map(Expense.toCategoryData)
+        var assetData: [CategoryData] = []
+        let payments: [Asset.Loan.Payment] = {
+            var payments: [Asset.Loan.Payment] = []
+            for asset in assets.filter({ category.contains($0.metaData.category) && $0.loan != nil }) {
+                let assetPayments = asset.loan!.payments.filter({ dateInterval.contains($0.date) })
+                payments += assetPayments
+                assetData += asset.toCategoryData(assetPayments)
+            }
+            return payments
+        }()
+        let data = expenses.map(Expense.toCategoryData) + assetData
+        let financeData = expenses.map(Expense.toFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) })
         Form {
-            dateView(expenses: expenses)
+            dateView(financeData: financeData)
             if let subcategories = category.children, !subcategories.isEmpty {
                 subcategoryView(data: data, subcategories: subcategories)
             } else if let budget = category.monthlyBudget {
@@ -59,9 +70,18 @@ struct DashboardCategoryView: View {
                     budgetView(name: "Total", data: data, budget: budget)
                 }.headerProminence(.increased)
             }
-            Section("Entries") {
-                ExpenseListView(expenses: expenses)
-            }.headerProminence(.increased)
+            if !expenses.isEmpty {
+                Section("Entries") {
+                    ExpenseListView(expenses: expenses)
+                }.headerProminence(.increased)
+            }
+            if !payments.isEmpty {
+                Section("Asset Payments") {
+                    ForEach(payments, id: \.hashValue) { payment in
+                        AssetPaymentEntryView(payment: payment)
+                    }
+                }.headerProminence(.increased)
+            }
         }.navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -140,10 +160,10 @@ struct DashboardCategoryView: View {
     }
     
     @ViewBuilder
-    private func dateView(expenses: [Expense]) -> some View {
+    private func dateView(financeData: [FinanceData]) -> some View {
         let header: String = {
             if let selectedDate {
-                let total = expenses.filter({ isFiltered(date: selectedDate, expense: $0) }).total
+                let total = financeData.filter({ isFiltered(date: selectedDate, item: $0) }).total
                 let header: String = {
                     switch dateIntervalType {
                     case .month:
@@ -156,28 +176,27 @@ struct DashboardCategoryView: View {
                 }()
                 return "\(header): \(total.toString())"
             }
-            return "Total: \(expenses.total.toString())"
+            return "Total: \(financeData.total.toString())"
         }()
         Section(header) {
-            dateChart(expenses: expenses)
+            dateChart(financeData: financeData)
                 .frame(height: 120)
         }.headerProminence(.increased)
     }
     
-    private func isFiltered(date: Date, expense: Expense) -> Bool {
+    private func isFiltered(date: Date, item: FinanceData) -> Bool {
         switch dateIntervalType {
         case .month:
-            return expense.date.year == date.year && expense.date.month == date.month && expense.date.day == date.day
+            return item.date.year == date.year && item.date.month == date.month && item.date.day == date.day
         case .year:
-            return expense.date.year == date.year && expense.date.month == date.month
+            return item.date.year == date.year && item.date.month == date.month
         default:
-            return expense.date.year == date.year
+            return item.date.year == date.year
         }
     }
     
     @ViewBuilder
-    private func dateChart(expenses: [Expense]) -> some View {
-        let financeData = expenses.map(Expense.toFinanceData)
+    private func dateChart(financeData: [FinanceData]) -> some View {
         switch dateIntervalType {
         case .month:
             FinanceMonthChart(data: financeData,

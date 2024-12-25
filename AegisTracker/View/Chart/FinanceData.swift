@@ -19,6 +19,12 @@ extension Revenue {
     }
 }
 
+extension [FinanceData] {
+    var total: Price {
+        self.map({ .Cents(Int($0.amount * 100)) }).reduce(.Cents(0), +)
+    }
+}
+
 struct FinanceData: Codable {
     var date: Date
     var amount: Double

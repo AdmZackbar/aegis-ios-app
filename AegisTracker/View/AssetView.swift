@@ -153,7 +153,7 @@ struct AssetView: View {
                 Label("Add Payment", systemImage: "plus")
             }
             ForEach(loan.payments.sorted(by: { $0.date > $1.date }), id: \.hashValue) { payment in
-                paymentEntry(payment)
+                AssetPaymentEntryView(payment: payment)
                     .contextMenu {
                         Button {
                             self.payment = .fromAsset(payment)
@@ -168,84 +168,6 @@ struct AssetView: View {
                             Label("Delete", systemImage: "trash")
                         }
                     }
-            }
-        }
-    }
-    
-    @ViewBuilder
-    private func paymentEntry(_ payment: Asset.Loan.Payment) -> some View {
-        switch payment.type {
-        case .Regular(_):
-            regularPaymentEntry(payment)
-        case .Principal(_):
-            principalPaymentEntry(payment)
-        }
-    }
-    
-    @ViewBuilder
-    private func regularPaymentEntry(_ payment: Asset.Loan.Payment) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            VStack(alignment: .leading) {
-                HStack {
-                    Text("Regular")
-                    Spacer()
-                    Text("Total")
-                }.font(.subheadline)
-                    .opacity(0.6)
-                HStack {
-                    Text(payment.date.formatted(date: .abbreviated, time: .omitted))
-                    Spacer()
-                    Text(payment.amount.toString())
-                }.bold()
-            }
-            HStack(spacing: 16) {
-                stackedText(text: "Principal", amount: payment.principal)
-                stackedText(text: "Interest", amount: payment.interest)
-                stackedText(text: "Escrow", amount: payment.escrow)
-                stackedText(text: "Other", amount: payment.other)
-            }
-            if !payment.notes.isEmpty {
-                Text(payment.notes)
-                    .font(.subheadline)
-                    .italic()
-            }
-        }
-    }
-    
-    @ViewBuilder
-    private func stackedText(text: String, amount: Price) -> some View {
-        if amount.toCents() > 0 {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(text)
-                    .font(.caption)
-                    .opacity(0.6)
-                Text(amount.toString())
-                    .font(.subheadline)
-                    .bold()
-            }
-        }
-    }
-    
-    @ViewBuilder
-    private func principalPaymentEntry(_ payment: Asset.Loan.Payment) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            VStack(alignment: .leading) {
-                HStack {
-                    Text("Principal")
-                    Spacer()
-                    Text("Total")
-                }.font(.subheadline)
-                    .opacity(0.6)
-                HStack {
-                    Text(payment.date.formatted(date: .abbreviated, time: .omitted))
-                    Spacer()
-                    Text(payment.amount.toString())
-                }.bold()
-            }
-            if !payment.notes.isEmpty {
-                Text(payment.notes)
-                    .font(.subheadline)
-                    .italic()
             }
         }
     }
@@ -413,6 +335,87 @@ struct PaymentEditSheet: View {
                     date: date,
                     type: .Principal(principal: .Cents(principal)),
                     notes: notes)
+            }
+        }
+    }
+}
+
+struct AssetPaymentEntryView: View {
+    let payment: Asset.Loan.Payment
+    
+    var body: some View {
+        switch payment.type {
+        case .Regular(_):
+            regularPaymentEntry(payment)
+        case .Principal(_):
+            principalPaymentEntry(payment)
+        }
+    }
+    
+    @ViewBuilder
+    private func regularPaymentEntry(_ payment: Asset.Loan.Payment) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading) {
+                HStack {
+                    Text("Regular")
+                    Spacer()
+                    Text("Total")
+                }.font(.subheadline)
+                    .opacity(0.6)
+                HStack {
+                    Text(payment.date.formatted(date: .abbreviated, time: .omitted))
+                    Spacer()
+                    Text(payment.amount.toString())
+                }.bold()
+            }
+            HStack(spacing: 16) {
+                stackedText(text: "Principal", amount: payment.principal)
+                stackedText(text: "Interest", amount: payment.interest)
+                stackedText(text: "Escrow", amount: payment.escrow)
+                stackedText(text: "Other", amount: payment.other)
+            }
+            if !payment.notes.isEmpty {
+                Text(payment.notes)
+                    .font(.subheadline)
+                    .italic()
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func stackedText(text: String, amount: Price) -> some View {
+        if amount.toCents() > 0 {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(text)
+                    .font(.caption)
+                    .opacity(0.6)
+                Text(amount.toString())
+                    .font(.subheadline)
+                    .bold()
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func principalPaymentEntry(_ payment: Asset.Loan.Payment) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading) {
+                HStack {
+                    Text("Principal")
+                    Spacer()
+                    Text("Total")
+                }.font(.subheadline)
+                    .opacity(0.6)
+                HStack {
+                    Text(payment.date.formatted(date: .abbreviated, time: .omitted))
+                    Spacer()
+                    Text(payment.amount.toString())
+                }.bold()
+            }
+            if !payment.notes.isEmpty {
+                Text(payment.notes)
+                    .font(.subheadline)
+                    .italic()
             }
         }
     }
