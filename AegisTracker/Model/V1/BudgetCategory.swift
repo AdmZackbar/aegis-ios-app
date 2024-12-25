@@ -44,11 +44,13 @@ extension SchemaV1 {
         init(name: String = "",
              amount: Price? = nil,
              colorValue: UInt? = nil,
-             assetType: String? = nil) {
+             assetType: String? = nil,
+             children: [BudgetCategory]? = nil) {
             self.name = name
             self.amount = amount
             self.colorValue = colorValue
             self.assetType = assetType
+            self.children = children
         }
     }
 }

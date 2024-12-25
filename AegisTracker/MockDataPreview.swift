@@ -86,30 +86,26 @@ struct MockDataPreviewModifier: PreviewModifier {
                                         rate: 6.625,
                                         term: .Years(num: 30))))
         container.mainContext.insert(asset)
-        let mainCategory: BudgetCategory = .init(name: "Main Budget")
-        let categories: [BudgetCategory] = [
-            .init(name: "Housing", amount: .Cents(300000), colorValue: Color.init(hex: "#0056D6").hexValue),
-            .init(name: "Food", amount: .Cents(60000), colorValue: Color.init(hex: "#99244F").hexValue),
-            .init(name: "Transportation", amount: .Cents(15000), colorValue: Color.init(hex: "#D38301").hexValue),
+        let budget: BudgetCategory = .init(name: "Main Budget", children: [
+            .init(name: "Housing", amount: .Cents(300000), colorValue: Color.init(hex: "#0056D6").hexValue, children: [
+                .init(name: "Mortgage", assetType: "House"),
+                .init(name: "Housing Utilities")
+            ]),
+            .init(name: "Food", amount: .Cents(60000), colorValue: Color.init(hex: "#99244F").hexValue, children: [
+                .init(name: "Fast Food"),
+                .init(name: "Groceries")
+            ]),
+            .init(name: "Transportation", amount: .Cents(15000), colorValue: Color.init(hex: "#D38301").hexValue, children: [
+                .init(name: "Gas", amount: .Cents(6000))
+            ]),
             .init(name: "Healthcare", amount: .Cents(18000), colorValue: Color.init(hex: "#01C7FC").hexValue),
-            .init(name: "Personal", amount: .Cents(20000), colorValue: Color.init(hex: "#FF6250").hexValue),
+            .init(name: "Personal", amount: .Cents(20000), colorValue: Color.init(hex: "#FF6250").hexValue, children: [
+                .init(name: "Haircut")
+            ]),
             .init(name: "Entertainment", amount: .Cents(25000), colorValue: Color.init(hex: "#D357FE").hexValue),
             .init(name: "Other", colorValue: Color.gray.hexValue)
-        ]
-        let mortgage = BudgetCategory(name: "Mortgage", assetType: "House")
-        mortgage.parent = categories[0]
-        let fastFood = BudgetCategory(name: "Fast Food")
-        fastFood.parent = categories[1]
-        let groceries = BudgetCategory(name: "Fast Food")
-        groceries.parent = categories[1]
-        container.mainContext.insert(mainCategory)
-        categories.forEach { category in
-            category.parent = mainCategory
-            container.mainContext.insert(category)
-        }
-        container.mainContext.insert(mortgage)
-        container.mainContext.insert(fastFood)
-        container.mainContext.insert(groceries)
+        ])
+        container.mainContext.insert(budget)
     }
     
     func body(content: Content, context: ModelContainer) -> some View {

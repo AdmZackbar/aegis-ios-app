@@ -12,6 +12,10 @@ extension Int {
         Calendar.current.monthSymbols[self - 1]
     }
     
+    func shortMonthText() -> String {
+        Calendar.current.shortMonthSymbols[self - 1]
+    }
+    
     func yearText() -> String {
         self.formatted(.number.grouping(.never))
     }
@@ -32,6 +36,34 @@ extension Date {
         get {
             Calendar.current.component(.day, from: self)
         }
+    }
+    
+    static func from(year: Int, month: Int, day: Int) -> Date {
+        var components = DateComponents()
+        components.year = year
+        components.month = month
+        components.day = day
+        return Calendar.current.date(from: components)!
+    }
+}
+
+extension DateInterval {
+    static func monthOf(_ date: Date) -> DateInterval {
+        return .init(start: .from(year: date.year, month: date.month, day: 1),
+                     end: .from(year: date.year, month: date.month,
+                                day: Calendar.current.range(of: .day, in: .month, for: date)!.upperBound - 1))
+    }
+    
+    static func yearOf(_ date: Date) -> DateInterval {
+        return .init(start: .from(year: date.year, month: 1, day: 1),
+                     end: .from(year: date.year, month: 12,
+                                day: Calendar.current.range(of: .day, in: .month, for: .from(year: date.year, month: 12, day: 1))!.upperBound - 1))
+    }
+    
+    static func yearToDate(_ date: Date) -> DateInterval {
+        return .init(start: .from(year: date.year, month: 1, day: 1),
+                     end: .from(year: date.year, month: date.month,
+                                day: Calendar.current.range(of: .day, in: .month, for: date)!.upperBound - 1))
     }
 }
 

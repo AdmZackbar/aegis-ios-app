@@ -208,16 +208,18 @@ struct DashboardMonthView: View {
                         .font(.title3)
                         .bold()
                     Spacer()
-                    Menu {
-                        ForEach(categories, id: \.hashValue) { category in
-                            Button("View \(category.name)") {
-                                viewExpenseCategory(category)
+                    if !data.isEmpty {
+                        Menu {
+                            ForEach(categories.sorted(by: { $0.name < $1.name }), id: \.hashValue) { category in
+                                Button("View \(category.name)") {
+                                    viewExpenseCategory(category)
+                                }.disabled(!data.contains(where: { category.contains($0.category) }))
                             }
+                            Divider()
+                            Button("View All", action: viewExpenseList)
+                        } label: {
+                            Label("View Expenses", systemImage: "list.bullet").labelStyle(.iconOnly)
                         }
-                        Divider()
-                        Button("View All", action: viewExpenseList)
-                    } label: {
-                        Label("View Expenses", systemImage: "list.bullet").labelStyle(.iconOnly)
                     }
                 }
                 VStack(alignment: .leading) {
@@ -233,7 +235,7 @@ struct DashboardMonthView: View {
                             }
                         }
                     }
-                    if data.total.toCents() > 0 {
+                    if !data.isEmpty {
                         CategoryPieChart(categories: categories, data: data, selectedData: $selectedData)
                             .frame(height: 200)
                     } else {
@@ -262,12 +264,12 @@ struct DashboardMonthView: View {
     }
     
     private func viewExpenseCategory(_ category: BudgetCategory) {
+        let date = Date.from(year: year, month: month, day: 1)
         switch summaryView {
         case .month:
-            // TODO
-            navigationStore.push(ExpenseViewType.byCategory(name: category.name))
+            navigationStore.push(ExpenseViewType.dashboardCategory(category: category, dateInterval: .monthOf(date)))
         case .ytd:
-            navigationStore.push(ExpenseViewType.byCategory(name: category.name))
+            navigationStore.push(ExpenseViewType.dashboardCategory(category: category, dateInterval: .yearToDate(date)))
         }
     }
     
