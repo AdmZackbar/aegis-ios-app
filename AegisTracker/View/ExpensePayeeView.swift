@@ -132,10 +132,10 @@ struct ExpensePayeeView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         chartHeader(expenses)
                         if let year {
-                            FinanceYearChart(data: expenses.map(FinanceData.expense), year: year, selection: $chartSelection)
+                            FinanceYearChart(data: expenses.map(Expense.toFinanceData), year: year, selection: $chartSelection)
                                 .frame(height: 100)
                         } else {
-                            FinanceMultiYearChart(data: expenses.map(FinanceData.expense), selection: $chartSelection)
+                            FinanceMultiYearChart(data: expenses.map(Expense.toFinanceData), selection: $chartSelection)
                                 .frame(height: 100)
                         }
                     }

@@ -6,14 +6,14 @@
 //
 
 extension Expense {
-    func toCategoryData() -> CategoryData {
-        .init(category: self.category, amount: self.amount)
+    static func toCategoryData(_ expense: Expense) -> CategoryData {
+        .init(category: expense.category, amount: expense.amount)
     }
 }
 
 extension Revenue {
-    func toCategoryData() -> CategoryData {
-        .init(category: self.category, amount: self.amount)
+    static func toCategoryData(_ revenue: Revenue) -> CategoryData {
+        .init(category: revenue.category, amount: revenue.amount)
     }
 }
 

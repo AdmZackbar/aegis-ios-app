@@ -101,7 +101,7 @@ struct DashboardMonthView: View {
     
     var body: some View {
         let expenseData: [CategoryData] = {
-            return expenses.map({ $0.toCategoryData() }) + assets.map(toCategoryData).flatMap({ $0 })
+            return expenses.map(Expense.toCategoryData) + assets.map(toCategoryData).flatMap({ $0 })
         }()
         ScrollView(.vertical) {
             VStack(alignment: .leading, spacing: 20) {

@@ -57,7 +57,7 @@ struct RevenueDateView: View {
                                     .fontWeight(.bold)
                                     .fontDesign(.rounded)
                             }
-                            FinanceYearChart(data: yearRevenues.map(FinanceData.revenue), year: year, selection: $chartSelection)
+                            FinanceYearChart(data: yearRevenues.map(Revenue.toFinanceData), year: year, selection: $chartSelection)
                                 .frame(height: 140)
                         }
                     } header: {

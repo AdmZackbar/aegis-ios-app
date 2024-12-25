@@ -7,15 +7,19 @@
 
 import SwiftUI
 
-struct FinanceData: Codable {
-    static func expense(_ expense: Expense) -> FinanceData {
+extension Expense {
+    static func toFinanceData(_ expense: Expense) -> FinanceData {
         .init(date: expense.date, amount: expense.amount.toUsd(), category: .expense)
     }
-    
-    static func revenue(_ revenue: Revenue) -> FinanceData {
+}
+
+extension Revenue {
+    static func toFinanceData(_ revenue: Revenue) -> FinanceData {
         .init(date: revenue.date, amount: revenue.amount.toUsd(), category: .income)
     }
-    
+}
+
+struct FinanceData: Codable {
     var date: Date
     var amount: Double
     var category: Category

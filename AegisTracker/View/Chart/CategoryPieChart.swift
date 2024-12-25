@@ -96,16 +96,19 @@ struct CategoryPieChart: View {
     @Previewable @State var selectedData: CategoryData? = nil
     let categories: [BudgetCategory] = {
         var categories: [BudgetCategory] = [
-            .init(name: "Housing", amount: .Cents(300000), colorValue: Color.init(hex: "#0056D6").hexValue),
-            .init(name: "Food", amount: .Cents(60000), colorValue: Color.init(hex: "#99244F").hexValue),
+            .init(name: "Housing", amount: .Cents(300000), colorValue: Color.init(hex: "#0056D6").hexValue, children: [
+                .init(name: "Housing Maintenance")
+            ]),
+            .init(name: "Food", amount: .Cents(60000), colorValue: Color.init(hex: "#99244F").hexValue, children: [
+                .init(name: "Fast Food"),
+                .init(name: "Groceries")
+            ]),
             .init(name: "Transportation", amount: .Cents(15000), colorValue: Color.init(hex: "#D38301").hexValue),
             .init(name: "Healthcare", amount: .Cents(18000), colorValue: Color.init(hex: "#01C7FC").hexValue),
             .init(name: "Personal", amount: .Cents(20000), colorValue: Color.init(hex: "#FF6250").hexValue),
             .init(name: "Entertainment", amount: .Cents(25000), colorValue: Color.init(hex: "#D357FE").hexValue),
             .init(name: "Other", colorValue: Color.gray.hexValue)
         ]
-        categories[0].children = [.init(name: "Housing Maintenance")]
-        categories[1].children = [.init(name: "Fast Food"), .init(name: "Groceries")]
         return categories
     }()
     Form {

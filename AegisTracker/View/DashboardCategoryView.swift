@@ -17,6 +17,7 @@ struct DashboardCategoryView: View {
     let dateInterval: DateInterval
     
     @State private var selectedData: CategoryData? = nil
+    @State private var selectedDate: Date? = nil
     
     private var dateIntervalType: Calendar.Component? {
         if dateInterval.start.year == dateInterval.end.year {
@@ -48,8 +49,9 @@ struct DashboardCategoryView: View {
     
     var body: some View {
         let expenses = allExpenses.filter({ category.contains($0.category) && dateInterval.contains($0.date) })
-        let data = expenses.map({ $0.toCategoryData() })
+        let data = expenses.map(Expense.toCategoryData)
         Form {
+            dateView(expenses: expenses)
             if let subcategories = category.children, !subcategories.isEmpty {
                 subcategoryView(data: data, subcategories: subcategories)
             } else if let budget = category.monthlyBudget {
@@ -57,7 +59,7 @@ struct DashboardCategoryView: View {
                     budgetView(name: "Total", data: data, budget: budget)
                 }.headerProminence(.increased)
             }
-            Section("Expenses") {
+            Section("Entries") {
                 ExpenseListView(expenses: expenses)
             }.headerProminence(.increased)
         }.navigationTitle(title)
@@ -88,7 +90,7 @@ struct DashboardCategoryView: View {
                     Spacer()
                     Menu {
                         ForEach(subcategories.sorted(by: { $0.name < $1.name }), id: \.hashValue) { subcategory in
-                            Button("View \(subcategory.name)") {
+                            Button(subcategory.name) {
                                 navigationStore.push(ExpenseViewType.dashboardCategory(category: subcategory, dateInterval: dateInterval))
                             }.disabled(!data.contains(where: { subcategory.contains($0.category) }))
                         }
@@ -134,6 +136,60 @@ struct DashboardCategoryView: View {
                 stackedText(header: remaining.toCents() >= 0 ? "Remaining" : "Over", main: remaining.abs().toString(maxDigits: 0))
                     .foregroundStyle(remaining.toCents() >= 0 ? Color.primary : Color.red)
             }
+        }
+    }
+    
+    @ViewBuilder
+    private func dateView(expenses: [Expense]) -> some View {
+        let header: String = {
+            if let selectedDate {
+                let total = expenses.filter({ isFiltered(date: selectedDate, expense: $0) }).total
+                let header: String = {
+                    switch dateIntervalType {
+                    case .month:
+                        "\(selectedDate.month.shortMonthText()) \(selectedDate.day.formatted())"
+                    case .year:
+                        selectedDate.month.monthText()
+                    default:
+                        selectedDate.year.yearText()
+                    }
+                }()
+                return "\(header): \(total.toString())"
+            }
+            return "Total: \(expenses.total.toString())"
+        }()
+        Section(header) {
+            dateChart(expenses: expenses)
+                .frame(height: 120)
+        }.headerProminence(.increased)
+    }
+    
+    private func isFiltered(date: Date, expense: Expense) -> Bool {
+        switch dateIntervalType {
+        case .month:
+            return expense.date.year == date.year && expense.date.month == date.month && expense.date.day == date.day
+        case .year:
+            return expense.date.year == date.year && expense.date.month == date.month
+        default:
+            return expense.date.year == date.year
+        }
+    }
+    
+    @ViewBuilder
+    private func dateChart(expenses: [Expense]) -> some View {
+        let financeData = expenses.map(Expense.toFinanceData)
+        switch dateIntervalType {
+        case .month:
+            FinanceMonthChart(data: financeData,
+                              year: dateInterval.start.year,
+                              month: dateInterval.start.month,
+                              selection: $selectedDate)
+        case .year:
+            FinanceYearChart(data: financeData,
+                             year: dateInterval.start.year,
+                             selection: $selectedDate)
+        default:
+            FinanceMultiYearChart(data: financeData, selection: $selectedDate)
         }
     }
     

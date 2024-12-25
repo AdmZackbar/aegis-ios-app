@@ -90,7 +90,7 @@ struct ExpenseDateView: View {
                             .fontWeight(.bold)
                             .fontDesign(.rounded)
                     }
-                    FinanceMonthChart(data: monthExpenses.map(FinanceData.expense), year: year, month: month, selection: $chartSelection)
+                    FinanceMonthChart(data: monthExpenses.map(Expense.toFinanceData), year: year, month: month, selection: $chartSelection)
                         .frame(height: 140)
                 }
             } header: {
@@ -131,7 +131,7 @@ struct ExpenseDateView: View {
                                 .fontWeight(.bold)
                                 .fontDesign(.rounded)
                         }
-                        FinanceYearChart(data: yearExpenses.map(FinanceData.expense), year: year, selection: $chartSelection)
+                        FinanceYearChart(data: yearExpenses.map(Expense.toFinanceData), year: year, selection: $chartSelection)
                             .frame(height: 140)
                     }
                 } header: {
@@ -233,7 +233,7 @@ struct ExpenseMonthView: View {
                             .fontWeight(.bold)
                             .fontDesign(.rounded)
                     }
-                    FinanceMonthChart(data: expenses.map(FinanceData.expense), year: year, month: month, selection: $chartSelection)
+                    FinanceMonthChart(data: expenses.map(Expense.toFinanceData), year: year, month: month, selection: $chartSelection)
                         .frame(height: 140)
                 }
             }

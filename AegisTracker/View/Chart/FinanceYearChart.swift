@@ -21,15 +21,6 @@ struct FinanceYearChart: View {
     }
     
     var body: some View {
-        let domain = {
-            var start = DateComponents()
-            start.year = year
-            start.month = 1
-            var end = DateComponents()
-            end.year = year + 1
-            end.month = 1
-            return Calendar.current.date(from: start)!...Calendar.current.date(from: end)!
-        }()
         let colorMap: [String : Color] = {
             var map: [String : Color] = [:]
             FinanceData.Category.allCases.forEach({ map[$0.rawValue] = $0.color })
@@ -41,7 +32,7 @@ struct FinanceYearChart: View {
                 .foregroundStyle(by: .value("Category", selection == nil || selection!.month == item.date.month ? item.category.rawValue : ""))
                 .position(by: .value("Category", item.category.rawValue))
                 
-        }.chartXScale(domain: domain)
+        }.chartXScale(domain: Date.from(year: year, month: 1, day: 1)...Date.from(year: year + 1, month: 1, day: 1))
             .chartForegroundStyleScale { colorMap[$0] ?? Color.gray }
             .chartXAxis {
                 AxisMarks(values: .stride(by: .month)) { date in

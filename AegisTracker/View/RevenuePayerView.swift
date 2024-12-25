@@ -131,11 +131,12 @@ struct RevenuePayerView: View {
                 } else {
                     VStack(alignment: .leading, spacing: 12) {
                         chartHeader(revenues)
+                        let data = revenues.map(Revenue.toFinanceData)
                         if let year {
-                            FinanceYearChart(data: revenues.map(FinanceData.revenue), year: year, selection: $chartSelection)
+                            FinanceYearChart(data: data, year: year, selection: $chartSelection)
                                 .frame(height: 100)
                         } else {
-                            FinanceMultiYearChart(data: revenues.map(FinanceData.revenue), selection: $chartSelection)
+                            FinanceMultiYearChart(data: data, selection: $chartSelection)
                                 .frame(height: 100)
                         }
                     }
