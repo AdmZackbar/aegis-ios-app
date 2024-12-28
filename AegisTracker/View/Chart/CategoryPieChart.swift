@@ -94,27 +94,23 @@ struct CategoryPieChart: View {
 
 #Preview {
     @Previewable @State var selectedData: CategoryData? = nil
-    let categories: [BudgetCategory] = {
-        var categories: [BudgetCategory] = [
-            .init(name: "Housing", amount: .Cents(300000), colorValue: Color.init(hex: "#0056D6").hexValue, children: [
-                .init(name: "Housing Maintenance")
-            ]),
-            .init(name: "Food", amount: .Cents(60000), colorValue: Color.init(hex: "#99244F").hexValue, children: [
-                .init(name: "Fast Food"),
-                .init(name: "Groceries")
-            ]),
-            .init(name: "Transportation", amount: .Cents(15000), colorValue: Color.init(hex: "#D38301").hexValue),
-            .init(name: "Healthcare", amount: .Cents(18000), colorValue: Color.init(hex: "#01C7FC").hexValue),
-            .init(name: "Personal", amount: .Cents(20000), colorValue: Color.init(hex: "#FF6250").hexValue),
-            .init(name: "Entertainment", amount: .Cents(25000), colorValue: Color.init(hex: "#D357FE").hexValue),
-            .init(name: "Other", colorValue: Color.gray.hexValue)
-        ]
-        return categories
-    }()
     Form {
         Text(selectedData?.category ?? "No Selection")
         CategoryPieChart(
-            categories: categories,
+            categories: [
+                .init(name: "Housing", amount: .Cents(300000), colorValue: Color.init(hex: "#0056D6").hexValue, children: [
+                    .init(name: "Housing Maintenance")
+                ]),
+                .init(name: "Food", amount: .Cents(60000), colorValue: Color.init(hex: "#99244F").hexValue, children: [
+                    .init(name: "Fast Food"),
+                    .init(name: "Groceries")
+                ]),
+                .init(name: "Transportation", amount: .Cents(15000), colorValue: Color.init(hex: "#D38301").hexValue),
+                .init(name: "Healthcare", amount: .Cents(18000), colorValue: Color.init(hex: "#01C7FC").hexValue),
+                .init(name: "Personal", amount: .Cents(20000), colorValue: Color.init(hex: "#FF6250").hexValue),
+                .init(name: "Entertainment", amount: .Cents(25000), colorValue: Color.init(hex: "#D357FE").hexValue),
+                .init(name: "Other", colorValue: Color.gray.hexValue)
+            ],
             data: [.init(category: "Groceries", amount: .Cents(15401)),
                    .init(category: "Transportation", amount: .Cents(45211)),
                    .init(category: "Housing", amount: .Cents(430123)),
