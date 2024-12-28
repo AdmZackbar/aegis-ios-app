@@ -31,20 +31,18 @@ struct DashboardView: View {
             }()
             let categoryData = expenses.map(Expense.toCategoryData) + assetData
             let financeData = expenses.map(Expense.toFinanceData) + revenue.map(Revenue.toFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) })
-            let startYear: Int = (financeData.min(by: { $0.date < $1.date })?.date ?? .now).year
-            let monthIndices: Range<Int> = {
-                let numYears = Date().year - startYear + 1
-                return 0..<(12 * numYears)
-            }()
             ZStack(alignment: .bottomTrailing) {
-                TabView(selection: $navigationStore.dashboardConfig.dateTag) {
-                    ForEach(monthIndices, id: \.hashValue) { index in
-                        let date = Date.from(year: startYear + (index / 12), month: (index % 12) + 1, day: 1)
-                        Form {
-                            BudgetCategoryView(category: mainBudget, financeData: financeData, categoryData: categoryData)
-                        }.tag(date)
+                Form {
+                    BudgetCategoryView(category: mainBudget, financeData: financeData, categoryData: categoryData)
+                }.gesture(DragGesture(minimumDistance: 3.0, coordinateSpace: .local)
+                    .onEnded { value in
+                        switch(value.translation.width, value.translation.height) {
+                        case (...0, -30...30): next()
+                        case (0..., -30...30): prev()
+                        default: break
+                        }
                     }
-                }
+                )
                 Menu {
                     Button("Add Expense...") {
                         navigationStore.push(ExpenseViewType.add())
@@ -71,6 +69,20 @@ struct DashboardView: View {
                 .toolbar {
                     toolbarItems(budget: mainBudget)
                 }
+        }
+    }
+    
+    private func prev() {
+        let date = navigationStore.dashboardConfig.date
+        withAnimation {
+            navigationStore.dashboardConfig.date = .from(year: date.year, month: date.month - 1, day: 1)
+        }
+    }
+    
+    private func next() {
+        let date = navigationStore.dashboardConfig.date
+        withAnimation {
+            navigationStore.dashboardConfig.date = .from(year: date.year, month: date.month + 1, day: 1)
         }
     }
     
@@ -339,44 +351,37 @@ struct DashboardCategoryView: View {
         }()
         let categoryData = expenses.map(Expense.toCategoryData) + assetData
         let financeData = expenses.map(Expense.toFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) })
-        let startYear: Int = (financeData.min(by: { $0.date < $1.date })?.date ?? .now).year
-        let monthIndices: Range<Int> = {
-            let numYears = Date().year - startYear + 1
-            return 0..<(12 * numYears)
-        }()
         ZStack(alignment: .bottomTrailing) {
-            TabView(selection: $navigationStore.dashboardConfig.dateTag) {
-                ForEach(monthIndices, id: \.hashValue) { index in
-                    let date = Date.from(year: startYear + (index / 12), month: (index % 12) + 1, day: 1)
-                    Form {
-                        BudgetCategoryView(category: category, financeData: financeData, categoryData: categoryData)
-                    }.tag(date)
+            Form {
+                BudgetCategoryView(category: category, financeData: financeData, categoryData: categoryData)
+            }.gesture(DragGesture(minimumDistance: 3.0, coordinateSpace: .local)
+                .onEnded { value in
+                    switch(value.translation.width, value.translation.height) {
+                    case (...0, -30...30): next()
+                    case (0..., -30...30): prev()
+                    default: break
+                    }
                 }
-            }
-            Menu {
-                Button("Add Expense...") {
-                    navigationStore.push(ExpenseViewType.add(initial: .init(category: category.name)))
-                }
-                Button("Add Revenue...") {
-                    navigationStore.push(RevenueViewType.add())
-                }
-                Button("Add Asset...") {
-                    navigationStore.push(AssetViewType.add)
-                }
-            } label: {
-                Image(systemName: "plus")
-                    .bold()
-                    .foregroundStyle(Color.init(uiColor: UIColor.systemBackground))
-                    .padding(20)
-                    .background(.accent)
-                    .clipShape(Circle())
-                    .padding([.bottom, .trailing], 36)
-            }
+            )
         }.tabViewStyle(.page(indexDisplayMode: .never))
             .navigationTitle(DashboardView.computeTitle(category: category, dashboardConfig: navigationStore.dashboardConfig))
             .navigationBarTitleDisplayMode(.inline)
             .background(Color.init(uiColor: UIColor.secondarySystemBackground))
             .toolbar(content: toolbarItems)
+    }
+    
+    private func prev() {
+        let date = navigationStore.dashboardConfig.date
+        withAnimation {
+            navigationStore.dashboardConfig.date = .from(year: date.year, month: date.month - 1, day: 1)
+        }
+    }
+    
+    private func next() {
+        let date = navigationStore.dashboardConfig.date
+        withAnimation {
+            navigationStore.dashboardConfig.date = .from(year: date.year, month: date.month + 1, day: 1)
+        }
     }
     
     private func isFiltered(_ expense: Expense) -> Bool {
