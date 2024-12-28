@@ -36,12 +36,33 @@ struct DashboardView: View {
                 let numYears = Date().year - startYear + 1
                 return 0..<(12 * numYears)
             }()
-            TabView(selection: $navigationStore.dashboardConfig.dateTag) {
-                ForEach(monthIndices, id: \.hashValue) { index in
-                    let date = Date.from(year: startYear + (index / 12), month: (index % 12) + 1, day: 1)
-                    Form {
-                        BudgetCategoryView(category: mainBudget, financeData: financeData, categoryData: categoryData)
-                    }.tag(date)
+            ZStack(alignment: .bottomTrailing) {
+                TabView(selection: $navigationStore.dashboardConfig.dateTag) {
+                    ForEach(monthIndices, id: \.hashValue) { index in
+                        let date = Date.from(year: startYear + (index / 12), month: (index % 12) + 1, day: 1)
+                        Form {
+                            BudgetCategoryView(category: mainBudget, financeData: financeData, categoryData: categoryData)
+                        }.tag(date)
+                    }
+                }
+                Menu {
+                    Button("Add Expense...") {
+                        navigationStore.push(ExpenseViewType.add())
+                    }
+                    Button("Add Revenue...") {
+                        navigationStore.push(RevenueViewType.add())
+                    }
+                    Button("Add Asset...") {
+                        navigationStore.push(AssetViewType.add)
+                    }
+                } label: {
+                    Image(systemName: "plus")
+                        .bold()
+                        .foregroundStyle(Color.init(uiColor: UIColor.systemBackground))
+                        .padding(20)
+                        .background(.accent)
+                        .clipShape(Circle())
+                        .padding([.bottom, .trailing], 36)
                 }
             }.tabViewStyle(.page(indexDisplayMode: .never))
                 .navigationTitle(Self.computeTitle(category: mainBudget, dashboardConfig: navigationStore.dashboardConfig))
@@ -323,12 +344,33 @@ struct DashboardCategoryView: View {
             let numYears = Date().year - startYear + 1
             return 0..<(12 * numYears)
         }()
-        TabView(selection: $navigationStore.dashboardConfig.dateTag) {
-            ForEach(monthIndices, id: \.hashValue) { index in
-                let date = Date.from(year: startYear + (index / 12), month: (index % 12) + 1, day: 1)
-                Form {
-                    BudgetCategoryView(category: category, financeData: financeData, categoryData: categoryData)
-                }.tag(date)
+        ZStack(alignment: .bottomTrailing) {
+            TabView(selection: $navigationStore.dashboardConfig.dateTag) {
+                ForEach(monthIndices, id: \.hashValue) { index in
+                    let date = Date.from(year: startYear + (index / 12), month: (index % 12) + 1, day: 1)
+                    Form {
+                        BudgetCategoryView(category: category, financeData: financeData, categoryData: categoryData)
+                    }.tag(date)
+                }
+            }
+            Menu {
+                Button("Add Expense...") {
+                    navigationStore.push(ExpenseViewType.add(initial: .init(category: category.name)))
+                }
+                Button("Add Revenue...") {
+                    navigationStore.push(RevenueViewType.add())
+                }
+                Button("Add Asset...") {
+                    navigationStore.push(AssetViewType.add)
+                }
+            } label: {
+                Image(systemName: "plus")
+                    .bold()
+                    .foregroundStyle(Color.init(uiColor: UIColor.systemBackground))
+                    .padding(20)
+                    .background(.accent)
+                    .clipShape(Circle())
+                    .padding([.bottom, .trailing], 36)
             }
         }.tabViewStyle(.page(indexDisplayMode: .never))
             .navigationTitle(DashboardView.computeTitle(category: category, dashboardConfig: navigationStore.dashboardConfig))

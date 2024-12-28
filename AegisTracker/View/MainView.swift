@@ -49,75 +49,8 @@ struct MainView: View {
     
     var body: some View {
         NavigationStack(path: $navigationStore.path) {
-            List {
-                Section("Expenses") {
-                    Button {
-                        navigationStore.push(ExpenseViewType.dashboard)
-                    } label: {
-                        button("Dashboard", icon: "house")
-                    }.buttonStyle(.plain)
-                    Button {
-                        navigationStore.push(ExpenseViewType.add())
-                    } label: {
-                        button("Add Expense", icon: "text.badge.plus")
-                    }.buttonStyle(.plain)
-                    Button {
-                        navigationStore.push(ExpenseViewType.byDate)
-                    } label: {
-                        button("View By Date", icon: "calendar")
-                    }.buttonStyle(.plain)
-                    Button {
-                        navigationStore.push(ExpenseViewType.byCategory())
-                    } label: {
-                        button("View By Category", icon: "folder")
-                    }.buttonStyle(.plain)
-                    Button {
-                        navigationStore.push(ExpenseViewType.byPayee())
-                    } label: {
-                        button("View By Payee", icon: "person")
-                    }.buttonStyle(.plain)
-                    if !budgets.isEmpty {
-                        Menu {
-                            ForEach(budgets, id: \.hashValue) { budget in
-                                Button(budget.name) {
-                                    navigationStore.push(ExpenseViewType.editCategory(category: budget))
-                                }
-                            }
-                        } label: {
-                            button("Edit Budget Categories", icon: "pencil.circle")
-                        }.buttonStyle(.plain)
-                    }
-                }
-                Section("Revenue") {
-                    Button {
-                        navigationStore.push(RevenueViewType.add())
-                    } label: {
-                        button("Add Revenue", icon: "text.badge.plus")
-                    }.buttonStyle(.plain)
-                    Button {
-                        navigationStore.push(RevenueViewType.byDate)
-                    } label: {
-                        button("View By Date", icon: "calendar")
-                    }.buttonStyle(.plain)
-                    Button {
-                        navigationStore.push(RevenueViewType.byPayer())
-                    } label: {
-                        button("View By Payer", icon: "person")
-                    }.buttonStyle(.plain)
-                }
-                Section("Assets") {
-                    Button {
-                        navigationStore.push(AssetViewType.add)
-                    } label: {
-                        button("Add Asset", icon: "plus")
-                    }.buttonStyle(.plain)
-                    Button {
-                        navigationStore.push(AssetViewType.list)
-                    } label: {
-                        button("View Assets", icon: "folder")
-                    }.buttonStyle(.plain)
-                }
-            }.navigationTitle("Aegis")
+            DashboardView()
+                .navigationTitle("Aegis")
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationDestination(for: ExpenseViewType.self, destination: Self.computeDestination)
                 .navigationDestination(for: RevenueViewType.self, destination: Self.computeDestination)
@@ -168,8 +101,6 @@ struct MainView: View {
     @ViewBuilder
     static func computeDestination(type: ExpenseViewType) -> some View {
         switch type {
-        case .dashboard:
-            DashboardView()
         case .dashboardCategory(let category):
             DashboardCategoryView(category: category)
         case .editCategory(let category):
@@ -221,7 +152,6 @@ struct MainView: View {
 }
 
 enum ExpenseViewType: Hashable {
-    case dashboard
     case dashboardCategory(category: BudgetCategory)
     case editCategory(category: BudgetCategory)
     case byCategory(name: String? = nil)
