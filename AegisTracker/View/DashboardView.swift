@@ -37,8 +37,8 @@ struct DashboardView: View {
                 }.gesture(DragGesture(minimumDistance: 3.0, coordinateSpace: .local)
                     .onEnded { value in
                         switch(value.translation.width, value.translation.height) {
-                        case (...(-30), -30...30): next()
-                        case (30..., -30...30): prev()
+                        case (...(-40), -40...40): next()
+                        case (40..., -40...40): prev()
                         default: break
                         }
                     }
