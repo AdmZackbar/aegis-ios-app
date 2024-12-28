@@ -26,21 +26,15 @@ struct AegisApp: App {
         var query = FetchDescriptor<BudgetCategory>()
         query.fetchLimit = 1
         guard try container.mainContext.fetch(query).isEmpty else { return }
-        let mainCategory: BudgetCategory = .init(name: "Main Budget")
-        let categories: [BudgetCategory] = [
+        let mainCategory: BudgetCategory = .init(name: "Main Budget", children: [
             .init(name: "Housing", colorValue: Color.init(hex: "#0056D6").hexValue),
             .init(name: "Food", colorValue: Color.init(hex: "#99244F").hexValue),
             .init(name: "Transportation", colorValue: Color.init(hex: "#D38301").hexValue),
             .init(name: "Healthcare", colorValue: Color.init(hex: "#01C7FC").hexValue),
             .init(name: "Personal", colorValue: Color.init(hex: "#FF6250").hexValue),
-            .init(name: "Entertainment", colorValue: Color.init(hex: "#D357FE").hexValue),
-            .init(name: "Other", colorValue: Color.gray.hexValue)
-        ]
+            .init(name: "Entertainment", colorValue: Color.init(hex: "#D357FE").hexValue)
+        ])
         container.mainContext.insert(mainCategory)
-        categories.forEach { category in
-            category.parent = mainCategory
-            container.mainContext.insert(category)
-        }
     }
 
     var body: some Scene {

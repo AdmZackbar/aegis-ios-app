@@ -170,8 +170,8 @@ struct MainView: View {
         switch type {
         case .dashboard:
             DashboardView()
-        case .dashboardCategory(let category, let dateInterval):
-            DashboardCategoryView(category: category, dateInterval: dateInterval)
+        case .dashboardCategory(let category):
+            DashboardCategoryView(category: category)
         case .editCategory(let category):
             BudgetCategoryEditView(category: category)
         case .byCategory(let name):
@@ -222,7 +222,7 @@ struct MainView: View {
 
 enum ExpenseViewType: Hashable {
     case dashboard
-    case dashboardCategory(category: BudgetCategory, dateInterval: DateInterval)
+    case dashboardCategory(category: BudgetCategory)
     case editCategory(category: BudgetCategory)
     case byCategory(name: String? = nil)
     case byDate

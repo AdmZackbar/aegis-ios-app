@@ -13,10 +13,12 @@ struct FinanceYearChart: View {
     
     let data: [FinanceData]
     let year: Int
+    let dateRange: ClosedRange<Date>
     
-    init(data: [FinanceData], year: Int, selection: Binding<Date?>) {
+    init(data: [FinanceData], year: Int, dateRange: ClosedRange<Date>? = nil, selection: Binding<Date?>) {
         self.data = data
         self.year = year
+        self.dateRange = dateRange ?? Date.from(year: year, month: 1, day: 1)...Date.from(year: year + 1, month: 1, day: 1)
         self._selection = selection
     }
     
@@ -32,7 +34,7 @@ struct FinanceYearChart: View {
                 .foregroundStyle(by: .value("Category", selection == nil || selection!.month == item.date.month ? item.category.rawValue : ""))
                 .position(by: .value("Category", item.category.rawValue))
                 
-        }.chartXScale(domain: Date.from(year: year, month: 1, day: 1)...Date.from(year: year + 1, month: 1, day: 1))
+        }.chartXScale(domain: dateRange)
             .chartForegroundStyleScale { colorMap[$0] ?? Color.gray }
             .chartXAxis {
                 AxisMarks(values: .stride(by: .month)) { date in

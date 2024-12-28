@@ -10,158 +10,278 @@ import SwiftUI
 
 struct DashboardView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(filter: #Predicate<BudgetCategory> { $0.parent == nil }) var budgets: [BudgetCategory]
+    @Query(filter: #Predicate<BudgetCategory> { $0.name == "Main Budget" }) var budgets: [BudgetCategory]
     @Query(sort: \Expense.date) var expenses: [Expense]
     @Query(sort: \Revenue.date) var revenue: [Revenue]
-    
-    @State private var selection: Date = {
-        let date = Date()
-        return createDate(year: date.year, month: date.month)
-    }()
-    @State private var summaryView: SummaryViewType = .month
+    @Query var assets: [Asset]
     
     var body: some View {
-        let current = Date()
-        let startYear = (expenses.map({ $0.date }) + revenue.map({ $0.date })).min()?.year ?? current.year
-        let numYears = current.year - startYear + 1
-        TabView(selection: $selection) {
-            ForEach(0..<(12 * numYears), id: \.hashValue) { index in
-                let date = Self.createDate(year: startYear + (index / 12), month: (index % 12) + 1)
-                DashboardMonthView(expenses: expenses, revenue: revenue, year: date.year, month: date.month, summaryView: $summaryView)
-                    .tag(date)
-            }
-        }.tabViewStyle(.page(indexDisplayMode: .never))
-            .background(Color.init(uiColor: UIColor.secondarySystemBackground))
-            .toolbar(content: toolbarItems)
+        let expenses = expenses.filter({ navigationStore.dashboardConfig.contains($0.date) })
+        let revenue = revenue.filter({ navigationStore.dashboardConfig.contains($0.date) })
+        if let mainBudget = budgets.first {
+            var assetData: [CategoryData] = []
+            let payments: [Asset.Loan.Payment] = {
+                var payments: [Asset.Loan.Payment] = []
+                for asset in assets.filter({ mainBudget.contains($0.metaData.category) && $0.loan != nil }) {
+                    let assetPayments = asset.loan!.payments.filter({ navigationStore.dashboardConfig.contains($0.date) })
+                    payments += assetPayments
+                    assetData += asset.toCategoryData(assetPayments)
+                }
+                return payments
+            }()
+            let categoryData = expenses.map(Expense.toCategoryData) + assetData
+            let financeData = expenses.map(Expense.toFinanceData) + revenue.map(Revenue.toFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) })
+            let startYear: Int = (financeData.min(by: { $0.date < $1.date })?.date ?? .now).year
+            let monthIndices: Range<Int> = {
+                let numYears = Date().year - startYear + 1
+                return 0..<(12 * numYears)
+            }()
+            TabView(selection: $navigationStore.dashboardConfig.dateTag) {
+                ForEach(monthIndices, id: \.hashValue) { index in
+                    let date = Date.from(year: startYear + (index / 12), month: (index % 12) + 1, day: 1)
+                    Form {
+                        BudgetCategoryView(category: mainBudget, financeData: financeData, categoryData: categoryData)
+                    }.tag(date)
+                }
+            }.tabViewStyle(.page(indexDisplayMode: .never))
+                .navigationTitle(Self.computeTitle(category: mainBudget, dashboardConfig: navigationStore.dashboardConfig))
+                .navigationBarTitleDisplayMode(.inline)
+                .background(Color.init(uiColor: UIColor.secondarySystemBackground))
+                .toolbar {
+                    toolbarItems(budget: mainBudget)
+                }
+        }
     }
     
     @ToolbarContentBuilder
-    private func toolbarItems() -> some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
-            Picker("Type", selection: $summaryView.animation()) {
-                Text("Month").tag(SummaryViewType.month)
-                Text("YTD").tag(SummaryViewType.ytd)
+    private func toolbarItems(budget: BudgetCategory) -> some ToolbarContent {
+        ToolbarItem(placement: .principal) {
+            Picker("Type", selection: $navigationStore.dashboardConfig.dateRangeType) {
+                Text("Month").tag(DashboardConfig.DateRangeType.month)
+                Text("YTD").tag(DashboardConfig.DateRangeType.ytd)
             }.pickerStyle(.segmented)
+                .frame(width: 120)
         }
         ToolbarItem(placement: .topBarTrailing) {
             Menu {
-                Menu("Edit Budget") {
-                    ForEach(budgets, id: \.hashValue) { budget in
-                        Button(budget.name) {
-                            navigationStore.push(ExpenseViewType.editCategory(category: budget))
-                        }
-                    }
+                Button("Edit Budget") {
+                    navigationStore.push(ExpenseViewType.editCategory(category: budget))
                 }
             } label: {
-                Label("Settings", systemImage: "gear").labelStyle(.iconOnly)
+                Image(systemName: "gear")
             }
         }
     }
     
-    static func createDate(year: Int, month: Int) -> Date {
-        var components = DateComponents()
-        components.year = year
-        components.month = month
-        components.day = 1
-        return Calendar.current.date(from: components)!
-    }
-    
-    enum SummaryViewType {
-        case month
-        case ytd
+    static func computeTitle(category: BudgetCategory, dashboardConfig: DashboardConfig) -> String {
+        let dateStr: String = {
+            let date = dashboardConfig.date
+            let month = category.parent != nil ? date.month.shortMonthText() : date.month.monthText()
+            switch dashboardConfig.dateRangeType {
+            case .month:
+                return "\(month) \(date.year.yearText())"
+            case .ytd:
+                if date.month > 1 {
+                    return "Jan-\(date.month.shortMonthText()) \(date.year.yearText())"
+                }
+                return "\(month) \(date.year.yearText())"
+            }
+        }()
+        return category.parent != nil ? "\(dateStr): \(category.name)" : dateStr
     }
 }
 
-struct DashboardMonthView: View {
+struct BudgetCategoryView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(filter: #Predicate<BudgetCategory> { $0.parent == nil }) var budgets: [BudgetCategory]
-    @Query var assets: [Asset]
     
-    let expenses: [Expense]
-    let revenue: [Revenue]
-    let year: Int
-    let month: Int
+    let category: BudgetCategory
+    let financeData: [FinanceData]
+    let categoryData: [CategoryData]
     
-    @Binding private var summaryView: DashboardView.SummaryViewType
     @State private var selectedData: CategoryData? = nil
-    
-    init(expenses: [Expense], revenue: [Revenue], year: Int, month: Int, summaryView: Binding<DashboardView.SummaryViewType>) {
-        switch summaryView.wrappedValue {
-        case .month:
-            self.expenses = expenses.filter({ $0.date.year == year && $0.date.month == month })
-            self.revenue = revenue.filter({ $0.date.year == year && $0.date.month == month })
-        case .ytd:
-            self.expenses = expenses.filter({ $0.date.year == year && $0.date.month <= month })
-            self.revenue = revenue.filter({ $0.date.year == year && $0.date.month <= month })
-        }
-        self.year = year
-        self.month = month
-        self._summaryView = summaryView
-    }
+    @State private var selectedDate: Date? = nil
     
     var body: some View {
-        let expenseData: [CategoryData] = {
-            return expenses.map(Expense.toCategoryData) + assets.map(toCategoryData).flatMap({ $0 })
-        }()
-        ScrollView(.vertical) {
-            VStack(alignment: .leading, spacing: 20) {
-                HStack {
-                    Text("\(month.monthText()) \(year.yearText())")
-                        .font(.title)
-                        .bold()
-                    Spacer()
+        Section(DashboardView.computeTitle(category: category, dashboardConfig: navigationStore.dashboardConfig)) {
+            dateView()
+        }.headerProminence(.increased)
+        if let subcategories = category.children, !subcategories.isEmpty {
+            subcategoryView(subcategories: subcategories)
+        } else if let budget = category.monthlyBudget {
+            Section("Budget") {
+                budgetView(name: "Total", data: categoryData, budget: budget)
+            }.headerProminence(.increased)
+        }
+    }
+    
+    @ViewBuilder
+    private func dateView() -> some View {
+        VStack(alignment: .leading) {
+            dataSummary()
+            dateChart()
+                .frame(height: 120)
+        }
+    }
+    
+    @ViewBuilder
+    private func dataSummary() -> some View {
+        let header: String = {
+            if let selectedDate {
+                switch navigationStore.dashboardConfig.dateRangeType {
+                case .month:
+                    "\(selectedDate.month.shortMonthText()) \(selectedDate.day.formatted())"
+                case .ytd:
+                    "\(selectedDate.month.shortMonthText())"
                 }
-                totalSummary(expenses: expenseData.total, income: revenue.total)
-                expenseCategoryView(expenseData)
-            }.padding([.leading, .trailing], 20)
+            } else {
+                "Total"
+            }
+        }()
+        let expenseTotal: Price = {
+            let expenses = financeData.filter({ $0.category == .expense })
+            if let selectedDate {
+                switch navigationStore.dashboardConfig.dateRangeType {
+                case .month:
+                    return expenses.filter({ $0.date.day == selectedDate.day }).total
+                case .ytd:
+                    return expenses.filter({ $0.date.month == selectedDate.month }).total
+                }
+            }
+            return expenses.total
+        }()
+        let income = financeData.filter({ $0.category == .income })
+        let incomeTotal: Price = {
+            if let selectedDate {
+                switch navigationStore.dashboardConfig.dateRangeType {
+                case .month:
+                    return income.filter({ $0.date.day == selectedDate.day }).total
+                case .ytd:
+                    return income.filter({ $0.date.month == selectedDate.month }).total
+                }
+            }
+            return income.total
+        }()
+        HStack(spacing: 16) {
+            stackedText(header: "\(header) Spending", main: expenseTotal.toString())
+            if !income.isEmpty {
+                stackedText(header: "\(header) Income", main: incomeTotal.toString())
+            }
         }
-    }
-    
-    private func toCategoryData(_ asset: Asset) -> [CategoryData] {
-        if let loan = asset.loan {
-            return asset.toCategoryData(loan.payments.filter({ isFiltered($0.date) }))
-        }
-        return []
     }
     
     @ViewBuilder
-    private func totalSummary(expenses: Price, income: Price) -> some View {
-        let expenseHeader: String = {
-            switch summaryView {
-            case .month:
-                "Expenses"
-            case .ytd:
-                "Expenses YTD"
-            }
-        }()
-        let revenueHeader: String = {
-            switch summaryView {
-            case .month:
-                "Income"
-            case .ytd:
-                "Income YTD"
-            }
-        }()
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top, spacing: 12) {
-                stackedText(header: expenseHeader, main: expenses.toString())
-                Divider()
-                stackedText(header: revenueHeader, main: income.toString())
-                Spacer()
-            }
-            diffSummary(diff: income - expenses)
-        }.padding()
-            .background(Color(UIColor.systemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+    private func dateChart() -> some View {
+        let month = navigationStore.dashboardConfig.date.month
+        let year = navigationStore.dashboardConfig.date.year
+        switch navigationStore.dashboardConfig.dateRangeType {
+        case .month:
+            FinanceMonthChart(data: financeData,
+                              year: year,
+                              month: month,
+                              selection: $selectedDate)
+        case .ytd:
+            FinanceYearChart(data: financeData,
+                             year: year,
+                             dateRange: Date.from(year: year, month: 1, day: 1)...Date.from(year: year, month: month + 1, day: 1),
+                             selection: $selectedDate)
+        }
     }
     
     @ViewBuilder
-    private func diffSummary(diff: Price) -> some View {
-        let cents = diff.toCents()
-        if cents != 0 {
-            let diffText: String = cents > 0 ? "Surplus" : "Deficit"
-            stackedText(header: diffText, main: diff.abs().toString())
+    private func subcategoryView(subcategories: [BudgetCategory]) -> some View {
+        Section(category.parent == nil ? "Categories" : "Subcategories") {
+            VStack(alignment: .leading, spacing: 0) {
+                budgetView(subcategories: subcategories)
+                if categoryData.total.toCents() > 0 {
+                    CategoryPieChart(categories: subcategories, data: categoryData, selectedData: $selectedData)
+                        .frame(height: 180)
+                }
+                ForEach(subcategories.sorted(by: { $0.name < $1.name })
+                    .sorted(by: { computeActual($0) > computeActual($1) }), id: \.hashValue) { subcategory in
+                    Divider()
+                        .padding([.top, .bottom], 8)
+                    Button {
+                        navigationStore.push(ExpenseViewType.dashboardCategory(category: subcategory))
+                    } label: {
+                        subcategoryEntryView(subcategory)
+                    }.buttonStyle(.plain)
+                }
+            }
+        }.headerProminence(.increased)
+    }
+    
+    private func computeActual(_ subcategory: BudgetCategory) -> Price {
+        categoryData.filter({ subcategory.contains($0.category) }).total
+    }
+    
+    @ViewBuilder
+    private func budgetView(subcategories: [BudgetCategory]) -> some View {
+        if category.monthlyBudget != nil {
+            let numMonths = Double(computeNumMonths())
+            let selectedBudget: Price? = {
+                let childBudgets = subcategories.filter({ selectedData == nil || $0.name == selectedData!.category }).total
+                if let childBudgets {
+                    if selectedData == nil, let base = category.amount {
+                        return (childBudgets + base) * numMonths
+                    }
+                    return childBudgets * numMonths
+                }
+                if selectedData == nil, let base = category.amount {
+                    return base * numMonths
+                }
+                return nil
+            }()
+            let selectedCategory = selectedData != nil ? subcategories.find(selectedData!.category) : nil
+            budgetView(name: selectedData?.category ?? "Total",
+                       data: categoryData.filter({ selectedCategory == nil || selectedCategory!.contains($0.category) }),
+                       budget: selectedBudget)
         }
+    }
+    
+    private func computeNumMonths() -> Int {
+        switch navigationStore.dashboardConfig.dateRangeType {
+        case .month:
+            return 1
+        case .ytd:
+            return navigationStore.dashboardConfig.date.month
+        }
+    }
+    
+    @ViewBuilder
+    private func budgetView(name: String, data: [CategoryData], budget: Price?) -> some View {
+        HStack(alignment: .top, spacing: 24) {
+            stackedText(header: "\(name) Budget", main: budget?.toString(maxDigits: 0) ?? "N/A")
+            if let budget {
+                let remaining = budget - data.total
+                stackedText(header: remaining.toCents() >= 0 ? "Remaining" : "Over", main: remaining.abs().toString(maxDigits: 0))
+                    .foregroundStyle(remaining.toCents() >= 0 ? Color.primary : Color.red)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func subcategoryEntryView(_ subcategory: BudgetCategory) -> some View {
+        HStack(spacing: 16) {
+            VStack(alignment: .leading) {
+                Text(subcategory.name)
+                    .font(.title3)
+                    .fontWeight(.bold)
+                Text("Total: \(computeActual(subcategory).toString(maxDigits: 0))")
+                    .font(.subheadline)
+                    .opacity(0.8)
+            }
+            Spacer()
+            if let budget = subcategory.monthlyBudget {
+                VStack(alignment: .trailing) {
+                    Text("Budget")
+                        .font(.subheadline)
+                        .opacity(0.6)
+                    Text((budget * Double(computeNumMonths())).toString(maxDigits: 0))
+                        .fontWeight(.bold)
+                }
+            }
+            Image(systemName: "chevron.right")
+        }.contentShape(Rectangle())
     }
     
     @ViewBuilder
@@ -175,117 +295,73 @@ struct DashboardMonthView: View {
                 .fontWeight(.semibold)
         }
     }
+}
+
+struct DashboardCategoryView: View {
+    @EnvironmentObject private var navigationStore: NavigationStore
+    @Query(sort: \Expense.date) var expenses: [Expense]
+    @Query var assets: [Asset]
     
-    @ViewBuilder
-    private func expenseCategoryView(_ data: [CategoryData]) -> some View {
-        if let categories = budgets.first?.children {
-            let budget: Price? = {
-                switch summaryView {
-                case .month:
-                    return categories.total
-                case .ytd:
-                    if let total = categories.total {
-                        return total * Double(month)
-                    }
-                    return nil
+    let category: BudgetCategory
+    
+    var body: some View {
+        let expenses = expenses.filter({ isFiltered($0) })
+        var assetData: [CategoryData] = []
+        let payments: [Asset.Loan.Payment] = {
+            var payments: [Asset.Loan.Payment] = []
+            for asset in assets.filter({ category.contains($0.metaData.category) && $0.loan != nil }) {
+                let assetPayments = asset.loan!.payments.filter({ navigationStore.dashboardConfig.contains($0.date) })
+                payments += assetPayments
+                assetData += asset.toCategoryData(assetPayments)
+            }
+            return payments
+        }()
+        let categoryData = expenses.map(Expense.toCategoryData) + assetData
+        let financeData = expenses.map(Expense.toFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) })
+        let startYear: Int = (financeData.min(by: { $0.date < $1.date })?.date ?? .now).year
+        let monthIndices: Range<Int> = {
+            let numYears = Date().year - startYear + 1
+            return 0..<(12 * numYears)
+        }()
+        TabView(selection: $navigationStore.dashboardConfig.dateTag) {
+            ForEach(monthIndices, id: \.hashValue) { index in
+                let date = Date.from(year: startYear + (index / 12), month: (index % 12) + 1, day: 1)
+                Form {
+                    BudgetCategoryView(category: category, financeData: financeData, categoryData: categoryData)
+                }.tag(date)
+            }
+        }.tabViewStyle(.page(indexDisplayMode: .never))
+            .navigationTitle(DashboardView.computeTitle(category: category, dashboardConfig: navigationStore.dashboardConfig))
+            .navigationBarTitleDisplayMode(.inline)
+            .background(Color.init(uiColor: UIColor.secondarySystemBackground))
+            .toolbar(content: toolbarItems)
+    }
+    
+    private func isFiltered(_ expense: Expense) -> Bool {
+        if category.parent != nil {
+            return category.contains(expense.category) && navigationStore.dashboardConfig.contains(expense.date)
+        }
+        return navigationStore.dashboardConfig.contains(expense.date)
+    }
+    
+    @ToolbarContentBuilder
+    private func toolbarItems() -> some ToolbarContent {
+        ToolbarItem(placement: .principal) {
+            Picker("Type", selection: $navigationStore.dashboardConfig.dateRangeType) {
+                Text("Month").tag(DashboardConfig.DateRangeType.month)
+                Text("YTD").tag(DashboardConfig.DateRangeType.ytd)
+            }.pickerStyle(.segmented)
+                .frame(width: 120)
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            Menu {
+                Button("Edit '\(category.name)'") {
+                    navigationStore.push(ExpenseViewType.editCategory(category: category))
                 }
-            }()
-            let selectedBudget: Price? = {
-                let categories = categories.filter({ selectedData == nil || $0.name == selectedData!.category })
-                switch summaryView {
-                case .month:
-                    return categories.total
-                case .ytd:
-                    if let total = categories.total {
-                        return total * Double(month)
-                    }
-                    return nil
-                }
-            }()
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("Expenses")
-                        .font(.title3)
-                        .bold()
-                    Spacer()
-                    if !data.isEmpty {
-                        Menu {
-                            ForEach(categories.sorted(by: { $0.name < $1.name }), id: \.hashValue) { category in
-                                Button("View \(category.name)") {
-                                    viewExpenseCategory(category)
-                                }.disabled(!data.contains(where: { category.contains($0.category) }))
-                            }
-                            Divider()
-                            Button("View All", action: viewExpenseList)
-                        } label: {
-                            Label("View Expenses", systemImage: "list.bullet").labelStyle(.iconOnly)
-                        }
-                    }
-                }
-                VStack(alignment: .leading) {
-                    if budget != nil {
-                        HStack(alignment: .top, spacing: 16) {
-                            stackedText(header: "\(selectedData?.category ?? "Total") Budget", main: selectedBudget?.toString(maxDigits: 0) ?? "N/A")
-                            if let selectedBudget {
-                                let selectedCategory = selectedData != nil ? categories.find(selectedData!.category) : nil
-                                let remaining = selectedBudget - data.filter({ selectedCategory == nil || selectedCategory!.contains($0.category) }).total
-                                Divider()
-                                stackedText(header: remaining.toCents() >= 0 ? "Remaining" : "Over", main: remaining.abs().toString(maxDigits: 0))
-                                    .foregroundStyle(remaining.toCents() >= 0 ? Color.primary : Color.red)
-                            }
-                        }
-                    }
-                    if !data.isEmpty {
-                        CategoryPieChart(categories: categories, data: data, selectedData: $selectedData)
-                            .frame(height: 200)
-                    } else {
-                        HStack {
-                            Spacer()
-                            Text("No Expenses")
-                                .font(.title3)
-                                .bold()
-                            Spacer()
-                        }.padding()
-                    }
-                }.padding()
-                    .background(Color(UIColor.systemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+            } label: {
+                Label("Settings", systemImage: "gear").labelStyle(.iconOnly)
             }
         }
-    }
-    
-    private func isFiltered(_ date: Date) -> Bool {
-        switch summaryView {
-        case .month:
-            return date.year == year && date.month == month
-        case .ytd:
-            return date.year == year && date.month <= month
-        }
-    }
-    
-    private func viewExpenseCategory(_ category: BudgetCategory) {
-        let date = Date.from(year: year, month: month, day: 1)
-        switch summaryView {
-        case .month:
-            navigationStore.push(ExpenseViewType.dashboardCategory(category: category, dateInterval: .monthOf(date)))
-        case .ytd:
-            navigationStore.push(ExpenseViewType.dashboardCategory(category: category, dateInterval: .yearToDate(date)))
-        }
-    }
-    
-    private func viewExpenseList() {
-        switch summaryView {
-        case .month:
-            navigationStore.push(ExpenseViewType.byMonth(year: year, month: month))
-        case .ytd:
-            // TODO
-            navigationStore.push(ExpenseViewType.byDate)
-        }
-    }
-    
-    private func viewRevenueList() {
-        // TODO
-        navigationStore.push(RevenueViewType.byDate)
     }
 }
 

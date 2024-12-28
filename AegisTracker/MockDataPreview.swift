@@ -102,8 +102,7 @@ struct MockDataPreviewModifier: PreviewModifier {
             .init(name: "Personal", amount: .Cents(20000), colorValue: Color.init(hex: "#FF6250").hexValue, children: [
                 .init(name: "Haircut")
             ]),
-            .init(name: "Entertainment", amount: .Cents(25000), colorValue: Color.init(hex: "#D357FE").hexValue),
-            .init(name: "Other", colorValue: Color.gray.hexValue)
+            .init(name: "Entertainment", amount: .Cents(25000), colorValue: Color.init(hex: "#D357FE").hexValue)
         ])
         container.mainContext.insert(budget)
     }
