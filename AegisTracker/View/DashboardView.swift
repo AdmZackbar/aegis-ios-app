@@ -37,8 +37,8 @@ struct DashboardView: View {
                 }.gesture(DragGesture(minimumDistance: 3.0, coordinateSpace: .local)
                     .onEnded { value in
                         switch(value.translation.width, value.translation.height) {
-                        case (...0, -30...30): next()
-                        case (0..., -30...30): prev()
+                        case (...(-30), -30...30): next()
+                        case (30..., -30...30): prev()
                         default: break
                         }
                     }
@@ -60,10 +60,10 @@ struct DashboardView: View {
                         .padding(20)
                         .background(.accent)
                         .clipShape(Circle())
-                        .padding([.bottom, .trailing], 36)
+                        .padding(.bottom, 8)
+                        .padding(.trailing, 32)
                 }
-            }.tabViewStyle(.page(indexDisplayMode: .never))
-                .navigationTitle(Self.computeTitle(category: mainBudget, dashboardConfig: navigationStore.dashboardConfig))
+            }.navigationTitle(Self.computeTitle(category: mainBudget, dashboardConfig: navigationStore.dashboardConfig))
                 .navigationBarTitleDisplayMode(.inline)
                 .background(Color.init(uiColor: UIColor.secondarySystemBackground))
                 .toolbar {
@@ -99,6 +99,9 @@ struct DashboardView: View {
             Menu {
                 Button("Edit Budget") {
                     navigationStore.push(ExpenseViewType.editCategory(category: budget))
+                }
+                Button("View Assets") {
+                    navigationStore.push(AssetViewType.list)
                 }
             } label: {
                 Image(systemName: "gear")
@@ -357,8 +360,8 @@ struct DashboardCategoryView: View {
             }.gesture(DragGesture(minimumDistance: 3.0, coordinateSpace: .local)
                 .onEnded { value in
                     switch(value.translation.width, value.translation.height) {
-                    case (...0, -30...30): next()
-                    case (0..., -30...30): prev()
+                    case (...(-30), -30...30): next()
+                    case (30..., -30...30): prev()
                     default: break
                     }
                 }
@@ -404,6 +407,9 @@ struct DashboardCategoryView: View {
             Menu {
                 Button("Edit '\(category.name)'") {
                     navigationStore.push(ExpenseViewType.editCategory(category: category))
+                }
+                Button("View Assets") {
+                    navigationStore.push(AssetViewType.list)
                 }
             } label: {
                 Label("Settings", systemImage: "gear").labelStyle(.iconOnly)
