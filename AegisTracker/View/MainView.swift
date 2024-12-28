@@ -127,6 +127,12 @@ struct MainView: View {
             ExpenseEditView(expense: initial, mode: .Add)
         case .edit(let expense):
             ExpenseEditView(expense: expense, mode: .Edit)
+        case .list(let title, let expenses):
+            Form {
+                Section("Expenses") {
+                    ExpenseListView(expenses: expenses, omitted: [.Category])
+                }.headerProminence(.increased)
+            }.navigationTitle(title)
         }
     }
     
@@ -161,6 +167,7 @@ enum ExpenseViewType: Hashable {
     case view(expense: Expense)
     case add(initial: Expense? = nil)
     case edit(expense: Expense)
+    case list(title: String, expenses: [Expense])
 }
 
 enum RevenueViewType: Hashable {

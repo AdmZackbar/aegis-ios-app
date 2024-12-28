@@ -33,7 +33,7 @@ struct DashboardView: View {
             let financeData = expenses.map(Expense.toFinanceData) + revenue.map(Revenue.toFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) })
             ZStack(alignment: .bottomTrailing) {
                 Form {
-                    BudgetCategoryView(category: mainBudget, financeData: financeData, categoryData: categoryData)
+                    BudgetCategoryView(category: mainBudget, expenses: expenses, financeData: financeData, categoryData: categoryData)
                 }.gesture(DragGesture(minimumDistance: 3.0, coordinateSpace: .local)
                     .onEnded { value in
                         switch(value.translation.width, value.translation.height) {
@@ -109,7 +109,7 @@ struct DashboardView: View {
         }
     }
     
-    static func computeTitle(category: BudgetCategory, dashboardConfig: DashboardConfig) -> String {
+    static func computeTitle(category: BudgetCategory, dashboardConfig: DashboardConfig, includeCategory: Bool? = nil) -> String {
         let dateStr: String = {
             let date = dashboardConfig.date
             let month = category.parent != nil ? date.month.shortMonthText() : date.month.monthText()
@@ -123,7 +123,7 @@ struct DashboardView: View {
                 return "\(month) \(date.year.yearText())"
             }
         }()
-        return category.parent != nil ? "\(dateStr): \(category.name)" : dateStr
+        return includeCategory ?? (category.parent != nil) ? "\(dateStr): \(category.name)" : dateStr
     }
 }
 
@@ -131,6 +131,7 @@ struct BudgetCategoryView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
     
     let category: BudgetCategory
+    let expenses: [Expense]
     let financeData: [FinanceData]
     let categoryData: [CategoryData]
     
@@ -146,6 +147,12 @@ struct BudgetCategoryView: View {
         } else if let budget = category.monthlyBudget {
             Section("Budget") {
                 budgetView(name: "Total", data: categoryData, budget: budget)
+            }.headerProminence(.increased)
+        }
+        let mainExpenses = expenses.filter({ $0.category == category.name })
+        if !mainExpenses.isEmpty {
+            Section("Expenses") {
+                ExpenseListView(expenses: mainExpenses.sorted(by: { $0.date > $1.date }), omitted: [.Category], allowSwipeActions: false)
             }.headerProminence(.increased)
         }
     }
@@ -225,6 +232,7 @@ struct BudgetCategoryView: View {
     
     @ViewBuilder
     private func subcategoryView(subcategories: [BudgetCategory]) -> some View {
+        let otherExpenses = expenses.filter({ expense in expense.category != category.name && subcategories.allSatisfy({ !$0.contains(expense.category) }) }).sorted(by: { $0.date > $1.date })
         Section(category.parent == nil ? "Categories" : "Subcategories") {
             VStack(alignment: .leading, spacing: 0) {
                 budgetView(subcategories: subcategories)
@@ -237,14 +245,23 @@ struct BudgetCategoryView: View {
                         .bold()
                         .padding()
                 }
-                ForEach(subcategories.sorted(by: { $0.name < $1.name })
-                    .sorted(by: { computeActual($0) > computeActual($1) }), id: \.hashValue) { subcategory in
+                ForEach(subcategories.sorted(by: { $0.name < $1.name }).sorted(by: { computeActual($0) > computeActual($1) }), id: \.hashValue) { subcategory in
                     Divider()
                         .padding([.top, .bottom], 8)
                     Button {
                         navigationStore.push(ExpenseViewType.dashboardCategory(category: subcategory))
                     } label: {
-                        subcategoryEntryView(subcategory)
+                        subcategoryEntryView(subcategory, actual: computeActual(subcategory))
+                    }.buttonStyle(.plain)
+                }
+                if !otherExpenses.isEmpty {
+                    Divider()
+                        .padding([.top, .bottom], 8)
+                    let otherCategory = BudgetCategory(name: "Other")
+                    Button {
+                        navigationStore.push(ExpenseViewType.list(title: DashboardView.computeTitle(category: otherCategory, dashboardConfig: navigationStore.dashboardConfig, includeCategory: true), expenses: otherExpenses))
+                    } label: {
+                        subcategoryEntryView(otherCategory, actual: otherExpenses.total)
                     }.buttonStyle(.plain)
                 }
             }
@@ -301,15 +318,14 @@ struct BudgetCategoryView: View {
     }
     
     @ViewBuilder
-    private func subcategoryEntryView(_ subcategory: BudgetCategory) -> some View {
+    private func subcategoryEntryView(_ subcategory: BudgetCategory, actual: Price) -> some View {
         HStack(spacing: 16) {
             VStack(alignment: .leading) {
                 Text(subcategory.name)
                     .font(.title3)
                     .fontWeight(.bold)
-                Text("Total: \(computeActual(subcategory).toString(maxDigits: 0))")
-                    .font(.subheadline)
-                    .opacity(0.8)
+                Text(actual.toString(maxDigits: 0))
+                    .bold()
             }
             Spacer()
             if let budget = subcategory.monthlyBudget {
@@ -318,7 +334,7 @@ struct BudgetCategoryView: View {
                         .font(.subheadline)
                         .opacity(0.6)
                     Text((budget * Double(computeNumMonths())).toString(maxDigits: 0))
-                        .fontWeight(.bold)
+                        .italic()
                 }
             }
             Image(systemName: "chevron.right")
@@ -361,7 +377,7 @@ struct DashboardCategoryView: View {
         let financeData = expenses.map(Expense.toFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) })
         ZStack(alignment: .bottomTrailing) {
             Form {
-                BudgetCategoryView(category: category, financeData: financeData, categoryData: categoryData)
+                BudgetCategoryView(category: category, expenses: expenses, financeData: financeData, categoryData: categoryData)
             }.gesture(DragGesture(minimumDistance: 3.0, coordinateSpace: .local)
                 .onEnded { value in
                     switch(value.translation.width, value.translation.height) {
