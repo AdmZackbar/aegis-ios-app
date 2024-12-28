@@ -89,7 +89,7 @@ struct DashboardView: View {
     @ToolbarContentBuilder
     private func toolbarItems(budget: BudgetCategory) -> some ToolbarContent {
         ToolbarItem(placement: .principal) {
-            Picker("Type", selection: $navigationStore.dashboardConfig.dateRangeType) {
+            Picker("Type", selection: $navigationStore.dashboardConfig.dateRangeType.animation()) {
                 Text("Month").tag(DashboardConfig.DateRangeType.month)
                 Text("YTD").tag(DashboardConfig.DateRangeType.ytd)
             }.pickerStyle(.segmented)
