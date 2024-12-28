@@ -231,6 +231,11 @@ struct BudgetCategoryView: View {
                 if categoryData.total.toCents() > 0 {
                     CategoryPieChart(categories: subcategories, data: categoryData, selectedData: $selectedData)
                         .frame(height: 180)
+                } else {
+                    Text("No Expenses")
+                        .frame(maxWidth: .infinity)
+                        .bold()
+                        .padding()
                 }
                 ForEach(subcategories.sorted(by: { $0.name < $1.name })
                     .sorted(by: { computeActual($0) > computeActual($1) }), id: \.hashValue) { subcategory in
