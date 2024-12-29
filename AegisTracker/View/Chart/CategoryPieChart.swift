@@ -17,14 +17,23 @@ struct CategoryPieChart: View {
     private let categoryRanges: [(category: String, range: Range<Double>)]
     
     init(categories: [BudgetCategory], data: [CategoryData], selectedData: Binding<CategoryData?>) {
-        self.categories = categories
+        let main: BudgetCategory? = categories.filter({ $0.parent != nil }).first?.parent
+        if let main {
+            self.categories = categories + [main]
+        } else {
+            self.categories = categories
+        }
         self.data = {
             let map: [BudgetCategory : Int] = {
                 var map: [BudgetCategory : Int] = [:]
                 let other: BudgetCategory = categories.filter({ $0.name.lowercased() == "other" }).first ?? .init(name: "Other")
                 for item in data {
-                    let actual = categories.find(item.category) ?? other
-                    map[actual, default: 0] += item.amount.toCents()
+                    if let main, main.name == item.category {
+                        map[main, default: 0] += item.amount.toCents()
+                    } else {
+                        let actual = categories.find(item.category) ?? other
+                        map[actual, default: 0] += item.amount.toCents()
+                    }
                 }
                 return map
             }()
@@ -96,21 +105,22 @@ struct CategoryPieChart: View {
     @Previewable @State var selectedData: CategoryData? = nil
     Form {
         Text(selectedData?.category ?? "No Selection")
+        let budget = BudgetCategory(name: "Main Budget", children: [
+            .init(name: "Housing", amount: .Cents(300000), colorValue: Color.init(hex: "#0056D6").hexValue, children: [
+                .init(name: "Housing Maintenance")
+            ]),
+            .init(name: "Food", amount: .Cents(60000), colorValue: Color.init(hex: "#99244F").hexValue, children: [
+                .init(name: "Fast Food"),
+                .init(name: "Groceries")
+            ]),
+            .init(name: "Transportation", amount: .Cents(15000), colorValue: Color.init(hex: "#D38301").hexValue),
+            .init(name: "Healthcare", amount: .Cents(18000), colorValue: Color.init(hex: "#01C7FC").hexValue),
+            .init(name: "Personal", amount: .Cents(20000), colorValue: Color.init(hex: "#FF6250").hexValue),
+            .init(name: "Entertainment", amount: .Cents(25000), colorValue: Color.init(hex: "#D357FE").hexValue),
+            .init(name: "Other", colorValue: Color.gray.hexValue)
+        ])
         CategoryPieChart(
-            categories: [
-                .init(name: "Housing", amount: .Cents(300000), colorValue: Color.init(hex: "#0056D6").hexValue, children: [
-                    .init(name: "Housing Maintenance")
-                ]),
-                .init(name: "Food", amount: .Cents(60000), colorValue: Color.init(hex: "#99244F").hexValue, children: [
-                    .init(name: "Fast Food"),
-                    .init(name: "Groceries")
-                ]),
-                .init(name: "Transportation", amount: .Cents(15000), colorValue: Color.init(hex: "#D38301").hexValue),
-                .init(name: "Healthcare", amount: .Cents(18000), colorValue: Color.init(hex: "#01C7FC").hexValue),
-                .init(name: "Personal", amount: .Cents(20000), colorValue: Color.init(hex: "#FF6250").hexValue),
-                .init(name: "Entertainment", amount: .Cents(25000), colorValue: Color.init(hex: "#D357FE").hexValue),
-                .init(name: "Other", colorValue: Color.gray.hexValue)
-            ],
+            categories: budget.children!,
             data: [.init(category: "Groceries", amount: .Cents(15401)),
                    .init(category: "Transportation", amount: .Cents(45211)),
                    .init(category: "Housing", amount: .Cents(430123)),
@@ -118,6 +128,7 @@ struct CategoryPieChart: View {
                    .init(category: "Fast Food", amount: .Cents(4501)),
                    .init(category: "Fast Food", amount: .Cents(90023)),
                    .init(category: "Something", amount: .Cents(90023)),
+                   .init(category: "Main Budget", amount: .Cents(150023)),
                    .init(category: "Personal", amount: .Cents(232202))],
             selectedData: $selectedData)
         .frame(height: 220)

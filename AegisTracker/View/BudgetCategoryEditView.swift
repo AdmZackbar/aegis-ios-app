@@ -24,6 +24,7 @@ struct BudgetCategoryEditView: View {
     @State private var childName: String = ""
     @State private var showAssetAlert: Bool = false
     @State private var assetName: String = ""
+    @State private var selectedData: CategoryData? = nil
     
     init(category: BudgetCategory) {
         self.category = category
@@ -51,19 +52,7 @@ struct BudgetCategoryEditView: View {
                     }
                 }
             }.headerProminence(.increased)
-            Section {
-                Text("Monthly Amount: \(category.monthlyBudget?.toString() ?? "N/A")")
-            } header: {
-                HStack {
-                    Text("Budget")
-                    Spacer()
-                    Button {
-                        sheetType = .budget
-                    } label: {
-                        Text("Edit")
-                    }
-                }
-            }.headerProminence(.increased)
+            budgetView()
             subcategoryView()
         }.navigationTitle(category.parent == nil ? "View Budget" : "View Category")
             .navigationBarTitleDisplayMode(.inline)
@@ -134,6 +123,38 @@ struct BudgetCategoryEditView: View {
     
     private func hideSheet() {
         sheetType = nil
+    }
+    
+    @ViewBuilder
+    private func budgetView() -> some View {
+        Section {
+            VStack(alignment: .leading) {
+                Text("Monthly Amount: \(category.monthlyBudget?.toString() ?? "N/A")")
+                if let children = category.children, children.map({ $0.monthlyBudget?.toCents() ?? 0 }).reduce(0, +) > 0 {
+                    let data: [CategoryData] = {
+                        let data: [CategoryData] = children.map({ .init(category: $0.name, amount: $0.monthlyBudget ?? .Cents(0)) })
+                        if let otherAmount = category.amount {
+                            return data + [.init(category: category.parent == nil ? "Other" : category.name, amount: otherAmount)]
+                        }
+                        return data
+                    }()
+                    Section {
+                        CategoryPieChart(categories: children, data: data, selectedData: $selectedData)
+                            .frame(height: 180)
+                    }
+                }
+            }
+        } header: {
+            HStack {
+                Text("Budget")
+                Spacer()
+                Button {
+                    sheetType = .budget
+                } label: {
+                    Text("Edit")
+                }
+            }
+        }.headerProminence(.increased)
     }
     
     @ViewBuilder
