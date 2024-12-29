@@ -25,6 +25,7 @@ struct BudgetCategoryEditView: View {
     @State private var showAssetAlert: Bool = false
     @State private var assetName: String = ""
     @State private var selectedCategory: BudgetCategory? = nil
+    @State private var editCategory: BudgetCategory? = nil
     
     init(category: BudgetCategory) {
         self.category = category
@@ -46,7 +47,7 @@ struct BudgetCategoryEditView: View {
                     Text("Main")
                     Spacer()
                     Button {
-                        sheetType = .main
+                        showSheet(editCategory: category, sheetType: .main)
                     } label: {
                         Text("Edit")
                     }
@@ -95,8 +96,9 @@ struct BudgetCategoryEditView: View {
                                 }
                                 ToolbarItem(placement: .primaryAction) {
                                     Button("Save") {
-                                        category.name = name
-                                        category.color = hasColor ? color : nil
+                                        let c = editCategory ?? category
+                                        c.name = name
+                                        c.color = hasColor ? color : nil
                                         hideSheet()
                                     }
                                 }
@@ -104,14 +106,15 @@ struct BudgetCategoryEditView: View {
                     }.presentationDetents([.medium])
                 case .budget:
                     NavigationStack {
-                        BudgetEditView(children: category.children ?? [], hasBudget: $hasBudget, amount: $amount)
+                        BudgetEditView(children: editCategory?.children ?? [], hasBudget: $hasBudget, amount: $amount)
                             .toolbar {
                                 ToolbarItem(placement: .cancellationAction) {
                                     Button("Cancel", action: hideSheet)
                                 }
                                 ToolbarItem(placement: .primaryAction) {
                                     Button("Save") {
-                                        category.amount = hasBudget ? .Cents(amount) : nil
+                                        let c = editCategory ?? category
+                                        c.amount = hasBudget ? .Cents(amount) : nil
                                         hideSheet()
                                     }
                                 }
@@ -119,6 +122,20 @@ struct BudgetCategoryEditView: View {
                     }.presentationDetents([.medium])
                 }
             }
+    }
+    
+    private func showSheet(editCategory: BudgetCategory, sheetType: SheetType) {
+        switch sheetType {
+        case .main:
+            name = editCategory.name
+            hasColor = editCategory.color != nil
+            color = editCategory.color ?? .gray
+        case .budget:
+            amount = editCategory.amount?.toCents() ?? 0
+            hasBudget = editCategory.amount != nil
+        }
+        self.editCategory = editCategory
+        self.sheetType = sheetType
     }
     
     private func hideSheet() {
@@ -149,7 +166,7 @@ struct BudgetCategoryEditView: View {
                 Text("Budget")
                 Spacer()
                 Button {
-                    sheetType = .budget
+                    showSheet(editCategory: category, sheetType: .budget)
                 } label: {
                     Text("Edit")
                 }
@@ -176,6 +193,14 @@ struct BudgetCategoryEditView: View {
                         }
                     }.bold().contentShape(Rectangle())
                 }.buttonStyle(.plain)
+                    .contextMenu {
+                        Button("Edit Name/Color") {
+                            showSheet(editCategory: child, sheetType: .main)
+                        }
+                        Button("Edit Budget Amount") {
+                            showSheet(editCategory: child, sheetType: .budget)
+                        }
+                    }
             }.onDelete { indices in
                 for index in indices {
                     modelContext.delete(sorted[index])
@@ -246,7 +271,7 @@ struct BudgetCategoryEditView: View {
                 if hasColor {
                     ColorPicker("Color:", selection: $color)
                 }
-            }.navigationTitle("Edit Main Information")
+            }.navigationTitle("Edit Category")
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationBarBackButtonHidden()
         }
@@ -292,7 +317,7 @@ struct BudgetCategoryEditView: View {
                         }
                     }
                 }
-            }.navigationTitle("Edit Budget")
+            }.navigationTitle("Edit Category")
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationBarBackButtonHidden()
         }
