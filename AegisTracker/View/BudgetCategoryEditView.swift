@@ -24,7 +24,7 @@ struct BudgetCategoryEditView: View {
     @State private var childName: String = ""
     @State private var showAssetAlert: Bool = false
     @State private var assetName: String = ""
-    @State private var selectedData: CategoryData? = nil
+    @State private var selectedCategory: BudgetCategory? = nil
     
     init(category: BudgetCategory) {
         self.category = category
@@ -139,7 +139,7 @@ struct BudgetCategoryEditView: View {
                         return data
                     }()
                     Section {
-                        CategoryPieChart(categories: children, data: data, selectedData: $selectedData)
+                        CategoryPieChart(categories: children, data: data, selectedCategory: $selectedCategory)
                             .frame(height: 180)
                     }
                 }

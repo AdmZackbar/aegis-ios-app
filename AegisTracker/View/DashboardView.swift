@@ -180,7 +180,7 @@ struct BudgetCategoryView: View {
     let financeData: [FinanceData]
     let categoryData: [CategoryData]
     
-    @State private var selectedData: CategoryData? = nil
+    @State private var selectedCategory: BudgetCategory? = nil
     @State private var selectedDate: Date? = nil
     
     var body: some View {
@@ -286,7 +286,7 @@ struct BudgetCategoryView: View {
             VStack(alignment: .leading, spacing: 0) {
                 budgetView(subcategories: subcategories)
                 if categoryData.total.toCents() > 0 {
-                    CategoryPieChart(categories: subcategories, data: categoryData, selectedData: $selectedData)
+                    CategoryPieChart(categories: subcategories, data: categoryData, selectedCategory: $selectedCategory)
                         .frame(height: 180)
                 } else {
                     Text("No Expenses")
@@ -326,20 +326,19 @@ struct BudgetCategoryView: View {
         if category.monthlyBudget != nil {
             let numMonths = Double(computeNumMonths())
             let selectedBudget: Price? = {
-                let childBudgets = subcategories.filter({ selectedData == nil || $0.name == selectedData!.category }).total
+                let childBudgets = subcategories.filter({ selectedCategory == nil || $0.name == selectedCategory!.name }).total
                 if let childBudgets {
-                    if selectedData == nil, let base = category.amount {
+                    if selectedCategory == nil, let base = category.amount {
                         return (childBudgets + base) * numMonths
                     }
                     return childBudgets * numMonths
                 }
-                if selectedData == nil, let base = category.amount {
+                if selectedCategory == nil, let base = category.amount {
                     return base * numMonths
                 }
                 return nil
             }()
-            let selectedCategory = selectedData != nil ? subcategories.find(selectedData!.category) : nil
-            budgetView(name: selectedData?.category ?? "Total",
+            budgetView(name: selectedCategory?.name ?? "Total",
                        data: categoryData.filter({ selectedCategory == nil || selectedCategory!.contains($0.category) }),
                        budget: selectedBudget)
         }

@@ -9,21 +9,22 @@ import Charts
 import SwiftUI
 
 struct CategoryPieChart: View {
-    @Binding private var selectedData: CategoryData?
+    @Binding private var selectedCategory: BudgetCategory?
     @State private var selectedAngle: Double? = nil
     
     let categories: [BudgetCategory]
     let data: [CategoryData]
+    let dataCategoryMap: [CategoryData : BudgetCategory]
     private let categoryRanges: [(category: String, range: Range<Double>)]
     
-    init(categories: [BudgetCategory], data: [CategoryData], selectedData: Binding<CategoryData?>) {
+    init(categories: [BudgetCategory], data: [CategoryData], selectedCategory: Binding<BudgetCategory?>) {
         let main: BudgetCategory? = categories.filter({ $0.parent != nil }).first?.parent
         if let main {
             self.categories = categories + [main]
         } else {
             self.categories = categories
         }
-        self.data = {
+        (self.data, self.dataCategoryMap) = {
             let map: [BudgetCategory : Int] = {
                 var map: [BudgetCategory : Int] = [:]
                 let other: BudgetCategory = categories.filter({ $0.name.lowercased() == "other" }).first ?? .init(name: "Other")
@@ -37,8 +38,12 @@ struct CategoryPieChart: View {
                 }
                 return map
             }()
-            return map.map({ CategoryData(category: $0.name, amount: .Cents($1)) })
-                .sorted(by: { $0.category < $1.category })
+            var categoryMap: [CategoryData : BudgetCategory] = [:]
+            map.forEach({ category, amount in
+                let data = CategoryData(category: category.name, amount: .Cents(amount))
+                categoryMap[data] = category
+            })
+            return (categoryMap.keys.sorted(by: { $0.category < $1.category }), categoryMap)
         }()
         var total: Double = 0
         self.categoryRanges = self.data.map {
@@ -48,14 +53,14 @@ struct CategoryPieChart: View {
             total = newTotal
             return result
         }
-        self._selectedData = selectedData
+        self._selectedCategory = selectedCategory
     }
     
     var body: some View {
         Chart(data, id: \.category.hashValue) { item in
             SectorMark(angle: .value(item.category, item.amount.toUsd()),
                        innerRadius: .ratio(0.65),
-                       outerRadius: item == selectedData ? .inset(0) : .inset(10),
+                       outerRadius: item.category == selectedCategory?.name ? .inset(0) : .inset(10),
                        angularInset: 1)
                 .cornerRadius(4)
                 .foregroundStyle(by: .value(Text(verbatim: item.category), item.category))
@@ -67,44 +72,51 @@ struct CategoryPieChart: View {
                 GeometryReader { geometry in
                     if let anchor = chartProxy.plotFrame {
                         let frame = geometry[anchor]
-                        VStack(spacing: 0) {
-                            Text(selectedData?.category ?? "Total")
-                                .font(selectedData != nil ? .caption : .subheadline)
-                                .opacity(0.6)
-                            let amount: Price = {
-                                if let selectedData {
-                                    return data.filter({ $0.category == selectedData.category }).total
-                                }
-                                return data.total
-                            }()
-                            Text(amount.toString(maxDigits: 0))
-                                .font(.title3)
-                                .bold()
-                        }.position(x: frame.midX, y: frame.midY)
-                            .foregroundStyle(selectedData != nil ? categories.filter({ $0.name == selectedData!.category }).first?.color ?? Color.primary : Color.primary)
+                        chartOverlay(frame)
                     }
                 }
             }
-            .onChange(of: selectedAngle) { old, newValue in
-                withAnimation {
-                    selectedData = {
-                        guard let selectedAngle else { return nil }
-                        if let selection = categoryRanges.firstIndex(where: {
-                            $0.range.contains(selectedAngle)
-                        }) {
-                            return data[selection]
-                        }
-                        return nil
-                    }()
+            .onChange(of: selectedAngle, onSelectedAngleChanged)
+    }
+    
+    @ViewBuilder
+    private func chartOverlay(_ frame: CGRect) -> some View {
+        VStack(spacing: 0) {
+            Text(selectedCategory?.name ?? "Total")
+                .font(selectedCategory != nil ? .caption : .subheadline)
+                .opacity(0.6)
+            let amount: Price = {
+                if let selectedCategory {
+                    return data.filter({ $0.category == selectedCategory.name }).total
                 }
-            }
+                return data.total
+            }()
+            Text(amount.toString(maxDigits: 0))
+                .font(.title3)
+                .bold()
+        }.position(x: frame.midX, y: frame.midY)
+            .foregroundStyle(selectedCategory != nil ? categories.filter({ $0.name == selectedCategory!.name }).first?.color ?? Color.primary : Color.primary)
+    }
+    
+    private func onSelectedAngleChanged(oldValue: Double?, newValue: Double?) {
+        withAnimation {
+            selectedCategory = {
+                guard let newValue else { return nil }
+                if let selection = categoryRanges.firstIndex(where: {
+                    $0.range.contains(newValue)
+                }) {
+                    return dataCategoryMap[data[selection]]
+                }
+                return nil
+            }()
+        }
     }
 }
 
 #Preview {
-    @Previewable @State var selectedData: CategoryData? = nil
+    @Previewable @State var selectedCategory: BudgetCategory? = nil
     Form {
-        Text(selectedData?.category ?? "No Selection")
+        Text(selectedCategory?.name ?? "No Selection")
         let budget = BudgetCategory(name: "Main Budget", children: [
             .init(name: "Housing", amount: .Cents(300000), colorValue: Color.init(hex: "#0056D6").hexValue, children: [
                 .init(name: "Housing Maintenance")
@@ -130,7 +142,7 @@ struct CategoryPieChart: View {
                    .init(category: "Something", amount: .Cents(90023)),
                    .init(category: "Main Budget", amount: .Cents(150023)),
                    .init(category: "Personal", amount: .Cents(232202))],
-            selectedData: $selectedData)
+            selectedCategory: $selectedCategory)
         .frame(height: 220)
     }
 }
