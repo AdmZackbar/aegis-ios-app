@@ -13,11 +13,9 @@ struct MainView: View {
         "Housing",
         "Food",
         "Transportation",
-        "Utilities",
         "Healthcare",
         "Personal",
-        "Entertainment",
-        "Other"
+        "Entertainment"
     ]
     static let RevenueCategories: [String] = [
         "Paycheck",
@@ -26,19 +24,6 @@ struct MainView: View {
         "Retirement",
         "Reimbursement",
         "Dividend"
-    ]
-    
-    static let ExpenseCategoryColors: [String : Color] = [
-        "Car": Color.indigo,
-        "Food": Color.blue,
-        "Housing": Color.red,
-        "Media": Color.cyan,
-        "Medicine": Color.pink,
-        "Personal": Color.orange,
-        "Recreation": Color.yellow,
-        "Technology": Color.green,
-        "Travel": Color.purple,
-        "Other": Color.gray
     ]
     
     @Query(filter: #Predicate<BudgetCategory> { $0.parent == nil }) var budgets: [BudgetCategory]

@@ -44,20 +44,26 @@ struct DashboardView: View {
                     }
                 )
                 Menu {
-                    Button("Add Expense...") {
-                        navigationStore.push(ExpenseViewType.add())
-                    }
-                    Button("Add Revenue...") {
-                        navigationStore.push(RevenueViewType.add())
-                    }
-                    Button("Add Asset...") {
+                    Button {
                         navigationStore.push(AssetViewType.add)
+                    } label: {
+                        Label("Add Asset", systemImage: "bag.circle")
+                    }
+                    Button {
+                        navigationStore.push(RevenueViewType.add())
+                    } label: {
+                        Label("Add Revenue", systemImage: "dollarsign.circle")
+                    }
+                    Button {
+                        navigationStore.push(ExpenseViewType.add())
+                    } label: {
+                        Label("Add Expense", systemImage: "house.circle")
                     }
                 } label: {
                     Image(systemName: "plus")
-                        .bold()
+                        .font(.title)
                         .foregroundStyle(Color.init(uiColor: UIColor.systemBackground))
-                        .padding(20)
+                        .padding(16)
                         .background(.accent)
                         .clipShape(Circle())
                         .padding(.bottom, 8)
@@ -73,16 +79,14 @@ struct DashboardView: View {
     }
     
     private func prev() {
-        let date = navigationStore.dashboardConfig.date
         withAnimation {
-            navigationStore.dashboardConfig.date = .from(year: date.year, month: date.month - 1, day: 1)
+            navigationStore.dashboardConfig.prev()
         }
     }
     
     private func next() {
-        let date = navigationStore.dashboardConfig.date
         withAnimation {
-            navigationStore.dashboardConfig.date = .from(year: date.year, month: date.month + 1, day: 1)
+            navigationStore.dashboardConfig.next()
         }
     }
     
@@ -92,19 +96,58 @@ struct DashboardView: View {
             Picker("Type", selection: $navigationStore.dashboardConfig.dateRangeType.animation()) {
                 Text("Month").tag(DashboardConfig.DateRangeType.month)
                 Text("YTD").tag(DashboardConfig.DateRangeType.ytd)
+                Text("Year").tag(DashboardConfig.DateRangeType.year)
             }.pickerStyle(.segmented)
-                .frame(width: 120)
+                .frame(width: 200)
         }
         ToolbarItem(placement: .topBarTrailing) {
             Menu {
-                Button("Edit Budget") {
+                Button {
                     navigationStore.push(ExpenseViewType.editCategory(category: budget))
+                } label: {
+                    Label("Edit Budget", systemImage: "gear")
                 }
-                Button("View Assets") {
+                Divider()
+                Menu {
+                    Button {
+                        navigationStore.push(ExpenseViewType.byDate)
+                    } label: {
+                        Label("By Date", systemImage: "calendar")
+                    }
+                    Button {
+                        navigationStore.push(ExpenseViewType.byCategory())
+                    } label: {
+                        Label("By Category", systemImage: "basket")
+                    }
+                    Button {
+                        navigationStore.push(ExpenseViewType.byPayee())
+                    } label: {
+                        Label("By Payer", systemImage: "person")
+                    }
+                } label: {
+                    Label("View Expenses", systemImage: "bag.circle")
+                }
+                Menu {
+                    Button {
+                        navigationStore.push(RevenueViewType.byDate)
+                    } label: {
+                        Label("By Date", systemImage: "calendar")
+                    }
+                    Button {
+                        navigationStore.push(RevenueViewType.byPayer())
+                    } label: {
+                        Label("By Payer", systemImage: "person")
+                    }
+                } label: {
+                    Label("View Income", systemImage: "dollarsign.circle")
+                }
+                Button {
                     navigationStore.push(AssetViewType.list)
+                } label: {
+                    Label("View Assets", systemImage: "house.circle")
                 }
             } label: {
-                Image(systemName: "gear")
+                Image(systemName: "list.bullet.circle")
             }
         }
     }
@@ -121,6 +164,8 @@ struct DashboardView: View {
                     return "Jan-\(date.month.shortMonthText()) \(date.year.yearText())"
                 }
                 return "\(month) \(date.year.yearText())"
+            case .year:
+                return date.year.yearText()
             }
         }()
         return includeCategory ?? (category.parent != nil) ? "\(dateStr): \(category.name)" : dateStr
@@ -173,7 +218,7 @@ struct BudgetCategoryView: View {
                 switch navigationStore.dashboardConfig.dateRangeType {
                 case .month:
                     "\(selectedDate.month.shortMonthText()) \(selectedDate.day.formatted())"
-                case .ytd:
+                case .ytd, .year:
                     "\(selectedDate.month.shortMonthText())"
                 }
             } else {
@@ -186,7 +231,7 @@ struct BudgetCategoryView: View {
                 switch navigationStore.dashboardConfig.dateRangeType {
                 case .month:
                     return expenses.filter({ $0.date.day == selectedDate.day }).total
-                case .ytd:
+                case .ytd, .year:
                     return expenses.filter({ $0.date.month == selectedDate.month }).total
                 }
             }
@@ -198,7 +243,7 @@ struct BudgetCategoryView: View {
                 switch navigationStore.dashboardConfig.dateRangeType {
                 case .month:
                     return income.filter({ $0.date.day == selectedDate.day }).total
-                case .ytd:
+                case .ytd, .year:
                     return income.filter({ $0.date.month == selectedDate.month }).total
                 }
             }
@@ -226,6 +271,10 @@ struct BudgetCategoryView: View {
             FinanceYearChart(data: financeData,
                              year: year,
                              dateRange: Date.from(year: year, month: 1, day: 1)...Date.from(year: year, month: month + 1, day: 1),
+                             selection: $selectedDate)
+        case .year:
+            FinanceYearChart(data: financeData,
+                             year: year,
                              selection: $selectedDate)
         }
     }
@@ -302,6 +351,8 @@ struct BudgetCategoryView: View {
             return 1
         case .ytd:
             return navigationStore.dashboardConfig.date.month
+        case .year:
+            return 12
         }
     }
     
@@ -395,16 +446,14 @@ struct DashboardCategoryView: View {
     }
     
     private func prev() {
-        let date = navigationStore.dashboardConfig.date
         withAnimation {
-            navigationStore.dashboardConfig.date = .from(year: date.year, month: date.month - 1, day: 1)
+            navigationStore.dashboardConfig.prev()
         }
     }
     
     private func next() {
-        let date = navigationStore.dashboardConfig.date
         withAnimation {
-            navigationStore.dashboardConfig.date = .from(year: date.year, month: date.month + 1, day: 1)
+            navigationStore.dashboardConfig.next()
         }
     }
     
@@ -418,22 +467,61 @@ struct DashboardCategoryView: View {
     @ToolbarContentBuilder
     private func toolbarItems() -> some ToolbarContent {
         ToolbarItem(placement: .principal) {
-            Picker("Type", selection: $navigationStore.dashboardConfig.dateRangeType) {
+            Picker("Type", selection: $navigationStore.dashboardConfig.dateRangeType.animation()) {
                 Text("Month").tag(DashboardConfig.DateRangeType.month)
                 Text("YTD").tag(DashboardConfig.DateRangeType.ytd)
+                Text("Year").tag(DashboardConfig.DateRangeType.year)
             }.pickerStyle(.segmented)
-                .frame(width: 120)
+                .frame(width: 200)
         }
         ToolbarItem(placement: .topBarTrailing) {
             Menu {
-                Button("Edit '\(category.name)'") {
+                Button {
                     navigationStore.push(ExpenseViewType.editCategory(category: category))
+                } label: {
+                    Label("Edit Budget", systemImage: "gear")
                 }
-                Button("View Assets") {
+                Divider()
+                Menu {
+                    Button {
+                        navigationStore.push(ExpenseViewType.byDate)
+                    } label: {
+                        Label("By Date", systemImage: "calendar")
+                    }
+                    Button {
+                        navigationStore.push(ExpenseViewType.byCategory())
+                    } label: {
+                        Label("By Category", systemImage: "basket")
+                    }
+                    Button {
+                        navigationStore.push(ExpenseViewType.byPayee())
+                    } label: {
+                        Label("By Payer", systemImage: "person")
+                    }
+                } label: {
+                    Label("View Expenses", systemImage: "bag.circle")
+                }
+                Menu {
+                    Button {
+                        navigationStore.push(RevenueViewType.byDate)
+                    } label: {
+                        Label("By Date", systemImage: "calendar")
+                    }
+                    Button {
+                        navigationStore.push(RevenueViewType.byPayer())
+                    } label: {
+                        Label("By Payer", systemImage: "person")
+                    }
+                } label: {
+                    Label("View Income", systemImage: "dollarsign.circle")
+                }
+                Button {
                     navigationStore.push(AssetViewType.list)
+                } label: {
+                    Label("View Assets", systemImage: "house.circle")
                 }
             } label: {
-                Label("Settings", systemImage: "gear").labelStyle(.iconOnly)
+                Image(systemName: "list.bullet.circle")
             }
         }
     }
