@@ -19,6 +19,10 @@ struct BudgetCategoryEditView: View {
     @State private var childName: String = ""
     @State private var showAssetAlert: Bool = false
     @State private var assetName: String = ""
+    @State private var showChildActionAlert: Bool = false
+    @State private var actionCategory: BudgetCategory? = nil
+    @State private var showDeleteAlert: Bool = false
+    @State private var deleteCategory: BudgetCategory? = nil
     @State private var selectedCategory: BudgetCategory? = nil
     
     init(category: BudgetCategory) {
@@ -51,16 +55,6 @@ struct BudgetCategoryEditView: View {
             subcategoryView()
         }.navigationTitle(category.parent == nil ? "View Budget" : "View Category")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        assetName = category.assetType ?? ""
-                        showAssetAlert = true
-                    } label: {
-                        Label("Set Asset Category", systemImage: "pencil")
-                    }
-                }
-            }
             .alert("Add Subcategory", isPresented: $showAddAlert) {
                 TextField("Name", text: $childName)
                     .textInputAutocapitalization(.words)
@@ -77,6 +71,31 @@ struct BudgetCategoryEditView: View {
                     showAssetAlert = false
                 }
                 Button("Save", action: setAssetName)
+            }
+            .alert("Delete '\(deleteCategory?.name ?? "Subcategory")'?", isPresented: $showDeleteAlert) {
+                if let deleteCategory {
+                    Button("Delete", role: .destructive) {
+                        modelContext.delete(deleteCategory)
+                        showDeleteAlert = false
+                    }
+                }
+            }
+            .confirmationDialog("Subcategory Actions", isPresented: $showChildActionAlert) {
+                if let actionCategory {
+                    Button("View '\(actionCategory.name)'") {
+                        navigationStore.push(ExpenseViewType.editCategory(category: actionCategory))
+                    }
+                    Button("Edit Name/Color") {
+                        sheetType = .main(actionCategory)
+                    }
+                    Button("Edit Budget Amount") {
+                        sheetType = .budget(actionCategory)
+                    }
+                    Button("Delete '\(actionCategory.name)'", role: .destructive) {
+                        deleteCategory = actionCategory
+                        showDeleteAlert = true
+                    }
+                }
             }
             .sheet(item: $sheetType) { sheet in
                 switch sheet {
@@ -132,7 +151,8 @@ struct BudgetCategoryEditView: View {
                 .sorted(by: { ($0.monthlyBudget ?? .Cents(0)) > ($1.monthlyBudget ?? .Cents(0)) })
             ForEach(sorted, id: \.hashValue) { child in
                 Button {
-                    navigationStore.push(ExpenseViewType.editCategory(category: child))
+                    actionCategory = child
+                    showChildActionAlert = true
                 } label: {
                     HStack {
                         Text(child.name)
@@ -150,11 +170,31 @@ struct BudgetCategoryEditView: View {
                         Button("Edit Budget Amount") {
                             sheetType = .budget(child)
                         }
+                        Button {
+                            assetName = category.assetType ?? ""
+                            showAssetAlert = true
+                        } label: {
+                            Label("Set Asset Category", systemImage: "pencil")
+                        }
                     }
-            }.onDelete { indices in
-                for index in indices {
-                    modelContext.delete(sorted[index])
-                }
+                    .swipeActions {
+                        Button {
+                            deleteCategory = child
+                            showDeleteAlert = true
+                        } label: {
+                            Label("Delete", systemImage: "trash").tint(.red)
+                        }
+                        Button {
+                            sheetType = .budget(child)
+                        } label: {
+                            Label("Edit Budget", systemImage: "dollarsign").tint(.green)
+                        }
+                        Button {
+                            sheetType = .main(child)
+                        } label: {
+                            Label("Edit Name/Color", systemImage: "paintpalette").tint(.blue)
+                        }
+                    }
             }
         } header: {
             HStack {
