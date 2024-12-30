@@ -31,45 +31,64 @@ struct DashboardView: View {
             }()
             let categoryData = expenses.map(Expense.toCategoryData) + assetData
             let financeData = expenses.map(Expense.toFinanceData) + revenue.map(Revenue.toFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) })
-            ZStack(alignment: .bottomTrailing) {
-                Form {
-                    BudgetCategoryView(category: mainBudget, expenses: expenses, financeData: financeData, categoryData: categoryData)
-                }.gesture(DragGesture(minimumDistance: 3.0, coordinateSpace: .local)
-                    .onEnded { value in
-                        switch(value.translation.width, value.translation.height) {
-                        case (...(-40), -40...40): next()
-                        case (40..., -40...40): prev()
-                        default: break
+            let title = Self.computeTitle(category: mainBudget, dashboardConfig: navigationStore.dashboardConfig)
+            VStack {
+                HStack {
+                    Button(action: prev) {
+                        Image(systemName: "chevron.left")
+                            .bold()
+                    }
+                    Spacer()
+                    Text(title)
+                        .font(.title3)
+                        .bold()
+                    Spacer()
+                    Button(action: next) {
+                        Image(systemName: "chevron.right")
+                            .bold()
+                    }
+                }.padding(.top, 4)
+                    .padding([.leading, .trailing], 20)
+                ZStack(alignment: .bottomTrailing) {
+                    Form {
+                        BudgetCategoryView(category: mainBudget, expenses: expenses, financeData: financeData, categoryData: categoryData)
+                    }.gesture(DragGesture(minimumDistance: 3.0, coordinateSpace: .local)
+                        .onEnded { value in
+                            switch(value.translation.width, value.translation.height) {
+                            case (...(-40), -40...40): next()
+                            case (40..., -40...40): prev()
+                            default: break
+                            }
                         }
-                    }
-                )
-                Menu {
-                    Button {
-                        navigationStore.push(AssetViewType.add)
+                    )
+                    Menu {
+                        Button {
+                            navigationStore.push(AssetViewType.add)
+                        } label: {
+                            Label("Add Asset", systemImage: "bag.circle")
+                        }
+                        Button {
+                            navigationStore.push(RevenueViewType.add())
+                        } label: {
+                            Label("Add Revenue", systemImage: "dollarsign.circle")
+                        }
+                        Button {
+                            navigationStore.push(ExpenseViewType.add())
+                        } label: {
+                            Label("Add Expense", systemImage: "house.circle")
+                        }
                     } label: {
-                        Label("Add Asset", systemImage: "bag.circle")
+                        Image(systemName: "plus")
+                            .font(.title)
+                            .foregroundStyle(Color.init(uiColor: UIColor.systemBackground))
+                            .padding(16)
+                            .background(.accent)
+                            .clipShape(Circle())
+                            .padding(.bottom, 8)
+                            .padding(.trailing, 32)
                     }
-                    Button {
-                        navigationStore.push(RevenueViewType.add())
-                    } label: {
-                        Label("Add Revenue", systemImage: "dollarsign.circle")
-                    }
-                    Button {
-                        navigationStore.push(ExpenseViewType.add())
-                    } label: {
-                        Label("Add Expense", systemImage: "house.circle")
-                    }
-                } label: {
-                    Image(systemName: "plus")
-                        .font(.title)
-                        .foregroundStyle(Color.init(uiColor: UIColor.systemBackground))
-                        .padding(16)
-                        .background(.accent)
-                        .clipShape(Circle())
-                        .padding(.bottom, 8)
-                        .padding(.trailing, 32)
                 }
-            }.navigationTitle(Self.computeTitle(category: mainBudget, dashboardConfig: navigationStore.dashboardConfig))
+            }.navigationTitle(title)
                 .navigationBarTitleDisplayMode(.inline)
                 .background(Color.init(uiColor: UIColor.secondarySystemBackground))
                 .toolbar {
@@ -184,7 +203,7 @@ struct BudgetCategoryView: View {
     @State private var selectedDate: Date? = nil
     
     var body: some View {
-        Section(DashboardView.computeTitle(category: category, dashboardConfig: navigationStore.dashboardConfig)) {
+        Section("Summary") {
             dateView()
         }.headerProminence(.increased)
         if let subcategories = category.children, !subcategories.isEmpty {
