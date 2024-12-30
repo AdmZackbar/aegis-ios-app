@@ -194,11 +194,20 @@ struct BudgetCategoryView: View {
                 budgetView(name: "Total", data: categoryData, budget: budget)
             }.headerProminence(.increased)
         }
-        let mainExpenses = expenses.filter({ $0.category == category.name })
-        if !mainExpenses.isEmpty {
-            Section("Expenses") {
-                ExpenseListView(expenses: mainExpenses.sorted(by: { $0.date > $1.date }), omitted: [.Category], allowSwipeActions: false)
-            }.headerProminence(.increased)
+        switch navigationStore.dashboardConfig.dateRangeType {
+        case .month:
+            if !expenses.isEmpty {
+                Section("All Expenses") {
+                    ExpenseListView(expenses: expenses.sorted(by: { $0.date > $1.date }), allowSwipeActions: false)
+                }.headerProminence(.increased)
+            }
+        case .ytd, .year:
+            let mainExpenses = expenses.filter({ $0.category == category.name })
+            if !mainExpenses.isEmpty {
+                Section("Expenses") {
+                    ExpenseListView(expenses: mainExpenses.sorted(by: { $0.date > $1.date }), omitted: [.Category], allowSwipeActions: false)
+                }.headerProminence(.increased)
+            }
         }
     }
     
