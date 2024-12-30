@@ -14,18 +14,12 @@ struct BudgetCategoryEditView: View {
     
     private let category: BudgetCategory
     
-    @State private var name: String = ""
-    @State private var hasColor: Bool = false
-    @State private var color: Color = .gray
-    @State private var hasBudget: Bool = false
-    @State private var amount: Int = 0
-    @State private var sheetType: SheetType? = nil
+    @State private var sheetType: BudgetCategoryWrapper.SheetType? = nil
     @State private var showAddAlert: Bool = false
     @State private var childName: String = ""
     @State private var showAssetAlert: Bool = false
     @State private var assetName: String = ""
     @State private var selectedCategory: BudgetCategory? = nil
-    @State private var editCategory: BudgetCategory? = nil
     
     init(category: BudgetCategory) {
         self.category = category
@@ -47,7 +41,7 @@ struct BudgetCategoryEditView: View {
                     Text("Main")
                     Spacer()
                     Button {
-                        showSheet(editCategory: category, sheetType: .main)
+                        sheetType = .main(category)
                     } label: {
                         Text("Edit")
                     }
@@ -57,7 +51,6 @@ struct BudgetCategoryEditView: View {
             subcategoryView()
         }.navigationTitle(category.parent == nil ? "View Budget" : "View Category")
             .navigationBarTitleDisplayMode(.inline)
-            .onAppear(perform: load)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
@@ -87,55 +80,12 @@ struct BudgetCategoryEditView: View {
             }
             .sheet(item: $sheetType) { sheet in
                 switch sheet {
-                case .main:
-                    NavigationStack {
-                        MainEditView(name: $name, hasColor: $hasColor, color: $color)
-                            .toolbar {
-                                ToolbarItem(placement: .cancellationAction) {
-                                    Button("Cancel", action: hideSheet)
-                                }
-                                ToolbarItem(placement: .primaryAction) {
-                                    Button("Save") {
-                                        let c = editCategory ?? category
-                                        c.name = name
-                                        c.color = hasColor ? color : nil
-                                        hideSheet()
-                                    }
-                                }
-                            }
-                    }.presentationDetents([.medium])
-                case .budget:
-                    NavigationStack {
-                        BudgetEditView(children: editCategory?.children ?? [], hasBudget: $hasBudget, amount: $amount)
-                            .toolbar {
-                                ToolbarItem(placement: .cancellationAction) {
-                                    Button("Cancel", action: hideSheet)
-                                }
-                                ToolbarItem(placement: .primaryAction) {
-                                    Button("Save") {
-                                        let c = editCategory ?? category
-                                        c.amount = hasBudget ? .Cents(amount) : nil
-                                        hideSheet()
-                                    }
-                                }
-                            }
-                    }.presentationDetents([.medium])
+                case .main(let category):
+                    BudgetCategoryEditMainSheet(category: .init(category: category), sheetType: $sheetType)
+                case .budget(let category):
+                    BudgetCategoryEditBudgetSheet(category: .init(category: category), sheetType: $sheetType)
                 }
             }
-    }
-    
-    private func showSheet(editCategory: BudgetCategory, sheetType: SheetType) {
-        switch sheetType {
-        case .main:
-            name = editCategory.name
-            hasColor = editCategory.color != nil
-            color = editCategory.color ?? .gray
-        case .budget:
-            amount = editCategory.amount?.toCents() ?? 0
-            hasBudget = editCategory.amount != nil
-        }
-        self.editCategory = editCategory
-        self.sheetType = sheetType
     }
     
     private func hideSheet() {
@@ -166,7 +116,7 @@ struct BudgetCategoryEditView: View {
                 Text("Budget")
                 Spacer()
                 Button {
-                    showSheet(editCategory: category, sheetType: .budget)
+                    sheetType = .budget(category)
                 } label: {
                     Text("Edit")
                 }
@@ -195,10 +145,10 @@ struct BudgetCategoryEditView: View {
                 }.buttonStyle(.plain)
                     .contextMenu {
                         Button("Edit Name/Color") {
-                            showSheet(editCategory: child, sheetType: .main)
+                            sheetType = .main(child)
                         }
                         Button("Edit Budget Amount") {
-                            showSheet(editCategory: child, sheetType: .budget)
+                            sheetType = .budget(child)
                         }
                     }
             }.onDelete { indices in
@@ -232,87 +182,121 @@ struct BudgetCategoryEditView: View {
         assetName = ""
         showAssetAlert = false
     }
+}
+
+struct BudgetCategoryWrapper {
+    private var category: BudgetCategory
     
-    private func load() {
+    var name: String
+    var hasColor: Bool
+    var color: Color
+    var hasBudget: Bool
+    var amount: Int
+    var children: [BudgetCategory]?
+    
+    init(category: BudgetCategory) {
+        self.category = category
         name = category.name
         hasColor = category.color != nil
         color = category.color ?? .gray
         hasBudget = category.amount != nil
         amount = category.amount?.toCents() ?? 0
+        children = category.children
     }
     
-    private enum SheetType: String, Identifiable {
+    mutating func save() {
+        category.name = name
+        category.color = hasColor ? color : nil
+        category.amount = hasBudget ? .Cents(amount) : nil
+        category.children = children
+    }
+    
+    enum SheetType: Identifiable {
         var id: String {
-            rawValue
+            switch self {
+            case .main(_):
+                "Main"
+            case .budget(_):
+                "Budget"
+            }
         }
         
-        case main
-        case budget
+        case main(_ category: BudgetCategory)
+        case budget(_ category: BudgetCategory)
+    }
+}
+
+struct BudgetCategoryEditMainSheet: View {
+    @Binding private var sheetType: BudgetCategoryWrapper.SheetType?
+    @State private var category: BudgetCategoryWrapper
+    
+    init(category: BudgetCategoryWrapper, sheetType: Binding<BudgetCategoryWrapper.SheetType?>) {
+        self.category = category
+        self._sheetType = sheetType
     }
     
-    private struct MainEditView: View {
-        @Binding private var name: String
-        @Binding private var hasColor: Bool
-        @Binding private var color: Color
-        
-        init(name: Binding<String>, hasColor: Binding<Bool>, color: Binding<Color>) {
-            self._name = name
-            self._hasColor = hasColor
-            self._color = color
-        }
-        
-        var body: some View {
+    var body: some View {
+        NavigationStack {
             Form {
                 HStack {
                     Text("Name:")
-                    TextField("required", text: $name)
+                    TextField("required", text: $category.name)
                 }
-                Toggle("Custom Color:", isOn: $hasColor)
-                if hasColor {
-                    ColorPicker("Color:", selection: $color)
+                Toggle("Custom Color:", isOn: $category.hasColor)
+                if category.hasColor {
+                    ColorPicker("Color:", selection: $category.color)
                 }
             }.navigationTitle("Edit Category")
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationBarBackButtonHidden()
-        }
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel", action: hide)
+                    }
+                    ToolbarItem(placement: .primaryAction) {
+                        Button("Save") {
+                            category.save()
+                            hide()
+                        }
+                    }
+                }
+        }.presentationDetents([.medium])
     }
     
-    private struct BudgetEditView: View {
-        let children: [BudgetCategory]
-        
-        @Binding private var hasBudget: Bool
-        @Binding private var amount: Int
-        
-        init(children: [BudgetCategory], hasBudget: Binding<Bool>, amount: Binding<Int>) {
-            self.children = children
-            self._hasBudget = hasBudget
-            self._amount = amount
-        }
-        
-        var body: some View {
+    private func hide() {
+        sheetType = nil
+    }
+}
+
+struct BudgetCategoryEditBudgetSheet: View {
+    @Binding private var sheetType: BudgetCategoryWrapper.SheetType?
+    @State private var category: BudgetCategoryWrapper
+    
+    init(category: BudgetCategoryWrapper, sheetType: Binding<BudgetCategoryWrapper.SheetType?>) {
+        self.category = category
+        self._sheetType = sheetType
+    }
+    
+    var body: some View {
+        NavigationStack {
             Form {
                 Section("Monthly Budget") {
-                    if !children.isEmpty {
-                        Text("Per Month: \(computeBudget())")
-                        Toggle(isOn: $hasBudget) {
-                            HStack {
-                                Text("Additional:")
-                                if hasBudget {
-                                    CurrencyField(value: $amount)
-                                } else {
-                                    Text("None")
-                                }
-                            }
+                    let hasChildBudgets: Bool = {
+                        if let children = category.children {
+                            return children.map({ $0.monthlyBudget?.toCents() ?? 0 }).reduce(0, +) > 0
                         }
-                    } else {
-                        Toggle(isOn: $hasBudget) {
-                            HStack {
-                                Text("Amount:")
-                                if hasBudget {
-                                    CurrencyField(value: $amount)
-                                } else {
-                                    Text(computeBudget())
-                                }
+                        return false
+                    }()
+                    if hasChildBudgets {
+                        Text("Per Month: \(computeBudget())")
+                    }
+                    Toggle(isOn: $category.hasBudget) {
+                        HStack {
+                            Text(hasChildBudgets ? "Additional:" : "Amount:")
+                            if category.hasBudget {
+                                CurrencyField(value: $category.amount)
+                            } else {
+                                Text(hasChildBudgets ? "None" : "N/A")
                             }
                         }
                     }
@@ -320,14 +304,29 @@ struct BudgetCategoryEditView: View {
             }.navigationTitle("Edit Category")
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationBarBackButtonHidden()
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel", action: hide)
+                    }
+                    ToolbarItem(placement: .primaryAction) {
+                        Button("Save") {
+                            category.save()
+                            hide()
+                        }
+                    }
+                }
+        }.presentationDetents([.medium])
+    }
+    
+    private func computeBudget() -> String {
+        if let childrenTotal = category.children?.total {
+            return (childrenTotal + .Cents(category.hasBudget ? category.amount : 0)).toString()
         }
-        
-        private func computeBudget() -> String {
-            if let childrenTotal = children.total {
-                return (childrenTotal + .Cents(hasBudget ? amount : 0)).toString()
-            }
-            return hasBudget ? Price.Cents(amount).toString() : "N/A"
-        }
+        return category.hasBudget ? Price.Cents(category.amount).toString() : "N/A"
+    }
+    
+    private func hide() {
+        sheetType = nil
     }
 }
 
