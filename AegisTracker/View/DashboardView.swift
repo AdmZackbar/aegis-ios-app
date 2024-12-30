@@ -15,6 +15,10 @@ struct DashboardView: View {
     @Query(sort: \Revenue.date) var revenue: [Revenue]
     @Query var assets: [Asset]
     
+    @State private var showDatePicker: Bool = false
+    @State private var selectedMonth: Int = Date().month
+    @State private var selectedYear: Int = Date().year
+    
     var body: some View {
         let expenses = expenses.filter({ navigationStore.dashboardConfig.contains($0.date) })
         let revenue = revenue.filter({ navigationStore.dashboardConfig.contains($0.date) })
@@ -42,6 +46,31 @@ struct DashboardView: View {
                     Text(title)
                         .font(.title3)
                         .bold()
+                        .onTapGesture {
+                            selectedMonth = navigationStore.dashboardConfig.date.month
+                            selectedYear = navigationStore.dashboardConfig.date.year
+                            showDatePicker = true
+                        }
+                        .popover(isPresented: $showDatePicker) {
+                            HStack(spacing: 0) {
+                                if navigationStore.dashboardConfig.dateRangeType != .year {
+                                    Picker("", selection: $selectedMonth) {
+                                        ForEach(1...12, id: \.self) { month in
+                                            Text(month.monthText()).tag(month)
+                                        }
+                                    }.pickerStyle(.wheel)
+                                        .frame(width: 180)
+                                }
+                                Picker("", selection: $selectedYear) {
+                                    ForEach(1970...2032, id: \.self) { year in
+                                        Text(year.yearText()).tag(year)
+                                    }
+                                }.pickerStyle(.wheel)
+                                    .frame(width: 120)
+                            }.presentationCompactAdaptation(.popover)
+                                .onChange(of: selectedMonth, updateSelectedDate)
+                                .onChange(of: selectedYear, updateSelectedDate)
+                        }
                     Spacer()
                     Button(action: next) {
                         Image(systemName: "chevron.right")
@@ -95,6 +124,10 @@ struct DashboardView: View {
                     toolbarItems(budget: mainBudget)
                 }
         }
+    }
+    
+    private func updateSelectedDate() {
+        navigationStore.dashboardConfig.date = .from(year: selectedYear, month: selectedMonth, day: 1)
     }
     
     private func prev() {
