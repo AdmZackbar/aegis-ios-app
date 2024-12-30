@@ -15,10 +15,6 @@ struct DashboardView: View {
     @Query(sort: \Revenue.date) var revenue: [Revenue]
     @Query var assets: [Asset]
     
-    @State private var showDatePicker: Bool = false
-    @State private var selectedMonth: Int = Date().month
-    @State private var selectedYear: Int = Date().year
-    
     var body: some View {
         let expenses = expenses.filter({ navigationStore.dashboardConfig.contains($0.date) })
         let revenue = revenue.filter({ navigationStore.dashboardConfig.contains($0.date) })
@@ -35,95 +31,173 @@ struct DashboardView: View {
             }()
             let categoryData = expenses.map(Expense.toCategoryData) + assetData
             let financeData = expenses.map(Expense.toFinanceData) + revenue.map(Revenue.toFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) })
-            let title = Self.computeTitle(category: mainBudget, dashboardConfig: navigationStore.dashboardConfig)
-            VStack {
-                HStack {
-                    Button(action: prev) {
-                        Image(systemName: "chevron.left")
-                            .bold()
-                    }
-                    Spacer()
-                    Text(title)
-                        .font(.title3)
-                        .bold()
-                        .onTapGesture {
-                            selectedMonth = navigationStore.dashboardConfig.date.month
-                            selectedYear = navigationStore.dashboardConfig.date.year
-                            showDatePicker = true
-                        }
-                        .popover(isPresented: $showDatePicker) {
-                            HStack(spacing: 0) {
-                                if navigationStore.dashboardConfig.dateRangeType != .year {
-                                    Picker("", selection: $selectedMonth) {
-                                        ForEach(1...12, id: \.self) { month in
-                                            Text(month.monthText()).tag(month)
-                                        }
-                                    }.pickerStyle(.wheel)
-                                        .frame(width: 180)
-                                }
-                                Picker("", selection: $selectedYear) {
-                                    ForEach(1970...2032, id: \.self) { year in
-                                        Text(year.yearText()).tag(year)
-                                    }
-                                }.pickerStyle(.wheel)
-                                    .frame(width: 120)
-                            }.presentationCompactAdaptation(.popover)
-                                .onChange(of: selectedMonth, updateSelectedDate)
-                                .onChange(of: selectedYear, updateSelectedDate)
-                        }
-                    Spacer()
-                    Button(action: next) {
-                        Image(systemName: "chevron.right")
-                            .bold()
-                    }
-                }.padding(.top, 4)
-                    .padding([.leading, .trailing], 20)
-                ZStack(alignment: .bottomTrailing) {
-                    Form {
-                        BudgetCategoryView(category: mainBudget, expenses: expenses, financeData: financeData, categoryData: categoryData)
-                    }.gesture(DragGesture(minimumDistance: 3.0, coordinateSpace: .local)
-                        .onEnded { value in
-                            switch(value.translation.width, value.translation.height) {
-                            case (...(-40), -40...40): next()
-                            case (40..., -40...40): prev()
-                            default: break
-                            }
-                        }
-                    )
-                    Menu {
-                        Button {
-                            navigationStore.push(AssetViewType.add)
-                        } label: {
-                            Label("Add Asset", systemImage: "bag.circle")
-                        }
-                        Button {
-                            navigationStore.push(RevenueViewType.add())
-                        } label: {
-                            Label("Add Revenue", systemImage: "dollarsign.circle")
-                        }
-                        Button {
-                            navigationStore.push(ExpenseViewType.add())
-                        } label: {
-                            Label("Add Expense", systemImage: "house.circle")
-                        }
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.title)
-                            .foregroundStyle(Color.init(uiColor: UIColor.systemBackground))
-                            .padding(16)
-                            .background(.accent)
-                            .clipShape(Circle())
-                            .padding(.bottom, 8)
-                            .padding(.trailing, 32)
-                    }
-                }
-            }.navigationTitle(title)
-                .navigationBarTitleDisplayMode(.inline)
-                .background(Color.init(uiColor: UIColor.secondarySystemBackground))
-                .toolbar {
-                    toolbarItems(budget: mainBudget)
-                }
+            DashboardContentView(category: mainBudget, expenses: expenses, financeData: financeData, categoryData: categoryData)
         }
+    }
+}
+
+struct DashboardCategoryView: View {
+    @EnvironmentObject private var navigationStore: NavigationStore
+    @Query(sort: \Expense.date) var expenses: [Expense]
+    @Query var assets: [Asset]
+    
+    let category: BudgetCategory
+    
+    var body: some View {
+        let expenses = expenses.filter({ isFiltered($0) })
+        var assetData: [CategoryData] = []
+        let payments: [Asset.Loan.Payment] = {
+            var payments: [Asset.Loan.Payment] = []
+            for asset in assets.filter({ category.contains($0.metaData.category) && $0.loan != nil }) {
+                let assetPayments = asset.loan!.payments.filter({ navigationStore.dashboardConfig.contains($0.date) })
+                payments += assetPayments
+                assetData += asset.toCategoryData(assetPayments)
+            }
+            return payments
+        }()
+        let categoryData = expenses.map(Expense.toCategoryData) + assetData
+        let financeData = expenses.map(Expense.toFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) })
+        DashboardContentView(category: category, expenses: expenses, financeData: financeData, categoryData: categoryData)
+    }
+    
+    private func isFiltered(_ expense: Expense) -> Bool {
+        if category.parent != nil {
+            return category.contains(expense.category) && navigationStore.dashboardConfig.contains(expense.date)
+        }
+        return navigationStore.dashboardConfig.contains(expense.date)
+    }
+}
+
+private struct DashboardContentView: View {
+    @EnvironmentObject private var navigationStore: NavigationStore
+    
+    let category: BudgetCategory
+    let expenses: [Expense]
+    let financeData: [FinanceData]
+    let categoryData: [CategoryData]
+    
+    @State private var showDatePicker: Bool = false
+    @State private var selectedMonth: Int = Date().month
+    @State private var selectedYear: Int = Date().year
+    
+    var body: some View {
+        let title = computeTitle()
+        VStack {
+            headerView(title: title)
+            ZStack(alignment: .bottomTrailing) {
+                Form {
+                    BudgetCategoryView(category: category, expenses: expenses, financeData: financeData, categoryData: categoryData)
+                }.gesture(DragGesture(minimumDistance: 3.0, coordinateSpace: .local)
+                    .onEnded { value in
+                        switch(value.translation.width, value.translation.height) {
+                        case (...(-40), -40...40): next()
+                        case (40..., -40...40): prev()
+                        default: break
+                        }
+                    }
+                )
+                Menu {
+                    Button {
+                        navigationStore.push(AssetViewType.add)
+                    } label: {
+                        Label("Add Asset", systemImage: "bag.circle")
+                    }
+                    Button {
+                        navigationStore.push(RevenueViewType.add())
+                    } label: {
+                        Label("Add Revenue", systemImage: "dollarsign.circle")
+                    }
+                    Button {
+                        navigationStore.push(ExpenseViewType.add())
+                    } label: {
+                        Label("Add Expense", systemImage: "house.circle")
+                    }
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.title)
+                        .foregroundStyle(Color.init(uiColor: UIColor.systemBackground))
+                        .padding(16)
+                        .background(.accent)
+                        .clipShape(Circle())
+                        .padding(.bottom, 8)
+                        .padding(.trailing, 32)
+                }
+            }
+        }.navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .background(Color.init(uiColor: UIColor.secondarySystemBackground))
+            .toolbar(content: toolbarItems)
+    }
+    
+    func computeTitle() -> String {
+        Self.computeTitle(category: category, dashboardConfig: navigationStore.dashboardConfig)
+    }
+    
+    static func computeTitle(category: BudgetCategory, dashboardConfig: DashboardConfig, includeCategory: Bool? = nil) -> String {
+        let dateStr: String = {
+            let date = dashboardConfig.date
+            let month = category.parent != nil ? date.month.shortMonthText() : date.month.monthText()
+            switch dashboardConfig.dateRangeType {
+            case .month:
+                return "\(month) \(date.year.yearText())"
+            case .ytd:
+                if date.month > 1 {
+                    return "Jan-\(date.month.shortMonthText()) \(date.year.yearText())"
+                }
+                return "\(month) \(date.year.yearText())"
+            case .year:
+                return date.year.yearText()
+            }
+        }()
+        return includeCategory ?? (category.parent != nil) ? "\(dateStr): \(category.name)" : dateStr
+    }
+    
+    @ViewBuilder
+    private func headerView(title: String) -> some View {
+        HStack {
+            Button(action: prev) {
+                Image(systemName: "chevron.left")
+                    .bold()
+            }
+            Spacer()
+            Text(title)
+                .font(.title3)
+                .bold()
+                .onTapGesture {
+                    selectedMonth = navigationStore.dashboardConfig.date.month
+                    selectedYear = navigationStore.dashboardConfig.date.year
+                    showDatePicker = true
+                }
+                .popover(isPresented: $showDatePicker, content: monthYearPickerView)
+            Spacer()
+            Button(action: next) {
+                Image(systemName: "chevron.right")
+                    .bold()
+            }
+        }.padding(.top, 4)
+            .padding([.leading, .trailing], 20)
+    }
+    
+    @ViewBuilder
+    private func monthYearPickerView() -> some View {
+        HStack(spacing: 0) {
+            if navigationStore.dashboardConfig.dateRangeType != .year {
+                Picker("", selection: $selectedMonth) {
+                    ForEach(1...12, id: \.self) { month in
+                        Text(month.monthText()).tag(month)
+                    }
+                }.pickerStyle(.wheel)
+                    .frame(width: 180)
+            }
+            Picker("", selection: $selectedYear) {
+                ForEach(1970...2032, id: \.self) { year in
+                    Text(year.yearText()).tag(year)
+                }
+            }.pickerStyle(.wheel)
+                .frame(width: 120)
+        }.presentationCompactAdaptation(.popover)
+            .onChange(of: selectedMonth, updateSelectedDate)
+            .onChange(of: selectedYear, updateSelectedDate)
     }
     
     private func updateSelectedDate() {
@@ -143,7 +217,7 @@ struct DashboardView: View {
     }
     
     @ToolbarContentBuilder
-    private func toolbarItems(budget: BudgetCategory) -> some ToolbarContent {
+    private func toolbarItems() -> some ToolbarContent {
         ToolbarItem(placement: .principal) {
             Picker("Type", selection: $navigationStore.dashboardConfig.dateRangeType.animation()) {
                 Text("Month").tag(DashboardConfig.DateRangeType.month)
@@ -155,9 +229,9 @@ struct DashboardView: View {
         ToolbarItem(placement: .topBarTrailing) {
             Menu {
                 Button {
-                    navigationStore.push(ExpenseViewType.editCategory(category: budget))
+                    navigationStore.push(ExpenseViewType.editCategory(category: category))
                 } label: {
-                    Label("Edit Budget", systemImage: "gear")
+                    Label(category.parent == nil ? "Edit Budget" : "Edit '\(category.name)'", systemImage: "gear")
                 }
                 Divider()
                 Menu {
@@ -203,28 +277,9 @@ struct DashboardView: View {
             }
         }
     }
-    
-    static func computeTitle(category: BudgetCategory, dashboardConfig: DashboardConfig, includeCategory: Bool? = nil) -> String {
-        let dateStr: String = {
-            let date = dashboardConfig.date
-            let month = category.parent != nil ? date.month.shortMonthText() : date.month.monthText()
-            switch dashboardConfig.dateRangeType {
-            case .month:
-                return "\(month) \(date.year.yearText())"
-            case .ytd:
-                if date.month > 1 {
-                    return "Jan-\(date.month.shortMonthText()) \(date.year.yearText())"
-                }
-                return "\(month) \(date.year.yearText())"
-            case .year:
-                return date.year.yearText()
-            }
-        }()
-        return includeCategory ?? (category.parent != nil) ? "\(dateStr): \(category.name)" : dateStr
-    }
 }
 
-struct BudgetCategoryView: View {
+private struct BudgetCategoryView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
     
     let category: BudgetCategory
@@ -369,7 +424,7 @@ struct BudgetCategoryView: View {
                         .padding([.top, .bottom], 8)
                     let otherCategory = BudgetCategory(name: "Other")
                     Button {
-                        navigationStore.push(ExpenseViewType.list(title: DashboardView.computeTitle(category: otherCategory, dashboardConfig: navigationStore.dashboardConfig, includeCategory: true), expenses: otherExpenses))
+                        navigationStore.push(ExpenseViewType.list(title: DashboardContentView.computeTitle(category: otherCategory, dashboardConfig: navigationStore.dashboardConfig, includeCategory: true), expenses: otherExpenses))
                     } label: {
                         subcategoryEntryView(otherCategory, actual: otherExpenses.total)
                     }.buttonStyle(.plain)
@@ -461,128 +516,6 @@ struct BudgetCategoryView: View {
             Text(main)
                 .font(.title3)
                 .fontWeight(.semibold)
-        }
-    }
-}
-
-struct DashboardCategoryView: View {
-    @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(sort: \Expense.date) var expenses: [Expense]
-    @Query var assets: [Asset]
-    
-    let category: BudgetCategory
-    
-    var body: some View {
-        let expenses = expenses.filter({ isFiltered($0) })
-        var assetData: [CategoryData] = []
-        let payments: [Asset.Loan.Payment] = {
-            var payments: [Asset.Loan.Payment] = []
-            for asset in assets.filter({ category.contains($0.metaData.category) && $0.loan != nil }) {
-                let assetPayments = asset.loan!.payments.filter({ navigationStore.dashboardConfig.contains($0.date) })
-                payments += assetPayments
-                assetData += asset.toCategoryData(assetPayments)
-            }
-            return payments
-        }()
-        let categoryData = expenses.map(Expense.toCategoryData) + assetData
-        let financeData = expenses.map(Expense.toFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) })
-        ZStack(alignment: .bottomTrailing) {
-            Form {
-                BudgetCategoryView(category: category, expenses: expenses, financeData: financeData, categoryData: categoryData)
-            }.gesture(DragGesture(minimumDistance: 3.0, coordinateSpace: .local)
-                .onEnded { value in
-                    switch(value.translation.width, value.translation.height) {
-                    case (...(-30), -30...30): next()
-                    case (30..., -30...30): prev()
-                    default: break
-                    }
-                }
-            )
-        }.tabViewStyle(.page(indexDisplayMode: .never))
-            .navigationTitle(DashboardView.computeTitle(category: category, dashboardConfig: navigationStore.dashboardConfig))
-            .navigationBarTitleDisplayMode(.inline)
-            .background(Color.init(uiColor: UIColor.secondarySystemBackground))
-            .toolbar(content: toolbarItems)
-    }
-    
-    private func prev() {
-        withAnimation {
-            navigationStore.dashboardConfig.prev()
-        }
-    }
-    
-    private func next() {
-        withAnimation {
-            navigationStore.dashboardConfig.next()
-        }
-    }
-    
-    private func isFiltered(_ expense: Expense) -> Bool {
-        if category.parent != nil {
-            return category.contains(expense.category) && navigationStore.dashboardConfig.contains(expense.date)
-        }
-        return navigationStore.dashboardConfig.contains(expense.date)
-    }
-    
-    @ToolbarContentBuilder
-    private func toolbarItems() -> some ToolbarContent {
-        ToolbarItem(placement: .principal) {
-            Picker("Type", selection: $navigationStore.dashboardConfig.dateRangeType.animation()) {
-                Text("Month").tag(DashboardConfig.DateRangeType.month)
-                Text("YTD").tag(DashboardConfig.DateRangeType.ytd)
-                Text("Year").tag(DashboardConfig.DateRangeType.year)
-            }.pickerStyle(.segmented)
-                .frame(width: 200)
-        }
-        ToolbarItem(placement: .topBarTrailing) {
-            Menu {
-                Button {
-                    navigationStore.push(ExpenseViewType.editCategory(category: category))
-                } label: {
-                    Label("Edit Budget", systemImage: "gear")
-                }
-                Divider()
-                Menu {
-                    Button {
-                        navigationStore.push(ExpenseViewType.byDate)
-                    } label: {
-                        Label("By Date", systemImage: "calendar")
-                    }
-                    Button {
-                        navigationStore.push(ExpenseViewType.byCategory())
-                    } label: {
-                        Label("By Category", systemImage: "basket")
-                    }
-                    Button {
-                        navigationStore.push(ExpenseViewType.byPayee())
-                    } label: {
-                        Label("By Payer", systemImage: "person")
-                    }
-                } label: {
-                    Label("View Expenses", systemImage: "bag.circle")
-                }
-                Menu {
-                    Button {
-                        navigationStore.push(RevenueViewType.byDate)
-                    } label: {
-                        Label("By Date", systemImage: "calendar")
-                    }
-                    Button {
-                        navigationStore.push(RevenueViewType.byPayer())
-                    } label: {
-                        Label("By Payer", systemImage: "person")
-                    }
-                } label: {
-                    Label("View Income", systemImage: "dollarsign.circle")
-                }
-                Button {
-                    navigationStore.push(AssetViewType.list)
-                } label: {
-                    Label("View Assets", systemImage: "house.circle")
-                }
-            } label: {
-                Image(systemName: "list.bullet.circle")
-            }
         }
     }
 }
