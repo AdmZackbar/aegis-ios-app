@@ -105,7 +105,7 @@ private struct DashboardContentView: View {
                     Button {
                         navigationStore.push(RevenueViewType.add())
                     } label: {
-                        Label("Add Revenue", systemImage: "dollarsign.circle")
+                        Label("Add Income", systemImage: "dollarsign.circle")
                     }
                     Button {
                         navigationStore.push(ExpenseViewType.add())
