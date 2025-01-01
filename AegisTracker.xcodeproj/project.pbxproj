@@ -107,6 +107,7 @@
 		E8E7023B2D1B0DB600FB7013 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		E8E7023E2D1B2FBB00FB7013 /* CategoryData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryData.swift; sourceTree = "<group>"; };
 		E8E702402D1B303800FB7013 /* CategoryPieChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryPieChart.swift; sourceTree = "<group>"; };
+		E8E702492D25B05100FB7013 /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
 		E8EB2A632CE063A7000E4B67 /* AegisTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AegisTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8EB2A662CE063A7000E4B67 /* AegisTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisTrackerApp.swift; sourceTree = "<group>"; };
 		E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -181,6 +182,7 @@
 		E8EB2A5A2CE063A7000E4B67 = {
 			isa = PBXGroup;
 			children = (
+				E8E702492D25B05100FB7013 /* CHANGELOG.md */,
 				E887697E2CE6881600D989E1 /* README.md */,
 				E8EB2A652CE063A7000E4B67 /* AegisTracker */,
 				E8EB2A782CE063A9000E4B67 /* AegisTrackerTests */,
