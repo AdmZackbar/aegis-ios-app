@@ -90,7 +90,7 @@ struct ExpenseDateView: View {
                             .fontWeight(.bold)
                             .fontDesign(.rounded)
                     }
-                    FinanceMonthChart(data: monthExpenses.map(Expense.toFinanceData), year: year, month: month, selection: $chartSelection)
+                    FinanceMonthChart(data: monthExpenses.map(Expense.toFinanceData), year: year, month: month)
                         .frame(height: 140)
                 }
             } header: {
@@ -233,7 +233,7 @@ struct ExpenseMonthView: View {
                             .fontWeight(.bold)
                             .fontDesign(.rounded)
                     }
-                    FinanceMonthChart(data: expenses.map(Expense.toFinanceData), year: year, month: month, selection: $chartSelection)
+                    FinanceMonthChart(data: expenses.map(Expense.toFinanceData), year: year, month: month)
                         .frame(height: 140)
                 }
             }

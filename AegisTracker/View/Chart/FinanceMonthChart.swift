@@ -9,17 +9,14 @@ import Charts
 import SwiftUI
 
 struct FinanceMonthChart: View {
-    @Binding private var selection: Date?
-    
     let data: [FinanceData]
     let year: Int
     let month: Int
     
-    init(data: [FinanceData], year: Int, month: Int, selection: Binding<Date?>) {
+    init(data: [FinanceData], year: Int, month: Int) {
         self.data = data
         self.year = year
         self.month = month
-        self._selection = selection
     }
     
     var body: some View {
@@ -31,7 +28,7 @@ struct FinanceMonthChart: View {
         Chart(data, id: \.date.hashValue) { item in
             BarMark(x: .value("Date", item.date, unit: .day), y: .value("Amount", item.amount))
                 .cornerRadius(4)
-                .foregroundStyle(by: .value("Category", isSelected(item) ? item.category.rawValue : ""))
+                .foregroundStyle(by: .value("Category", item.category.rawValue))
                 .position(by: .value("Category", item.category.rawValue))
         }.chartXScale(domain: createDate(day: 1)...createDate(day: Calendar.current.range(of: .day, in: .month, for: createDate())!.upperBound - 1))
             .chartForegroundStyleScale { colorMap[$0] ?? Color.gray }
@@ -50,12 +47,6 @@ struct FinanceMonthChart: View {
                 AxisMarks(format: .currency(code: "USD").precision(.fractionLength(0)),
                           values: .automatic(desiredCount: 4))
             }
-            .chartXSelection(value: $selection)
-    }
-    
-    private func isSelected(_ item: FinanceData) -> Bool {
-        guard let selection else { return true }
-        return selection.day == item.date.day
     }
     
     private func createDate(day: Int = 1) -> Date {
@@ -64,7 +55,6 @@ struct FinanceMonthChart: View {
 }
 
 #Preview {
-    @Previewable @State var selection: Date? = nil
     Form {
         let monthAgo = Calendar.current.date(byAdding: .month, value: -1, to: .now)!
         FinanceMonthChart(
@@ -73,8 +63,7 @@ struct FinanceMonthChart: View {
                    .init(date: monthAgo, amount: 451.2),
                    .init(date: monthAgo, amount: 3410.1, category: .income)],
             year: Date().year,
-            month: Date().month,
-            selection: $selection)
+            month: Date().month)
         .frame(height: 200)
     }
 }

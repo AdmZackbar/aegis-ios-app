@@ -12,12 +12,10 @@ struct DashboardView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
     @Query(filter: #Predicate<BudgetCategory> { $0.name == "Main Budget" }) var budgets: [BudgetCategory]
     @Query(sort: \Expense.date) var expenses: [Expense]
-    @Query(sort: \Revenue.date) var revenue: [Revenue]
     @Query var assets: [Asset]
     
     var body: some View {
         let expenses = expenses.filter({ navigationStore.dashboardConfig.contains($0.date) })
-        let revenue = revenue.filter({ navigationStore.dashboardConfig.contains($0.date) })
         if let mainBudget = budgets.first {
             var assetData: [CategoryData] = []
             let payments: [Asset.Loan.Payment] = {
@@ -30,7 +28,7 @@ struct DashboardView: View {
                 return payments
             }()
             let categoryData = expenses.map(Expense.toCategoryData) + assetData
-            let financeData = expenses.map(Expense.toFinanceData) + revenue.map(Revenue.toFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) })
+            let financeData = expenses.map(Expense.toFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) })
             DashboardContentView(category: mainBudget, expenses: expenses, financeData: financeData, categoryData: categoryData)
         }
     }
@@ -87,15 +85,7 @@ private struct DashboardContentView: View {
             ZStack(alignment: .bottomTrailing) {
                 Form {
                     BudgetCategoryView(category: category, expenses: expenses, financeData: financeData, categoryData: categoryData)
-                }.gesture(DragGesture(minimumDistance: 3.0, coordinateSpace: .local)
-                    .onEnded { value in
-                        switch(value.translation.width, value.translation.height) {
-                        case (...(-40), -40...40): next()
-                        case (40..., -40...40): prev()
-                        default: break
-                        }
-                    }
-                )
+                }
                 Menu {
                     Button {
                         navigationStore.push(AssetViewType.add)
@@ -381,8 +371,7 @@ private struct BudgetCategoryView: View {
         case .month:
             FinanceMonthChart(data: financeData,
                               year: year,
-                              month: month,
-                              selection: $selectedDate)
+                              month: month)
         case .ytd:
             FinanceYearChart(data: financeData,
                              year: year,
