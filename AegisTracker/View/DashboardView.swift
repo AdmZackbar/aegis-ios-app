@@ -109,7 +109,7 @@ private struct DashboardContentView: View {
                         .padding(16)
                         .background(.accent)
                         .clipShape(Circle())
-                        .padding(.bottom, 8)
+                        .padding(.bottom, 16)
                         .padding(.trailing, 32)
                 }
             }
