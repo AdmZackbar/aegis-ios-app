@@ -22,8 +22,7 @@ struct MainView: View {
         "Gift",
         "Bonus",
         "Retirement",
-        "Reimbursement",
-        "Dividend"
+        "Reimbursement"
     ]
     
     @Query(filter: #Predicate<BudgetCategory> { $0.parent == nil }) var budgets: [BudgetCategory]
