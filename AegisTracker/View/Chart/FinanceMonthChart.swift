@@ -58,7 +58,7 @@ struct FinanceMonthChart: View {
     Form {
         let monthAgo = Calendar.current.date(byAdding: .month, value: -1, to: .now)!
         FinanceMonthChart(
-            data: [.init(amount: 1540.1), .init(amount: 451.1),
+            data: [.init(amount: 1540.11), .init(amount: 451.18),
                    .init(amount: 4301.23, category: .income),
                    .init(date: monthAgo, amount: 451.2),
                    .init(date: monthAgo, amount: 3410.1, category: .income)],
