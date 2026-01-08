@@ -84,7 +84,7 @@ struct ExpenseDateView: View {
                     VStack(alignment: .leading, spacing: 0) {
                         Text("Total Spending")
                             .font(.subheadline)
-                            .opacity(0.6)
+                            .opacity(0.55)
                         Text(monthExpenses.total.toString())
                             .font(.title)
                             .fontWeight(.bold)
