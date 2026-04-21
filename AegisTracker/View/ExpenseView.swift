@@ -46,18 +46,13 @@ struct ExpenseView: View {
     private func headerView() -> some View {
         Text(expense.amount.toString())
             .font(.system(size: 48, weight: .bold, design: .rounded))
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
+            categoryHeaderView()
             HStack(alignment: .bottom) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(expense.category)
-                        .textCase(.uppercase)
-                        .font(.caption)
-                        .fontWeight(.light)
-                    Text(expense.payee)
-                        .font(.title2)
-                        .multilineTextAlignment(.leading)
-                        .bold()
-                }
+                Text(expense.payee)
+                    .font(.title2)
+                    .multilineTextAlignment(.leading)
+                    .bold()
                 Spacer()
                 Text(expense.date.formatted(date: .abbreviated, time: .omitted))
                     .font(.title2)
@@ -71,6 +66,30 @@ struct ExpenseView: View {
         }.padding([.leading, .trailing], 28)
             .padding(.top, 16)
             .padding(.bottom, 8)
+    }
+    
+    @ViewBuilder
+    private func categoryHeaderView() -> some View {
+        if !expense.tags.isEmpty {
+            ScrollView(.horizontal) {
+                HStack(spacing: 8) {
+                    Text(expense.category)
+                    Divider().frame(height: 16)
+                    HStack(spacing: 4) {
+                        ForEach(expense.tags.dropLast()) { tag in
+                            Text(tag.name).fontWeight(.regular).italic()
+                            Text("•")
+                        }
+                        Text(expense.tags.last!.name).fontWeight(.regular).italic()
+                    }
+                }.textCase(.uppercase).font(.caption).fontWeight(.light)
+            }
+        } else {
+            Text(expense.category)
+                .textCase(.uppercase)
+                .font(.caption)
+                .fontWeight(.light)
+        }
     }
     
     @ViewBuilder
@@ -166,12 +185,13 @@ struct ExpenseView: View {
 
 #Preview(traits: .modifier(MockDataPreviewModifier())) {
     @Previewable @StateObject var navigationStore = NavigationStore()
+    let expense = Expense(payee: "Publix", amount: .Cents(34189), category: "Groceries", notes: "November grocery run", tags: [.init(name: "Binge Shopping 2026"), .init(name: "Costco Runs")], details: .Items(list: .init(items: [
+        .init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541)),
+        .init(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300)),
+        .init(name: "Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
+    ])))
     return NavigationStack(path: $navigationStore.path) {
-        ExpenseView(expense: .init(payee: "Publix", amount: .Cents(34189), category: "Groceries", notes: "November grocery run", details: .Items(list: .init(items: [
-            .init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541)),
-            .init(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300)),
-            .init(name: "Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
-        ])))).navigationDestination(for: ExpenseViewType.self, destination: MainView.computeDestination)
+        ExpenseView(expense: expense).navigationDestination(for: ExpenseViewType.self, destination: MainView.computeDestination)
             .navigationDestination(for: RevenueViewType.self, destination: MainView.computeDestination)
             .navigationDestination(for: AssetViewType.self, destination: MainView.computeDestination)
     }.environmentObject(navigationStore)

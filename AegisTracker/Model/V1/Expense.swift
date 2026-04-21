@@ -9,6 +9,7 @@ import Foundation
 import SwiftData
 
 typealias Expense = SchemaV1.Expense
+typealias ExpenseTag = SchemaV1.ExpenseTag
 
 extension SchemaV1 {
     @Model
@@ -18,6 +19,7 @@ extension SchemaV1 {
         var amount: Price = Price.Cents(0)
         var category: String = ""
         var notes: String = ""
+        var tags: [ExpenseTag]! = []
         var details: Details? = nil
         
         init(date: Date = Date(),
@@ -25,12 +27,14 @@ extension SchemaV1 {
              amount: Price = .Cents(0),
              category: String = "",
              notes: String = "",
+             tags: [ExpenseTag] = [],
              details: Details? = nil) {
             self.date = date
             self.payee = payee
             self.amount = amount
             self.category = category
             self.notes = notes
+            self.tags = tags
             self.details = details
         }
         
@@ -105,6 +109,24 @@ extension SchemaV1 {
             var amount: Double
             var rate: Double
             var user: String
+        }
+    }
+    
+    @Model
+    final class ExpenseTag {
+        var name: String = ""
+        var creationDate: Date = Date()
+        
+        var totalAmount: Price {
+            expenses.map({ $0.amount }).reduce(.Cents(0), +)
+        }
+        
+        @Relationship(deleteRule: .cascade, inverse: \Expense.tags)
+        var expenses: [Expense]! = []
+        
+        init(name: String = "", creationDate: Date = Date()) {
+            self.name = name
+            self.creationDate = creationDate
         }
     }
 }

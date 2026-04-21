@@ -42,6 +42,7 @@ struct MockDataPreviewModifier: PreviewModifier {
                   amount: .Cents(4523),
                   category: "Haircut",
                   notes: "Ryle cut",
+                  tags: [ExpenseTag(name: "Self Improvement 2026")],
                   details: .Tip(amount: .Cents(1002))),
             .init(payee: "Publix",
                   amount: .Cents(10723),

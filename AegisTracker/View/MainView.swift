@@ -95,6 +95,10 @@ struct MainView: View {
             } else {
                 ExpenseCategoryListView()
             }
+        case .viewTags:
+            ExpenseTagsView()
+        case .viewTag(let tag):
+            ExpenseTagView(tag: tag)
         case .byDate:
             ExpenseDateView()
         case .byMonth(let year, let month):
@@ -144,6 +148,8 @@ struct MainView: View {
 enum ExpenseViewType: Hashable {
     case dashboardCategory(category: BudgetCategory)
     case editCategory(category: BudgetCategory)
+    case viewTags
+    case viewTag(tag: ExpenseTag)
     case byCategory(name: String? = nil)
     case byDate
     case byMonth(year: Int, month: Int)

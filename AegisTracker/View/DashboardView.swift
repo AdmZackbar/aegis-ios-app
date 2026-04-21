@@ -226,6 +226,12 @@ private struct DashboardContentView: View {
                 Divider()
                 Menu {
                     Button {
+                        navigationStore.push(ExpenseViewType.viewTags)
+                    } label: {
+                        Label("View Groups", systemImage: "tag")
+                    }
+                    Divider()
+                    Button {
                         navigationStore.push(ExpenseViewType.byDate)
                     } label: {
                         Label("By Date", systemImage: "calendar")

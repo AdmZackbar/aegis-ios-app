@@ -38,6 +38,8 @@
 		E88769802CE7DD9D00D989E1 /* Price.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887697F2CE7DD9D00D989E1 /* Price.swift */; };
 		E88769862CE91E5800D989E1 /* ExpenseListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88769852CE91E5800D989E1 /* ExpenseListView.swift */; };
 		E887699B2CFA4CF800D989E1 /* CurrencyField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E887699A2CFA4CF800D989E1 /* CurrencyField.swift */; };
+		E896E0592F9665FB00DAC43F /* ExpenseTagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E896E0582F9665FB00DAC43F /* ExpenseTagsView.swift */; };
+		E896E05B2F966E8A00DAC43F /* ExpenseTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E896E05A2F966E8A00DAC43F /* ExpenseTagView.swift */; };
 		E8E7023C2D1B0DC600FB7013 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E7023B2D1B0DB600FB7013 /* DashboardView.swift */; };
 		E8E7023F2D1B2FC100FB7013 /* CategoryData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E7023E2D1B2FBB00FB7013 /* CategoryData.swift */; };
 		E8E702412D1B304E00FB7013 /* CategoryPieChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E702402D1B303800FB7013 /* CategoryPieChart.swift */; };
@@ -104,6 +106,8 @@
 		E887697F2CE7DD9D00D989E1 /* Price.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Price.swift; sourceTree = "<group>"; };
 		E88769852CE91E5800D989E1 /* ExpenseListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseListView.swift; sourceTree = "<group>"; };
 		E887699A2CFA4CF800D989E1 /* CurrencyField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyField.swift; sourceTree = "<group>"; };
+		E896E0582F9665FB00DAC43F /* ExpenseTagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseTagsView.swift; sourceTree = "<group>"; };
+		E896E05A2F966E8A00DAC43F /* ExpenseTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseTagView.swift; sourceTree = "<group>"; };
 		E8E7023B2D1B0DB600FB7013 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		E8E7023E2D1B2FBB00FB7013 /* CategoryData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryData.swift; sourceTree = "<group>"; };
 		E8E702402D1B303800FB7013 /* CategoryPieChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryPieChart.swift; sourceTree = "<group>"; };
@@ -270,6 +274,8 @@
 				E88769852CE91E5800D989E1 /* ExpenseListView.swift */,
 				E86CB3402D0D1CE100DE38FF /* ExpenseEntryView.swift */,
 				E8F863FC2D066E8600A3EBCC /* ExpenseEditView.swift */,
+				E896E0582F9665FB00DAC43F /* ExpenseTagsView.swift */,
+				E896E05A2F966E8A00DAC43F /* ExpenseTagView.swift */,
 				E88164842D163FFF005C572E /* RevenueDateView.swift */,
 				E88164882D164F37005C572E /* RevenuePayerView.swift */,
 				E88164822D163DE5005C572E /* RevenueView.swift */,
@@ -347,7 +353,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1540;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					E8EB2A622CE063A7000E4B67 = {
 						CreatedOnToolsVersion = 15.4;
@@ -419,6 +425,7 @@
 				E88164982D176ED6005C572E /* FinanceMonthChart.swift in Sources */,
 				E88164A42D19BDC1005C572E /* BudgetCategoryEditView.swift in Sources */,
 				E85AE3D12D09483C00CA9D0C /* Asset.swift in Sources */,
+				E896E0592F9665FB00DAC43F /* ExpenseTagsView.swift in Sources */,
 				E88769792CE3FF7400D989E1 /* Revenue.swift in Sources */,
 				E881646D2D0FB6F5005C572E /* ExpenseCategoryView.swift in Sources */,
 				E8EB2A672CE063A7000E4B67 /* AegisTrackerApp.swift in Sources */,
@@ -442,6 +449,7 @@
 				E88164892D164F3F005C572E /* RevenuePayerView.swift in Sources */,
 				E881647F2D1630F5005C572E /* RevenueEntryView.swift in Sources */,
 				E88769802CE7DD9D00D989E1 /* Price.swift in Sources */,
+				E896E05B2F966E8A00DAC43F /* ExpenseTagView.swift in Sources */,
 				E88164962D1769C1005C572E /* FinanceMultiYearChart.swift in Sources */,
 				E88164692D0F5D95005C572E /* MockDataPreview.swift in Sources */,
 				E881648F2D174F77005C572E /* FinanceSummaryView.swift in Sources */,
@@ -522,6 +530,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = FU2B76F7PF;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -545,6 +554,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -586,6 +596,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = FU2B76F7PF;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -602,6 +613,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				VALIDATE_PRODUCT = YES;
@@ -618,7 +630,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AegisTracker/Preview Content\"";
-				DEVELOPMENT_TEAM = FU2B76F7PF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AegisTracker/Info.plist;
@@ -655,7 +666,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AegisTracker/Preview Content\"";
-				DEVELOPMENT_TEAM = FU2B76F7PF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AegisTracker/Info.plist;
@@ -688,7 +698,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = FU2B76F7PF;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
 				MARKETING_VERSION = 1.0;
@@ -707,7 +716,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = FU2B76F7PF;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
 				MARKETING_VERSION = 1.0;
@@ -725,7 +733,6 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = FU2B76F7PF;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.wassynger.AegisUITests;
@@ -742,7 +749,6 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = FU2B76F7PF;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.wassynger.AegisUITests;

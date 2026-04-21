@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- Expense tags: expenses can now have multiple 'tags'
+- Method of quickly adding tags across multiple expenses
+
 ## [0.1.0] - 2025-01-01
 
 ### Added

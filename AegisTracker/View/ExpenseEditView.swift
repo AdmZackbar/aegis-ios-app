@@ -24,6 +24,7 @@ struct ExpenseEditView: View {
     @Environment(\.modelContext) var modelContext
     @EnvironmentObject private var navigationStore: NavigationStore
     @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
+    @Query(sort: \ExpenseTag.name) var existingTags: [ExpenseTag]
     
     static let BillNames: [String] = ["Electric", "Water", "Sewer", "Trash", "Internet", "Other"]
     static let BillUnitMap: [String : String] = {
@@ -43,6 +44,9 @@ struct ExpenseEditView: View {
     @State private var payee: String = ""
     @State private var category: String = ""
     @State private var notes: String = ""
+    @State private var tags: [ExpenseTag] = []
+    @State private var tag: String = ""
+    @State private var showTag: Bool = false
     @State private var type: DetailType? = nil
     @State private var sheetType: SheetType? = nil
     // Tip
@@ -124,6 +128,7 @@ struct ExpenseEditView: View {
                     categoryDropDownMenu()
                 }
                 categoryAutoCompleteView(categories)
+                tagsView()
                 TextField("Notes", text: $notes, axis: .vertical)
                     .lineLimit(3...9)
                     .textInputAutocapitalization(.sentences)
@@ -274,6 +279,101 @@ struct ExpenseEditView: View {
     
     private func getFilteredEntries(_ text: String, _ entries: [String]) -> [String] {
         entries.filter({ $0.localizedCaseInsensitiveContains(text) }).sorted()
+    }
+    
+    @ViewBuilder
+    private func tagsView() -> some View {
+        if !tags.isEmpty {
+            HStack {
+                Image(systemName: "rectangle.3.group.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        ForEach(tags) { tag in
+                            Text(tag.name)
+                                .bold()
+                            Divider()
+                        }
+                    }
+                }.contextMenu {
+                    ForEach(tags) { tag in
+                        Button("Remove '\(tag.name)'") {
+                            tags.removeAll(where: { $0 == tag })
+                        }
+                    }
+                    if tags.count > 1 {
+                        Divider()
+                        Button("Remove All") {
+                            tags.removeAll()
+                        }
+                    }
+                }
+                Button {
+                    showTag = true
+                } label: {
+                    Image(systemName: "plus")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                }.disabled(showTag)
+            }
+            if (showTag) {
+                tagView()
+            }
+        } else {
+            tagView()
+        }
+    }
+    
+    @ViewBuilder
+    private func tagView() -> some View {
+        VStack {
+            HStack {
+                if (tags.isEmpty) {
+                    Image(systemName: "rectangle.3.group.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                }
+                Text(tags.isEmpty ? "Group:" : "New Group:")
+                TextField("optional", text: $tag)
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.words)
+                    .onSubmit {
+                        if tag.isEmpty {
+                            return
+                        }
+                        let t = existingTags.first(where: { $0.name == tag }) ?? ExpenseTag(name: tag)
+                        tags.insert(t, at: 0)
+                        showTag = false
+                        tag = ""
+                    }
+            }
+            if !tag.isEmpty {
+                let filteredTags = getFilteredTags(tag)
+                if !filteredTags.isEmpty {
+                    ScrollView(.horizontal) {
+                        HStack {
+                            ForEach(filteredTags, id: \.self) { t in
+                                Button {
+                                    tags.insert(t, at: 0)
+                                    showTag = false
+                                    tag = ""
+                                } label: {
+                                    Text(t.name)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private func getFilteredTags(_ text: String) -> [ExpenseTag] {
+        existingTags.filter({ $0.name.localizedCaseInsensitiveContains(text) }).sorted { $0.name < $1.name }
     }
     
     @ViewBuilder
@@ -535,6 +635,7 @@ struct ExpenseEditView: View {
         amount = expense.amount.toCents()
         category = expense.category
         notes = expense.notes
+        tags = expense.tags
         switch expense.details {
         case .Tip(let amount):
             type = .Tip
@@ -559,6 +660,7 @@ struct ExpenseEditView: View {
         expense.amount = .Cents(amount)
         expense.category = category
         expense.notes = notes
+        expense.tags = tags
         switch type {
         case .Tip:
             expense.details = .Tip(amount: .Cents(tip))
@@ -910,7 +1012,8 @@ struct ExpenseEditView: View {
 #Preview(traits: .modifier(MockDataPreviewModifier())) {
     @Previewable @StateObject var navigationStore = NavigationStore()
     return NavigationStack(path: $navigationStore.path) {
-        ExpenseEditView().navigationDestination(for: ExpenseViewType.self, destination: MainView.computeDestination)
+        ExpenseEditView()
+            .navigationDestination(for: ExpenseViewType.self, destination: MainView.computeDestination)
             .navigationDestination(for: RevenueViewType.self, destination: MainView.computeDestination)
             .navigationDestination(for: AssetViewType.self, destination: MainView.computeDestination)
     }.environmentObject(navigationStore)
