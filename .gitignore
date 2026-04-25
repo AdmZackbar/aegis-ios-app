@@ -1,0 +1,13 @@
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+project.xcworkspace/userdata/
+*.xcuserdata
+
+# macOS
+.DS_Store
+
+# Packages (Swift Package Manager / CocoaPods / Carthage)
+.swiftpm/
+.build/
