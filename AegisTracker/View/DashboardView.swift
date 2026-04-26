@@ -77,6 +77,8 @@ private struct DashboardContentView: View {
     @State private var showDatePicker: Bool = false
     @State private var selectedMonth: Int = Date().month
     @State private var selectedYear: Int = Date().year
+    @State private var showCopyExpenseSheet = false
+    @State private var showCopyRevenueSheet = false
     
     var body: some View {
         let title = computeTitle()
@@ -90,17 +92,27 @@ private struct DashboardContentView: View {
                     Button {
                         navigationStore.push(AssetViewType.add)
                     } label: {
-                        Label("Add Asset", systemImage: "bag.circle")
+                        Label("New Asset", systemImage: "house")
+                    }
+                    Button {
+                        showCopyRevenueSheet = true
+                    } label: {
+                        Label("Copy Income", systemImage: "dollarsign.arrow.trianglehead.counterclockwise.rotate.90")
                     }
                     Button {
                         navigationStore.push(RevenueViewType.add())
                     } label: {
-                        Label("Add Income", systemImage: "dollarsign.circle")
+                        Label("New Income", systemImage: "dollarsign")
+                    }
+                    Button {
+                        showCopyExpenseSheet = true
+                    } label: {
+                        Label("Copy Expense", systemImage: "bag")
                     }
                     Button {
                         navigationStore.push(ExpenseViewType.add())
                     } label: {
-                        Label("Add Expense", systemImage: "house.circle")
+                        Label("New Expense", systemImage: "bag.badge.plus")
                     }
                 } label: {
                     Image(systemName: "plus")
@@ -117,6 +129,12 @@ private struct DashboardContentView: View {
             .navigationBarTitleDisplayMode(.inline)
             .background(Color.init(uiColor: UIColor.secondarySystemBackground))
             .toolbar(content: toolbarItems)
+            .sheet(isPresented: $showCopyExpenseSheet) {
+                CopyExpenseSheetView()
+            }
+            .sheet(isPresented: $showCopyRevenueSheet) {
+                CopyRevenueSheetView()
+            }
     }
     
     func computeTitle() -> String {
@@ -247,7 +265,7 @@ private struct DashboardContentView: View {
                         Label("By Payer", systemImage: "person")
                     }
                 } label: {
-                    Label("View Expenses", systemImage: "bag.circle")
+                    Label("View Expenses", systemImage: "bag")
                 }
                 Menu {
                     Button {
@@ -261,15 +279,15 @@ private struct DashboardContentView: View {
                         Label("By Payer", systemImage: "person")
                     }
                 } label: {
-                    Label("View Income", systemImage: "dollarsign.circle")
+                    Label("View Income", systemImage: "dollarsign")
                 }
                 Button {
                     navigationStore.push(AssetViewType.list)
                 } label: {
-                    Label("View Assets", systemImage: "house.circle")
+                    Label("View Assets", systemImage: "house")
                 }
             } label: {
-                Image(systemName: "list.bullet.circle")
+                Image(systemName: "list.bullet")
             }
         }
     }

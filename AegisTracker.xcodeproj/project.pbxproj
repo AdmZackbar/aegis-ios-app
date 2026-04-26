@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E80E2B3E2F9E581C006FAC4A /* CopyExpenseSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E80E2B3D2F9E581C006FAC4A /* CopyExpenseSheetView.swift */; };
+		E80E2B402F9E60D5006FAC4A /* CopyRevenueSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E80E2B3F2F9E60D5006FAC4A /* CopyRevenueSheetView.swift */; };
 		E85AE3D12D09483C00CA9D0C /* Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85AE3D02D09483C00CA9D0C /* Asset.swift */; };
 		E85AE3D32D0B77E200CA9D0C /* ExpenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85AE3D22D0B77E200CA9D0C /* ExpenseView.swift */; };
 		E86CB3412D0D1CE100DE38FF /* ExpenseEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86CB3402D0D1CE100DE38FF /* ExpenseEntryView.swift */; };
@@ -72,6 +74,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E80E2B3D2F9E581C006FAC4A /* CopyExpenseSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyExpenseSheetView.swift; sourceTree = "<group>"; };
+		E80E2B3F2F9E60D5006FAC4A /* CopyRevenueSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyRevenueSheetView.swift; sourceTree = "<group>"; };
 		E85AE3CE2D0808BE00CA9D0C /* AegisTracker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AegisTracker.entitlements; sourceTree = "<group>"; };
 		E85AE3CF2D0808DE00CA9D0C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E85AE3D02D09483C00CA9D0C /* Asset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Asset.swift; sourceTree = "<group>"; };
@@ -287,6 +291,8 @@
 				E88164762D112EDE005C572E /* AssetListView.swift */,
 				E88164782D113679005C572E /* AssetView.swift */,
 				E881647A2D114ADA005C572E /* AssetEditView.swift */,
+				E80E2B3D2F9E581C006FAC4A /* CopyExpenseSheetView.swift */,
+				E80E2B3F2F9E60D5006FAC4A /* CopyRevenueSheetView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -451,8 +457,10 @@
 				E88164892D164F3F005C572E /* RevenuePayerView.swift in Sources */,
 				E881647F2D1630F5005C572E /* RevenueEntryView.swift in Sources */,
 				E88769802CE7DD9D00D989E1 /* Price.swift in Sources */,
+				E80E2B402F9E60D5006FAC4A /* CopyRevenueSheetView.swift in Sources */,
 				E896E05B2F966E8A00DAC43F /* ExpenseTagView.swift in Sources */,
 				E88164962D1769C1005C572E /* FinanceMultiYearChart.swift in Sources */,
+				E80E2B3E2F9E581C006FAC4A /* CopyExpenseSheetView.swift in Sources */,
 				E88164692D0F5D95005C572E /* MockDataPreview.swift in Sources */,
 				E881648F2D174F77005C572E /* FinanceSummaryView.swift in Sources */,
 				E88164A22D19B765005C572E /* BudgetCategory.swift in Sources */,

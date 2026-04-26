@@ -46,7 +46,6 @@ struct RevenueListView: View {
 //                    }
 //                    Divider()
                     editButton(revenue)
-                    duplicateButton(revenue)
                     deleteButton(revenue)
                 }
         }.alert("Delete Revenue?", isPresented: $deleteShowing) {
@@ -65,16 +64,6 @@ struct RevenueListView: View {
             navigationStore.push(RevenueViewType.edit(revenue: revenue))
         } label: {
             Label("Edit", systemImage: "pencil.circle").tint(.blue)
-        }
-    }
-    
-    private func duplicateButton(_ revenue: Revenue) -> some View {
-        Button {
-            let duplicate = Revenue(date: revenue.date, payer: revenue.payer, amount: revenue.amount, category: revenue.category, notes: revenue.notes)
-            modelContext.insert(duplicate)
-            navigationStore.push(RevenueViewType.edit(revenue: duplicate))
-        } label: {
-            Label("Duplicate", systemImage: "plus.square.on.square")
         }
     }
     
