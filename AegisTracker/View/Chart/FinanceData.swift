@@ -11,6 +11,10 @@ extension Expense {
     static func toFinanceData(_ expense: Expense) -> FinanceData {
         .init(date: expense.date, amount: expense.amount.toUsd(), category: .expense)
     }
+    
+    static func toOldFinanceData(_ expense: Expense) -> FinanceData {
+        .init(date: expense.date, amount: expense.amount.toUsd(), category: .old)
+    }
 }
 
 extension Revenue {
@@ -39,6 +43,7 @@ struct FinanceData: Codable {
     enum Category: String, Codable, CaseIterable {
         case expense
         case income
+        case old
         
         var color: Color {
             get {
@@ -47,6 +52,8 @@ struct FinanceData: Codable {
                     return .red
                 case .income:
                     return .green
+                case .old:
+                    return .gray
                 }
             }
         }

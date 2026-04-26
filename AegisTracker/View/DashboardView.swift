@@ -15,7 +15,8 @@ struct DashboardView: View {
     @Query var assets: [Asset]
     
     var body: some View {
-        let expenses = expenses.filter({ navigationStore.dashboardConfig.contains($0.date) })
+        let currentExpenses = expenses.filter({ navigationStore.dashboardConfig.contains($0.date) })
+        let oldExpenses = expenses.filter({ navigationStore.dashboardConfig.contains(moveDay($0.date)) })
         if let mainBudget = budgets.first {
             var assetData: [CategoryData] = []
             let payments: [Asset.Loan.Payment] = {
@@ -27,9 +28,27 @@ struct DashboardView: View {
                 }
                 return payments
             }()
-            let categoryData = expenses.map(Expense.toCategoryData) + assetData
-            let financeData = expenses.map(Expense.toFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) })
-            DashboardContentView(category: mainBudget, expenses: expenses, financeData: financeData, categoryData: categoryData)
+            let oldPayments: [Asset.Loan.Payment] = {
+                var payments: [Asset.Loan.Payment] = []
+                for asset in assets.filter({ mainBudget.contains($0.metaData.category) && $0.loan != nil }) {
+                    let assetPayments = asset.loan!.payments.filter({ navigationStore.dashboardConfig.contains(moveDay($0.date)) })
+                    payments += assetPayments
+                    assetData += asset.toCategoryData(assetPayments)
+                }
+                return payments
+            }()
+            let categoryData = currentExpenses.map(Expense.toCategoryData) + assetData
+            let financeData = currentExpenses.map(Expense.toFinanceData) + oldExpenses.map(Expense.toOldFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) }) + oldPayments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .old) })
+            DashboardContentView(category: mainBudget, expenses: currentExpenses, financeData: financeData, categoryData: categoryData)
+        }
+    }
+    
+    private func moveDay(_ date: Date) -> Date {
+        switch navigationStore.dashboardConfig.dateRangeType {
+        case .month:
+            return .from(year: date.year, month: date.month + 1, day: date.day)
+        case .ytd, .year:
+            return .from(year: date.year + 1, month: date.month, day: date.day)
         }
     }
 }
@@ -42,7 +61,8 @@ struct DashboardCategoryView: View {
     let category: BudgetCategory
     
     var body: some View {
-        let expenses = expenses.filter({ isFiltered($0) })
+        let currentExpenses = expenses.filter(isFiltered)
+        let oldExpenses = expenses.filter(isFilteredForNext)
         var assetData: [CategoryData] = []
         let payments: [Asset.Loan.Payment] = {
             var payments: [Asset.Loan.Payment] = []
@@ -53,9 +73,18 @@ struct DashboardCategoryView: View {
             }
             return payments
         }()
-        let categoryData = expenses.map(Expense.toCategoryData) + assetData
-        let financeData = expenses.map(Expense.toFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) })
-        DashboardContentView(category: category, expenses: expenses, financeData: financeData, categoryData: categoryData)
+        let oldPayments: [Asset.Loan.Payment] = {
+            var payments: [Asset.Loan.Payment] = []
+            for asset in assets.filter({ category.contains($0.metaData.category) && $0.loan != nil }) {
+                let assetPayments = asset.loan!.payments.filter({ navigationStore.dashboardConfig.contains(moveDay($0.date)) })
+                payments += assetPayments
+                assetData += asset.toCategoryData(assetPayments)
+            }
+            return payments
+        }()
+        let categoryData = currentExpenses.map(Expense.toCategoryData) + assetData
+        let financeData = currentExpenses.map(Expense.toFinanceData) + oldExpenses.map(Expense.toOldFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) }) + oldPayments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .old) })
+        DashboardContentView(category: category, expenses: currentExpenses, financeData: financeData, categoryData: categoryData)
     }
     
     private func isFiltered(_ expense: Expense) -> Bool {
@@ -63,6 +92,22 @@ struct DashboardCategoryView: View {
             return category.contains(expense.category) && navigationStore.dashboardConfig.contains(expense.date)
         }
         return navigationStore.dashboardConfig.contains(expense.date)
+    }
+    
+    private func isFilteredForNext(_ expense: Expense) -> Bool {
+        if category.parent != nil {
+            return category.contains(expense.category) && navigationStore.dashboardConfig.contains(moveDay(expense.date))
+        }
+        return navigationStore.dashboardConfig.contains(moveDay(expense.date))
+    }
+    
+    private func moveDay(_ date: Date) -> Date {
+        switch navigationStore.dashboardConfig.dateRangeType {
+        case .month:
+            return .from(year: date.year, month: date.month + 1, day: date.day)
+        case .ytd, .year:
+            return .from(year: date.year + 1, month: date.month, day: date.day)
+        }
     }
 }
 
@@ -213,15 +258,12 @@ private struct DashboardContentView: View {
     }
     
     private func prev() {
-        withAnimation {
-            navigationStore.dashboardConfig.prev()
-        }
+        // Disable animation for now until we can work out the bugs
+        navigationStore.dashboardConfig.prev()
     }
     
     private func next() {
-        withAnimation {
-            navigationStore.dashboardConfig.next()
-        }
+        navigationStore.dashboardConfig.next()
     }
     
     @ToolbarContentBuilder
@@ -393,9 +435,9 @@ private struct BudgetCategoryView: View {
         let year = navigationStore.dashboardConfig.date.year
         switch navigationStore.dashboardConfig.dateRangeType {
         case .month:
-            FinanceMonthChart(data: financeData,
-                              year: year,
-                              month: month)
+            FinanceMonthLineChart(data: financeData,
+                                  year: year,
+                                  month: month)
         case .ytd:
             FinanceYearChart(data: financeData,
                              year: year,

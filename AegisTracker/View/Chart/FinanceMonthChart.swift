@@ -13,12 +13,6 @@ struct FinanceMonthChart: View {
     let year: Int
     let month: Int
     
-    init(data: [FinanceData], year: Int, month: Int) {
-        self.data = data
-        self.year = year
-        self.month = month
-    }
-    
     var body: some View {
         let colorMap: [String : Color] = {
             var map: [String : Color] = [:]
@@ -56,14 +50,16 @@ struct FinanceMonthChart: View {
 
 #Preview {
     Form {
-        let monthAgo = Calendar.current.date(byAdding: .month, value: -1, to: .now)!
+        let date = Date.from(year: Date().year, month: 1, day: 12)
+        let daysAgo = Calendar.current.date(byAdding: .day, value: -5, to: date)!
         FinanceMonthChart(
-            data: [.init(amount: 1540.11), .init(amount: 451.18),
-                   .init(amount: 4301.23, category: .income),
-                   .init(date: monthAgo, amount: 451.2),
-                   .init(date: monthAgo, amount: 3410.1, category: .income)],
-            year: Date().year,
-            month: Date().month)
+            data: [.init(date: date, amount: 1540.11),
+                   .init(date: date, amount: 451.18),
+                   .init(date: date, amount: 4301.23, category: .income),
+                   .init(date: daysAgo, amount: 451.2),
+                   .init(date: daysAgo, amount: 3410.1, category: .income)],
+            year: date.year,
+            month: date.month)
         .frame(height: 200)
     }
 }
