@@ -283,7 +283,7 @@ private struct DashboardContentView: View {
     @ToolbarContentBuilder
     private func toolbarItems() -> some ToolbarContent {
         ToolbarItem(placement: .principal) {
-            Picker("Type", selection: $navigationStore.dashboardConfig.dateRangeType.animation()) {
+            Picker("Type", selection: $navigationStore.dashboardConfig.dateRangeType) {
                 Text("Month").tag(DashboardConfig.DateRangeType.month)
                 Text("YTD").tag(DashboardConfig.DateRangeType.ytd)
                 Text("Year").tag(DashboardConfig.DateRangeType.year)
