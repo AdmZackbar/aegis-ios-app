@@ -33,12 +33,11 @@ struct DashboardView: View {
                 for asset in assets.filter({ mainBudget.contains($0.metaData.category) && $0.loan != nil }) {
                     let assetPayments = asset.loan!.payments.filter({ navigationStore.dashboardConfig.contains(moveDay($0.date)) })
                     payments += assetPayments
-                    assetData += asset.toCategoryData(assetPayments)
                 }
                 return payments
             }()
             let categoryData = currentExpenses.map(Expense.toCategoryData) + assetData
-            let financeData = currentExpenses.map(Expense.toFinanceData) + oldExpenses.map(Expense.toOldFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) }) + oldPayments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .old) })
+            let financeData = currentExpenses.map(Expense.toFinanceData) + oldExpenses.map(Expense.toOldFinanceData) + payments.map(Asset.toFinanceData) + oldPayments.map(Asset.toOldFinanceData)
             DashboardContentView(category: mainBudget, expenses: currentExpenses, financeData: financeData, categoryData: categoryData)
         }
     }
@@ -78,12 +77,11 @@ struct DashboardCategoryView: View {
             for asset in assets.filter({ category.contains($0.metaData.category) && $0.loan != nil }) {
                 let assetPayments = asset.loan!.payments.filter({ navigationStore.dashboardConfig.contains(moveDay($0.date)) })
                 payments += assetPayments
-                assetData += asset.toCategoryData(assetPayments)
             }
             return payments
         }()
         let categoryData = currentExpenses.map(Expense.toCategoryData) + assetData
-        let financeData = currentExpenses.map(Expense.toFinanceData) + oldExpenses.map(Expense.toOldFinanceData) + payments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .expense) }) + oldPayments.map({ .init(date: $0.date, amount: ($0.amount - $0.principal).toUsd(), category: .old) })
+        let financeData = currentExpenses.map(Expense.toFinanceData) + oldExpenses.map(Expense.toOldFinanceData) + payments.map(Asset.toFinanceData) + oldPayments.map(Asset.toOldFinanceData)
         DashboardContentView(category: category, expenses: currentExpenses, financeData: financeData, categoryData: categoryData)
     }
     

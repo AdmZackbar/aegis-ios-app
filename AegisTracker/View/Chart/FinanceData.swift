@@ -23,6 +23,16 @@ extension Revenue {
     }
 }
 
+extension Asset {
+    static func toFinanceData(_ payment: Asset.Loan.Payment) -> FinanceData {
+        .init(date: payment.date, amount: (payment.amount - payment.principal).toUsd(), category: .expense)
+    }
+    
+    static func toOldFinanceData(_ payment: Asset.Loan.Payment) -> FinanceData {
+        .init(date: payment.date, amount: (payment.amount - payment.principal).toUsd(), category: .old)
+    }
+}
+
 extension [FinanceData] {
     var total: Price {
         self.map({ .Cents(Int($0.amount * 100)) }).reduce(.Cents(0), +)
