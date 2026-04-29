@@ -37,7 +37,7 @@ struct DashboardView: View {
                 return payments
             }()
             let categoryData = currentExpenses.map(Expense.toCategoryData) + assetData
-            let financeData = currentExpenses.map(Expense.toFinanceData) + oldExpenses.map(Expense.toOldFinanceData) + payments.map(Asset.toFinanceData) + oldPayments.map(Asset.toOldFinanceData)
+            let financeData = currentExpenses.map(Expense.toFinanceData) + oldExpenses.map(toOldFinanceData) + payments.map(Asset.toFinanceData) + oldPayments.map(toOldFinanceData)
             DashboardContentView(category: mainBudget, expenses: currentExpenses, financeData: financeData, categoryData: categoryData)
         }
     }
@@ -49,6 +49,14 @@ struct DashboardView: View {
         case .ytd, .year:
             return .from(year: date.year + 1, month: date.month, day: date.day)
         }
+    }
+    
+    private func toOldFinanceData(_ expense: Expense) -> FinanceData {
+        .init(date: moveDay(expense.date), amount: expense.amount.toUsd(), category: .old)
+    }
+    
+    private func toOldFinanceData(_ payment: Asset.Loan.Payment) -> FinanceData {
+        .init(date: moveDay(payment.date), amount: (payment.amount - payment.principal).toUsd(), category: .old)
     }
 }
 
@@ -81,7 +89,7 @@ struct DashboardCategoryView: View {
             return payments
         }()
         let categoryData = currentExpenses.map(Expense.toCategoryData) + assetData
-        let financeData = currentExpenses.map(Expense.toFinanceData) + oldExpenses.map(Expense.toOldFinanceData) + payments.map(Asset.toFinanceData) + oldPayments.map(Asset.toOldFinanceData)
+        let financeData = currentExpenses.map(Expense.toFinanceData) + oldExpenses.map(toOldFinanceData) + payments.map(Asset.toFinanceData) + oldPayments.map(toOldFinanceData)
         DashboardContentView(category: category, expenses: currentExpenses, financeData: financeData, categoryData: categoryData)
     }
     
@@ -106,6 +114,14 @@ struct DashboardCategoryView: View {
         case .ytd, .year:
             return .from(year: date.year + 1, month: date.month, day: date.day)
         }
+    }
+    
+    private func toOldFinanceData(_ expense: Expense) -> FinanceData {
+        .init(date: moveDay(expense.date), amount: expense.amount.toUsd(), category: .old)
+    }
+    
+    private func toOldFinanceData(_ payment: Asset.Loan.Payment) -> FinanceData {
+        .init(date: moveDay(payment.date), amount: (payment.amount - payment.principal).toUsd(), category: .old)
     }
 }
 

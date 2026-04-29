@@ -11,10 +11,6 @@ extension Expense {
     static func toFinanceData(_ expense: Expense) -> FinanceData {
         .init(date: expense.date, amount: expense.amount.toUsd(), category: .expense)
     }
-    
-    static func toOldFinanceData(_ expense: Expense) -> FinanceData {
-        .init(date: expense.date, amount: expense.amount.toUsd(), category: .old)
-    }
 }
 
 extension Revenue {
@@ -26,10 +22,6 @@ extension Revenue {
 extension Asset {
     static func toFinanceData(_ payment: Asset.Loan.Payment) -> FinanceData {
         .init(date: payment.date, amount: (payment.amount - payment.principal).toUsd(), category: .expense)
-    }
-    
-    static func toOldFinanceData(_ payment: Asset.Loan.Payment) -> FinanceData {
-        .init(date: payment.date, amount: (payment.amount - payment.principal).toUsd(), category: .old)
     }
 }
 
