@@ -121,7 +121,7 @@ extension SchemaV1 {
             expenses.map({ $0.amount }).reduce(.Cents(0), +)
         }
         
-        @Relationship(deleteRule: .cascade, inverse: \Expense.tags)
+        @Relationship(inverse: \Expense.tags)
         var expenses: [Expense]! = []
         
         init(name: String = "", creationDate: Date = Date()) {
