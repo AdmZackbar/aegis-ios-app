@@ -10,10 +10,12 @@ import SwiftUI
 struct ExpenseEntryView: View {
     let expense: Expense
     let omitted: [Component]
+    let category: String?
     
-    init(expense: Expense, omitted: [Component] = [.Category]) {
+    init(expense: Expense, omitted: [Component] = [.Category], category: String? = nil) {
         self.expense = expense
         self.omitted = omitted
+        self.category = category
     }
     
     var body: some View {
@@ -29,7 +31,16 @@ struct ExpenseEntryView: View {
                     Text(subtitle).font(.subheadline).italic()
                 }
             case .Items(let list):
-                itemListView(list)
+                if let category {
+                    if expense.category == category {
+                        itemListView(list.items.filter({ $0.category == nil || $0.category == category }))
+                    } else {
+                        itemListView(list.items.filter({ $0.category == category }))
+                    }
+                } else {
+                    itemListView(list.items)
+                }
+                
             case .Fuel(let details):
                 let amount = details.amount.formatted(.number.precision(.fractionLength(0...1)))
                 let rate = details.rate.formatted(.currency(code: "USD"))
@@ -84,8 +95,8 @@ struct ExpenseEntryView: View {
     }
     
     @ViewBuilder
-    private func itemListView(_ list: Expense.ItemList) -> some View {
-        let itemText = itemsText(list)
+    private func itemListView(_ items: [Expense.Item]) -> some View {
+        let itemText = itemsText(items)
         let subtitle = getSubtitle()
         let discount = expense.fullPriceText()
         if let subtitle, let itemText {
@@ -106,19 +117,21 @@ struct ExpenseEntryView: View {
                 HStack(alignment: .top) {
                     Text(leftText ?? "")
                     Spacer()
-                    Text(discount ?? "").strikethrough() .multilineTextAlignment(.trailing)
+                    Text(discount ?? "")
+                        .strikethrough()
+                        .multilineTextAlignment(.trailing)
                 }.font(.subheadline).italic()
             }
         }
     }
     
-    private func itemsText(_ list: Expense.ItemList) -> String? {
-        if list.items.isEmpty {
+    private func itemsText(_ items: [Expense.Item]) -> String? {
+        if items.isEmpty {
             return nil
-        } else if list.items.count > 1 {
-            return "\(list.items.count) items"
+        } else if items.count > 1 {
+            return "\(items.count) items"
         }
-        return list.items[0].name
+        return items[0].name
     }
     
     @ViewBuilder
@@ -167,6 +180,9 @@ struct ExpenseEntryView: View {
         case .Notes:
             return expense.notes
         case .Total:
+            if let category {
+                return expense.categoryPriceMap[category, default: .Cents(0)].toString()
+            }
             return expense.amount.toString()
         }
     }
@@ -213,6 +229,10 @@ struct ExpenseItemEntryView: View {
                 if !item.brand.isEmpty {
                     Text(item.brand)
                         .font(.subheadline).italic()
+                }
+                if let category = item.category {
+                    Text(category)
+                        .font(.subheadline)
                 }
             }
             Spacer()
@@ -269,6 +289,7 @@ struct ExpenseBillEntryView: View {
     let chicken = Expense.Item(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541))
     let hotChoc = Expense.Item(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300))
     let chunks = Expense.Item(name: "Lightly Breaded Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
+    let card = Expense.Item(name: "Mother's Day Card", brand: "Hallmark", quantity: .Discrete(1), total: .Cents(599), category: "Gift")
     return Form {
         ExpenseEntryView(expense: .init(payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Just another run", details: .Items(list: .init(items: [
             chicken, hotChoc, chunks
@@ -284,6 +305,7 @@ struct ExpenseBillEntryView: View {
         ExpenseItemEntryView(item: chicken)
         ExpenseItemEntryView(item: hotChoc)
         ExpenseItemEntryView(item: chunks)
+        ExpenseItemEntryView(item: card)
         ExpenseBillEntryView(bill: .Variable(name: "Electric", base: .Cents(1402), amount: 5125.1, rate: 0.00234))
         ExpenseBillEntryView(bill: .Flat(name: "Internet", base: .Cents(4109)))
     }

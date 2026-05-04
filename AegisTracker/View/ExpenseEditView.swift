@@ -741,6 +741,12 @@ struct ExpenseEditView: View {
                 }
                 brandAutoCompleteView(brands)
                 HStack {
+                    Text("Category:")
+                    TextField("optional override", text: $item.category)
+                        .textInputAutocapitalization(.words)
+                        .autocorrectionDisabled()
+                }
+                HStack {
                     Text("Total:")
                     CurrencyField(value: $item.totalPrice)
                 }
@@ -850,6 +856,7 @@ struct ExpenseEditView: View {
             var totalPrice: Int
             var sale: Bool
             var salePrice: Int
+            var category: String
             
             var invalid: Bool {
                 get {
@@ -867,7 +874,7 @@ struct ExpenseEditView: View {
                 }
             }
             
-            init(name: String = "", brand: String = "", quantityType: AmountType = .Discrete, discrete: Int = 1, unitAmount: Double = 1.0, unit: String = "", totalPrice: Int = 0, sale: Bool = false, salePrice: Int = 0) {
+            init(name: String = "", brand: String = "", quantityType: AmountType = .Discrete, discrete: Int = 1, unitAmount: Double = 1.0, unit: String = "", totalPrice: Int = 0, sale: Bool = false, salePrice: Int = 0, category: String = "") {
                 self.name = name
                 self.brand = brand
                 self.quantityType = quantityType
@@ -877,25 +884,28 @@ struct ExpenseEditView: View {
                 self.totalPrice = totalPrice
                 self.sale = sale
                 self.salePrice = salePrice
+                self.category = category
             }
             
             static func fromExpenseItem(_ item: Expense.Item) -> Item {
                 switch item.quantity {
                 case .Discrete(let num):
-                    return .init(name: item.name, brand: item.brand, quantityType: .Discrete, discrete: num, totalPrice: item.total.toCents(), sale: item.discount != nil, salePrice: item.discount?.toCents() ?? 0)
+                    return .init(name: item.name, brand: item.brand, quantityType: .Discrete, discrete: num, totalPrice: item.total.toCents(), sale: item.discount != nil, salePrice: item.discount?.toCents() ?? 0, category: item.category ?? "")
                 case .Unit(let num, let unit):
-                    return .init(name: item.name, brand: item.brand, quantityType: .Unit, unitAmount: num, unit: unit, totalPrice: item.total.toCents(), sale: item.discount != nil, salePrice: item.discount?.toCents() ?? 0)
+                    return .init(name: item.name, brand: item.brand, quantityType: .Unit, unitAmount: num, unit: unit, totalPrice: item.total.toCents(), sale: item.discount != nil, salePrice: item.discount?.toCents() ?? 0, category: item.category ?? "")
                 }
             }
             
             func toExpenseItem() -> Expense.Item {
-                let discount: Price? = sale ? .Cents(salePrice) : nil
-                switch quantityType {
-                case .Discrete:
-                    return .init(name: name, brand: brand, quantity: .Discrete(discrete), total: .Cents(totalPrice), discount: discount)
-                case .Unit:
-                    return .init(name: name, brand: brand, quantity: .Unit(num: unitAmount, unit: unit), total: .Cents(totalPrice), discount: discount)
+                var quantity: Expense.Item.Amount {
+                    switch quantityType {
+                    case .Discrete:
+                        return .Discrete(discrete)
+                    case .Unit:
+                        return .Unit(num: unitAmount, unit: unit)
+                    }
                 }
+                return .init(name: name, brand: brand, quantity: quantity, total: .Cents(totalPrice), discount: sale ? .Cents(salePrice) : nil, category: category.isEmpty ? nil : category)
             }
         }
         

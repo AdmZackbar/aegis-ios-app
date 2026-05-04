@@ -74,7 +74,7 @@ struct ExpenseCategoryView: View {
     var body: some View {
         let yearMap: [Int : [Expense]] = {
             var map: [Int : [Expense]] = [:]
-            expenses.filter({ $0.category == category && isFiltered($0) })
+            expenses.filter({ $0.hasCategory(category: category) && isFiltered($0) })
                 .forEach({ map[$0.date.year, default: []].append($0) })
             return map
         }()
@@ -84,7 +84,7 @@ struct ExpenseCategoryView: View {
                 sectionView(expenses: e, year: y)
                     .tag(y as Int?)
             }
-            sectionView(expenses: expenses.filter({ $0.category == category && isFiltered($0) }), year: nil)
+            sectionView(expenses: expenses.filter({ $0.hasCategory(category: category) && isFiltered($0) }), year: nil)
                 .tag(nil as Int?)
         }.navigationTitle(category)
             .navigationBarTitleDisplayMode(.inline)
@@ -132,10 +132,10 @@ struct ExpenseCategoryView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         chartHeader(expenses)
                         if let year {
-                            FinanceYearChart(data: expenses.map(Expense.toFinanceData), year: year, selection: $chartSelection)
+                            FinanceYearChart(data: expenses.map(toFinanceData), year: year, selection: $chartSelection)
                                 .frame(height: 100)
                         } else {
-                            FinanceMultiYearChart(data: expenses.map(Expense.toFinanceData), selection: $chartSelection)
+                            FinanceMultiYearChart(data: expenses.map(toFinanceData), selection: $chartSelection)
                                 .frame(height: 100)
                         }
                     }
@@ -148,16 +148,20 @@ struct ExpenseCategoryView: View {
             }.headerProminence(.increased)
             if !expenses.isEmpty {
                 Section("\(expenses.count) Expenses") {
-                    ExpenseListView(expenses: expenses, omitted: [.Category], allowSwipeActions: false)
+                    ExpenseListView(expenses: expenses, omitted: [.Category], category: category, allowSwipeActions: false)
                 }
             }
         }.scrollContentBackground(.hidden)
     }
     
+    func toFinanceData(_ expense: Expense) -> FinanceData {
+        .init(date: expense.date, amount: expense.categoryPriceMap[category]!.toUsd(), category: .expense)
+    }
+    
     @ViewBuilder
     private func chartHeader(_ expenses: [Expense]) -> some View {
         HStack(alignment: .bottom) {
-            Text(expenses.total.toString())
+            Text(expenses.getTotal(category: category).toString())
                 .font(.title)
                 .fontWeight(.bold)
                 .fontDesign(.rounded)
@@ -183,11 +187,11 @@ struct ExpenseCategoryView: View {
     }
     
     private func computeMonthAmount(_ expenses: [Expense], month: Int) -> Price {
-        return expenses.filter({ month == $0.date.month }).total
+        return expenses.filter({ month == $0.date.month }).getTotal(category: category)
     }
     
     private func computeYearAmount(_ expenses: [Expense], year: Int) -> Price {
-        return expenses.filter({ year == $0.date.year }).total
+        return expenses.filter({ year == $0.date.year }).getTotal(category: category)
     }
     
     private func isFiltered(_ expense: Expense) -> Bool {

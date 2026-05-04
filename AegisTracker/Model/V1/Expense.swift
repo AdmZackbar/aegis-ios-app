@@ -83,6 +83,7 @@ extension SchemaV1 {
             var quantity: Amount
             var total: Price
             var discount: Price?
+            var category: String? = nil
             var unitCost: Price {
                 get {
                     switch quantity {

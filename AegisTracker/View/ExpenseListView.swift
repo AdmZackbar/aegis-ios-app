@@ -14,14 +14,16 @@ struct ExpenseListView: View {
     
     private let expenses: [Expense]
     private let omitted: [ExpenseEntryView.Component]
+    private let category: String?
     private let allowSwipeActions: Bool
     
     @State private var deleteShowing: Bool = false
     @State private var deleteItem: Expense? = nil
     
-    init(expenses: [Expense], omitted: [ExpenseEntryView.Component] = [], allowSwipeActions: Bool = true) {
+    init(expenses: [Expense], omitted: [ExpenseEntryView.Component] = [], category: String? = nil, allowSwipeActions: Bool = true) {
         self.expenses = expenses
         self.omitted = omitted
+        self.category = category
         self.allowSwipeActions = allowSwipeActions
     }
     
@@ -86,7 +88,7 @@ struct ExpenseListView: View {
         Button {
             navigationStore.push(ExpenseViewType.view(expense: expense))
         } label: {
-            ExpenseEntryView(expense: expense, omitted: omitted)
+            ExpenseEntryView(expense: expense, omitted: omitted, category: category)
                 .contentShape(Rectangle())
         }.buttonStyle(.plain)
     }

@@ -6,8 +6,8 @@
 //
 
 extension Expense {
-    static func toCategoryData(_ expense: Expense) -> CategoryData {
-        .init(category: expense.category, amount: expense.amount)
+    static func toCategoryData(_ expense: Expense) -> [CategoryData] {
+        expense.categoryPriceMap.map(CategoryData.init)
     }
 }
 
