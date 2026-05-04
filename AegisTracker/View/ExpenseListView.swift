@@ -14,13 +14,13 @@ struct ExpenseListView: View {
     
     private let expenses: [Expense]
     private let omitted: [ExpenseEntryView.Component]
-    private let category: String?
+    private let category: BudgetCategory?
     private let allowSwipeActions: Bool
     
     @State private var deleteShowing: Bool = false
     @State private var deleteItem: Expense? = nil
     
-    init(expenses: [Expense], omitted: [ExpenseEntryView.Component] = [], category: String? = nil, allowSwipeActions: Bool = true) {
+    init(expenses: [Expense], omitted: [ExpenseEntryView.Component] = [], category: BudgetCategory? = nil, allowSwipeActions: Bool = true) {
         self.expenses = expenses
         self.omitted = omitted
         self.category = category

@@ -122,8 +122,17 @@ struct ExpenseView: View {
     @ViewBuilder
     private func itemDetailView(_ list: Expense.ItemList) -> some View {
         if !list.items.isEmpty {
-            Section("Items") {
-                ForEach(list.items, id: \.hashValue, content: ExpenseItemEntryView.init)
+            let map = Dictionary(grouping: list.items, by: \.category)
+            ForEach(map.keys.sorted { ($0 ?? "") < ($1 ?? "") }, id: \.?.hashValue) { header in
+                Section {
+                    ForEach(map[header]!, id: \.hashValue, content: ExpenseItemEntryView.init)
+                } header: {
+                    HStack {
+                        Text(header ?? "Items")
+                        Spacer()
+                        Text(map[header]!.map({ $0.total }).reduce(.zero, +).toString())
+                    }
+                }
             }
         }
     }
@@ -139,8 +148,8 @@ struct ExpenseView: View {
     
     @ViewBuilder
     private func payeeExpenseList(_ expenses: [Expense]) -> some View {
-        Section("\(expense.payee) \(expense.category)") {
-            ForEach(expenses, id: \.hashValue) { e in
+        Section("Similar Expenses") {
+            ForEach(expenses.prefix(12), id: \.hashValue) { e in
                 Button {
                     navigationStore.push(ExpenseViewType.view(expense: e))
                 } label: {

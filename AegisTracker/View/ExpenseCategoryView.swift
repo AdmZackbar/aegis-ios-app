@@ -59,7 +59,7 @@ struct ExpenseCategoryView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
     @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
     
-    private var category: String
+    private var category: BudgetCategory
     
     @State private var searchText: String = ""
     @State private var showEditAlert: Bool = false
@@ -67,7 +67,7 @@ struct ExpenseCategoryView: View {
     @State private var year: Int? = nil
     @State private var chartSelection: Date? = nil
     
-    init(category: String) {
+    init(category: BudgetCategory) {
         self.category = category
     }
     
@@ -86,7 +86,7 @@ struct ExpenseCategoryView: View {
             }
             sectionView(expenses: expenses.filter({ $0.hasCategory(category: category) && isFiltered($0) }), year: nil)
                 .tag(nil as Int?)
-        }.navigationTitle(category)
+        }.navigationTitle(category.name)
             .navigationBarTitleDisplayMode(.inline)
             .tabViewStyle(.page(indexDisplayMode: .never))
             .background(Color.init(uiColor: UIColor.systemGroupedBackground))
@@ -94,14 +94,14 @@ struct ExpenseCategoryView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        navigationStore.push(ExpenseViewType.add(initial: .init(category: category)))
+                        navigationStore.push(ExpenseViewType.add(initial: .init(category: category.name)))
                     } label: {
                         Label("Add", systemImage: "plus")
                     }
                 }
                 ToolbarItem(placement: .secondaryAction) {
                     Button {
-                        editName = category
+                        editName = category.name
                         showEditAlert = true
                     } label: {
                         Label("Change Category Name...", systemImage: "pencil.circle")
@@ -155,7 +155,7 @@ struct ExpenseCategoryView: View {
     }
     
     func toFinanceData(_ expense: Expense) -> FinanceData {
-        .init(date: expense.date, amount: expense.categoryPriceMap[category]!.toUsd(), category: .expense)
+        .init(date: expense.date, amount: expense.getAmount(category: category).toUsd(), category: .expense)
     }
     
     @ViewBuilder
@@ -220,7 +220,8 @@ struct ExpenseCategoryView: View {
     }
     
     private func updateAllCategoryNames() {
-        expenses.filter({ $0.category == category }).forEach({ $0.category = editName })
+        // Must match exact name
+        expenses.filter({ $0.category == category.name }).forEach({ $0.category = editName })
         try? modelContext.save()
         navigationStore.replace(ExpenseViewType.byCategory(name: editName))
     }
@@ -228,8 +229,9 @@ struct ExpenseCategoryView: View {
 
 #Preview(traits: .modifier(MockDataPreviewModifier())) {
     @Previewable @StateObject var navigationStore = NavigationStore()
+    let category: BudgetCategory = .init(name: "Gas")
     return NavigationStack(path: $navigationStore.path) {
-        ExpenseCategoryView(category: "Gas")
+        ExpenseCategoryView(category: category)
             .navigationDestination(for: ExpenseViewType.self, destination: MainView.computeDestination)
             .navigationDestination(for: RevenueViewType.self, destination: MainView.computeDestination)
             .navigationDestination(for: AssetViewType.self, destination: MainView.computeDestination)

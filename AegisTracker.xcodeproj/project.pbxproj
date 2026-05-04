@@ -12,6 +12,7 @@
 		E80E2B422F9E6AB1006FAC4A /* FinanceMonthLineChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = E80E2B412F9E6AB1006FAC4A /* FinanceMonthLineChart.swift */; };
 		E80E2B462FA8F667006FAC4A /* PriceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E80E2B452FA8F667006FAC4A /* PriceTests.swift */; };
 		E80E2B482FA8FB8D006FAC4A /* MainUtilitiesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E80E2B472FA8FB8D006FAC4A /* MainUtilitiesTests.swift */; };
+		E80E2B4A2FA90453006FAC4A /* ExpenseItemEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E80E2B492FA9044B006FAC4A /* ExpenseItemEntryView.swift */; };
 		E85AE3D12D09483C00CA9D0C /* Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85AE3D02D09483C00CA9D0C /* Asset.swift */; };
 		E85AE3D32D0B77E200CA9D0C /* ExpenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85AE3D22D0B77E200CA9D0C /* ExpenseView.swift */; };
 		E86CB3412D0D1CE100DE38FF /* ExpenseEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86CB3402D0D1CE100DE38FF /* ExpenseEntryView.swift */; };
@@ -81,6 +82,7 @@
 		E80E2B412F9E6AB1006FAC4A /* FinanceMonthLineChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinanceMonthLineChart.swift; sourceTree = "<group>"; };
 		E80E2B452FA8F667006FAC4A /* PriceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceTests.swift; sourceTree = "<group>"; };
 		E80E2B472FA8FB8D006FAC4A /* MainUtilitiesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainUtilitiesTests.swift; sourceTree = "<group>"; };
+		E80E2B492FA9044B006FAC4A /* ExpenseItemEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseItemEntryView.swift; sourceTree = "<group>"; };
 		E85AE3CE2D0808BE00CA9D0C /* AegisTracker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AegisTracker.entitlements; sourceTree = "<group>"; };
 		E85AE3CF2D0808DE00CA9D0C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E85AE3D02D09483C00CA9D0C /* Asset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Asset.swift; sourceTree = "<group>"; };
@@ -285,6 +287,7 @@
 				E85AE3D22D0B77E200CA9D0C /* ExpenseView.swift */,
 				E88769852CE91E5800D989E1 /* ExpenseListView.swift */,
 				E86CB3402D0D1CE100DE38FF /* ExpenseEntryView.swift */,
+				E80E2B492FA9044B006FAC4A /* ExpenseItemEntryView.swift */,
 				E8F863FC2D066E8600A3EBCC /* ExpenseEditView.swift */,
 				E896E0582F9665FB00DAC43F /* ExpenseTagsView.swift */,
 				E896E05A2F966E8A00DAC43F /* ExpenseTagView.swift */,
@@ -450,6 +453,7 @@
 				E881646B2D0F90D4005C572E /* NavigationStore.swift in Sources */,
 				E881647B2D114AE3005C572E /* AssetEditView.swift in Sources */,
 				E8E7023C2D1B0DC600FB7013 /* DashboardView.swift in Sources */,
+				E80E2B4A2FA90453006FAC4A /* ExpenseItemEntryView.swift in Sources */,
 				E881647D2D162CF1005C572E /* RevenueEditView.swift in Sources */,
 				E88164772D112EE9005C572E /* AssetListView.swift in Sources */,
 				E88164832D163DE8005C572E /* RevenueView.swift in Sources */,

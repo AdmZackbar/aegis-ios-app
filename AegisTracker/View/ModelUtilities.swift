@@ -5,18 +5,11 @@
 //  Created by Zach Wassynger on 12/16/24.
 //
 
+extension Price {
+    static let zero: Price = .Cents(0)
+}
+
 extension Expense {
-    var discount: Price {
-        get {
-            switch details {
-            case .Items(let list):
-                return list.items.map({ $0.discount ?? .Cents(0) }).reduce(.Cents(0), +)
-            default:
-                return .Cents(0)
-            }
-        }
-    }
-    
     var categoryPriceMap: [String : Price] {
         var map: [String : Price] = [:]
         map[self.category] = self.amount
@@ -25,8 +18,8 @@ extension Expense {
             for item in list.items {
                 if let itemCategory = item.category {
                     if itemCategory != self.category {
-                        map[self.category] = map[self.category]! - item.total
-                        map[itemCategory] = map[itemCategory, default: .Cents(0)] + item.total
+                        map[self.category]! -= item.total
+                        map[itemCategory, default: .zero] += item.total
                     }
                 }
             }
@@ -36,41 +29,102 @@ extension Expense {
         return map
     }
     
-    func fullPriceText() -> String? {
+    func getAmount(category: BudgetCategory? = nil) -> Price {
+        if let category {
+            var total = categoryPriceMap[category.name, default: .zero]
+            if let children = category.children {
+                total += children.map(getAmount).reduce(.zero, +)
+            }
+            return total
+        }
+        return amount
+    }
+    
+    func getDiscount(category: BudgetCategory? = nil) -> Price {
+        if let category {
+            if !hasCategory(category: category) {
+                switch details {
+                case .Items(let list):
+                    return list.items.filter({ $0.category != nil && category.contains($0.category!) }).map({ $0.discount ?? .zero }).reduce(.zero, +)
+                default:
+                    return .zero
+                }
+            }
+            switch details {
+            case .Items(let list):
+                return list.items.filter({ $0.category == nil || category.contains($0.category!) }).map({ $0.discount ?? .zero }).reduce(.zero, +)
+            default:
+                return .zero
+            }
+        }
+        switch details {
+        case .Items(let list):
+            return list.items.map({ $0.discount ?? .zero }).reduce(.zero, +)
+        default:
+            return .zero
+        }
+    }
+    
+    func fullPriceText(category: BudgetCategory? = nil) -> String? {
         switch details {
         case .Items(_):
-            return discount.toCents() > 0 ? (amount + discount).toString() : nil
+            let discount = getDiscount(category: category)
+            return discount.toCents() > 0 ? (getAmount(category: category) + discount).toString() : nil
         default:
             return nil
         }
     }
     
-    func hasCategory(category: String) -> Bool {
-        if (self.category == category) {
+    func hasCategory(category: BudgetCategory) -> Bool {
+        if (category.contains(self.category)) {
             return true
         }
         switch details {
         case .Items(let list):
-            return list.items.contains(where: { $0.category == category })
+            return list.items.contains(where: { $0.category != nil && category.contains($0.category!) })
         default:
             return false
         }
     }
 }
 
+extension Expense.Item {
+    var unitCost: Price {
+        get {
+            switch quantity {
+            case .Discrete(let num):
+                return total / Double(num)
+            case .Unit(let num, _):
+                return total / num
+            }
+        }
+    }
+    var fullCost: Price {
+        get {
+            return total + (discount ?? .zero)
+        }
+    }
+}
+
 extension [Expense] {
     var total: Price {
-        return self.map({ $0.amount }).reduce(.Cents(0), +)
+        return self.map({ $0.amount }).reduce(.zero, +)
     }
     
-    func getTotal(category: String) -> Price {
-        return self.map({ $0.categoryPriceMap[category, default: .Cents(0)] }).reduce(.Cents(0), +)
+    func getTotal(category: BudgetCategory) -> Price {
+        return self.map({ $0.getAmount(category: category) }).reduce(.zero, +)
+    }
+}
+
+extension ExpenseTag {
+    var totalAmount: Price {
+        expenses.map({ $0.amount }).reduce(.zero, +)
     }
 }
 
 extension [Revenue] {
     var total: Price {
-        return self.map({ $0.amount }).reduce(.Cents(0), +)
+        return self.map({ $0.amount }).reduce(.zero, +)
     }
 }
 

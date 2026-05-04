@@ -10,9 +10,9 @@ import SwiftUI
 struct ExpenseEntryView: View {
     let expense: Expense
     let omitted: [Component]
-    let category: String?
+    let category: BudgetCategory?
     
-    init(expense: Expense, omitted: [Component] = [.Category], category: String? = nil) {
+    init(expense: Expense, omitted: [Component] = [.Category], category: BudgetCategory? = nil) {
         self.expense = expense
         self.omitted = omitted
         self.category = category
@@ -32,10 +32,10 @@ struct ExpenseEntryView: View {
                 }
             case .Items(let list):
                 if let category {
-                    if expense.category == category {
-                        itemListView(list.items.filter({ $0.category == nil || $0.category == category }))
+                    if expense.hasCategory(category: category) {
+                        itemListView(list.items.filter({ $0.category == nil || category.contains($0.category!) }))
                     } else {
-                        itemListView(list.items.filter({ $0.category == category }))
+                        itemListView(list.items.filter({ $0.category != nil && category.contains($0.category!) }))
                     }
                 } else {
                     itemListView(list.items)
@@ -98,7 +98,7 @@ struct ExpenseEntryView: View {
     private func itemListView(_ items: [Expense.Item]) -> some View {
         let itemText = itemsText(items)
         let subtitle = getSubtitle()
-        let discount = expense.fullPriceText()
+        let discount = expense.fullPriceText(category: category)
         if let subtitle, let itemText {
             HStack(alignment: .top) {
                 Text(subtitle)
@@ -174,16 +174,14 @@ struct ExpenseEntryView: View {
         case .Date:
             return expense.date.formatted(date: .abbreviated, time: .omitted)
         case .Category:
-            return expense.category
+            let map = expense.categoryPriceMap
+            return map.keys.filter({ category?.contains($0) ?? true }).joined(separator: ", ")
         case .Payee:
             return expense.payee
         case .Notes:
             return expense.notes
         case .Total:
-            if let category {
-                return expense.categoryPriceMap[category, default: .Cents(0)].toString()
-            }
-            return expense.amount.toString()
+            return expense.getAmount(category: category).toString()
         }
     }
     
@@ -207,49 +205,6 @@ extension Expense.Item.Amount {
                 return "x\(num.formatted())"
             case .Unit(let num, let unit):
                 return unit.isEmpty ? num.formatted() : "\(num.formatted()) \(unit)"
-            }
-        }
-    }
-}
-
-struct ExpenseItemEntryView: View {
-    let item: Expense.Item
-    
-    var body: some View {
-        HStack(alignment: .top) {
-            VStack(alignment: .leading) {
-                HStack (alignment: .top, spacing: 4) {
-                    Text(item.name)
-                    if !item.quantity.summary.isEmpty {
-                        Text("(\(item.quantity.summary))")
-                            .font(.subheadline)
-                            .padding(.top, 1)
-                    }
-                }.bold()
-                if !item.brand.isEmpty {
-                    Text(item.brand)
-                        .font(.subheadline).italic()
-                }
-                if let category = item.category {
-                    Text(category)
-                        .font(.subheadline)
-                }
-            }
-            Spacer()
-            VStack(alignment: .trailing) {
-                HStack(alignment: .center, spacing: 6) {
-                    if let discount = item.discount {
-                        Text("(\((discount.toUsd() / item.fullCost.toUsd() * 100.0).formatted(.number.precision(.fractionLength(0))))%)")
-                            .font(.subheadline)
-                            .italic()
-                    }
-                    Text(item.total.toString())
-                }.bold()
-                if item.discount != nil {
-                    Text(item.fullCost.toString())
-                        .font(.subheadline)
-                        .bold().strikethrough()
-                }
             }
         }
     }
@@ -302,10 +257,6 @@ struct ExpenseBillEntryView: View {
         ]))), omitted: [.Payee, .Category])
         ExpenseEntryView(expense: .init(payee: "Greasy Hands", amount: .Cents(4510), category: "Haircut", notes: "With Ryle - Middle Part", details: .Tip(amount: .Cents(1000))))
         ExpenseEntryView(expense: .init(payee: "Valve", amount: .Cents(499), category: "Video Games"), omitted: [.Date])
-        ExpenseItemEntryView(item: chicken)
-        ExpenseItemEntryView(item: hotChoc)
-        ExpenseItemEntryView(item: chunks)
-        ExpenseItemEntryView(item: card)
         ExpenseBillEntryView(bill: .Variable(name: "Electric", base: .Cents(1402), amount: 5125.1, rate: 0.00234))
         ExpenseBillEntryView(bill: .Flat(name: "Internet", base: .Cents(4109)))
     }

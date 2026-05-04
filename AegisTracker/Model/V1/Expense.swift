@@ -84,21 +84,6 @@ extension SchemaV1 {
             var total: Price
             var discount: Price?
             var category: String? = nil
-            var unitCost: Price {
-                get {
-                    switch quantity {
-                    case .Discrete(let num):
-                        return total / Double(num)
-                    case .Unit(let num, _):
-                        return total / num
-                    }
-                }
-            }
-            var fullCost: Price {
-                get {
-                    return total + (discount ?? .Cents(0))
-                }
-            }
             
             enum Amount: Codable, Hashable, Equatable {
                 case Discrete(_ num: Int)
@@ -117,10 +102,6 @@ extension SchemaV1 {
     final class ExpenseTag {
         var name: String = ""
         var creationDate: Date = Date()
-        
-        var totalAmount: Price {
-            expenses.map({ $0.amount }).reduce(.Cents(0), +)
-        }
         
         @Relationship(inverse: \Expense.tags)
         var expenses: [Expense]! = []

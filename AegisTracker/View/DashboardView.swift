@@ -95,14 +95,14 @@ struct DashboardCategoryView: View {
     
     private func isFiltered(_ expense: Expense) -> Bool {
         if category.parent != nil {
-            return category.contains(expense.category) && navigationStore.dashboardConfig.contains(expense.date)
+            return expense.hasCategory(category: category) && navigationStore.dashboardConfig.contains(expense.date)
         }
         return navigationStore.dashboardConfig.contains(expense.date)
     }
     
     private func isFilteredForNext(_ expense: Expense) -> Bool {
         if category.parent != nil {
-            return category.contains(expense.category) && navigationStore.dashboardConfig.contains(moveDay(expense.date))
+            return expense.hasCategory(category: category) && navigationStore.dashboardConfig.contains(moveDay(expense.date))
         }
         return navigationStore.dashboardConfig.contains(moveDay(expense.date))
     }
@@ -375,14 +375,14 @@ private struct BudgetCategoryView: View {
         case .month:
             if !expenses.isEmpty {
                 Section("All Expenses") {
-                    ExpenseListView(expenses: expenses.sorted(by: { $0.date > $1.date }), allowSwipeActions: false)
+                    ExpenseListView(expenses: expenses.sorted(by: { $0.date > $1.date }), category: category, allowSwipeActions: false)
                 }.headerProminence(.increased)
             }
         case .ytd, .year:
-            let mainExpenses = expenses.filter({ $0.hasCategory(category: category.name) })
+            let mainExpenses = expenses.filter({ $0.hasCategory(category: category) })
             if !mainExpenses.isEmpty {
                 Section("Expenses") {
-                    ExpenseListView(expenses: mainExpenses.sorted(by: { $0.date > $1.date }), omitted: [.Category], category: category.name, allowSwipeActions: false)
+                    ExpenseListView(expenses: mainExpenses.sorted(by: { $0.date > $1.date }), omitted: [.Category], category: category, allowSwipeActions: false)
                 }.headerProminence(.increased)
             }
         }
@@ -466,7 +466,7 @@ private struct BudgetCategoryView: View {
     
     @ViewBuilder
     private func subcategoryView(subcategories: [BudgetCategory]) -> some View {
-        let otherExpenses = expenses.filter({ expense in !expense.hasCategory(category: category.name) && subcategories.allSatisfy({ !$0.contains(expense.category) }) }).sorted(by: { $0.date > $1.date })
+        let otherExpenses = expenses.filter({ expense in !expense.hasCategory(category: category) && subcategories.allSatisfy({ !expense.hasCategory(category: $0) }) }).sorted(by: { $0.date > $1.date })
         Section(category.parent == nil ? "Categories" : "Subcategories") {
             VStack(alignment: .leading, spacing: 0) {
                 budgetView(subcategories: subcategories)

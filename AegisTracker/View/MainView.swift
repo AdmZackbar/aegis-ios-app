@@ -91,7 +91,8 @@ struct MainView: View {
             BudgetCategoryEditView(category: category)
         case .byCategory(let name):
             if let name {
-                ExpenseCategoryView(category: name)
+                // TODO
+                ExpenseCategoryView(category: .init(name: name))
             } else {
                 ExpenseCategoryListView()
             }
