@@ -10,6 +10,8 @@
 		E80E2B3E2F9E581C006FAC4A /* CopyExpenseSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E80E2B3D2F9E581C006FAC4A /* CopyExpenseSheetView.swift */; };
 		E80E2B402F9E60D5006FAC4A /* CopyRevenueSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E80E2B3F2F9E60D5006FAC4A /* CopyRevenueSheetView.swift */; };
 		E80E2B422F9E6AB1006FAC4A /* FinanceMonthLineChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = E80E2B412F9E6AB1006FAC4A /* FinanceMonthLineChart.swift */; };
+		E80E2B462FA8F667006FAC4A /* PriceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E80E2B452FA8F667006FAC4A /* PriceTests.swift */; };
+		E80E2B482FA8FB8D006FAC4A /* MainUtilitiesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E80E2B472FA8FB8D006FAC4A /* MainUtilitiesTests.swift */; };
 		E85AE3D12D09483C00CA9D0C /* Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85AE3D02D09483C00CA9D0C /* Asset.swift */; };
 		E85AE3D32D0B77E200CA9D0C /* ExpenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85AE3D22D0B77E200CA9D0C /* ExpenseView.swift */; };
 		E86CB3412D0D1CE100DE38FF /* ExpenseEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86CB3402D0D1CE100DE38FF /* ExpenseEntryView.swift */; };
@@ -49,7 +51,6 @@
 		E8EB2A672CE063A7000E4B67 /* AegisTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A662CE063A7000E4B67 /* AegisTrackerApp.swift */; };
 		E8EB2A6D2CE063A9000E4B67 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */; };
 		E8EB2A702CE063A9000E4B67 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8EB2A6F2CE063A9000E4B67 /* Preview Assets.xcassets */; };
-		E8EB2A7A2CE063A9000E4B67 /* AegisTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A792CE063A9000E4B67 /* AegisTrackerTests.swift */; };
 		E8EB2A842CE063A9000E4B67 /* AegisTrackerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A832CE063A9000E4B67 /* AegisTrackerUITests.swift */; };
 		E8EB2A862CE063A9000E4B67 /* AegisTrackerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A852CE063A9000E4B67 /* AegisTrackerUITestsLaunchTests.swift */; };
 		E8EB2A962CE06617000E4B67 /* Schema.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8EB2A952CE06617000E4B67 /* Schema.swift */; };
@@ -78,6 +79,8 @@
 		E80E2B3D2F9E581C006FAC4A /* CopyExpenseSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyExpenseSheetView.swift; sourceTree = "<group>"; };
 		E80E2B3F2F9E60D5006FAC4A /* CopyRevenueSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyRevenueSheetView.swift; sourceTree = "<group>"; };
 		E80E2B412F9E6AB1006FAC4A /* FinanceMonthLineChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinanceMonthLineChart.swift; sourceTree = "<group>"; };
+		E80E2B452FA8F667006FAC4A /* PriceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceTests.swift; sourceTree = "<group>"; };
+		E80E2B472FA8FB8D006FAC4A /* MainUtilitiesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainUtilitiesTests.swift; sourceTree = "<group>"; };
 		E85AE3CE2D0808BE00CA9D0C /* AegisTracker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AegisTracker.entitlements; sourceTree = "<group>"; };
 		E85AE3CF2D0808DE00CA9D0C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E85AE3D02D09483C00CA9D0C /* Asset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Asset.swift; sourceTree = "<group>"; };
@@ -124,7 +127,6 @@
 		E8EB2A6C2CE063A9000E4B67 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E8EB2A6F2CE063A9000E4B67 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		E8EB2A752CE063A9000E4B67 /* AegisTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AegisTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		E8EB2A792CE063A9000E4B67 /* AegisTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisTrackerTests.swift; sourceTree = "<group>"; };
 		E8EB2A7F2CE063A9000E4B67 /* AegisTrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AegisTrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8EB2A832CE063A9000E4B67 /* AegisTrackerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisTrackerUITests.swift; sourceTree = "<group>"; };
 		E8EB2A852CE063A9000E4B67 /* AegisTrackerUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AegisTrackerUITestsLaunchTests.swift; sourceTree = "<group>"; };
@@ -242,7 +244,8 @@
 		E8EB2A782CE063A9000E4B67 /* AegisTrackerTests */ = {
 			isa = PBXGroup;
 			children = (
-				E8EB2A792CE063A9000E4B67 /* AegisTrackerTests.swift */,
+				E80E2B452FA8F667006FAC4A /* PriceTests.swift */,
+				E80E2B472FA8FB8D006FAC4A /* MainUtilitiesTests.swift */,
 			);
 			path = AegisTrackerTests;
 			sourceTree = "<group>";
@@ -480,7 +483,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E8EB2A7A2CE063A9000E4B67 /* AegisTrackerTests.swift in Sources */,
+				E80E2B462FA8F667006FAC4A /* PriceTests.swift in Sources */,
+				E80E2B482FA8FB8D006FAC4A /* MainUtilitiesTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -713,12 +717,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.wassynger.AegisTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AegisTracker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AegisTracker";
 			};
@@ -731,12 +735,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.wassynger.AegisTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AegisTracker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AegisTracker";
 			};
@@ -752,7 +756,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.wassynger.AegisUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = Aegis;
 			};
@@ -768,7 +772,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.wassynger.AegisUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = Aegis;
 			};

@@ -42,7 +42,7 @@ enum Price: Codable, Equatable, Hashable, Comparable {
     }
     
     static func < (lhs: Price, rhs: Price) -> Bool {
-        return lhs.toUsd() < rhs.toUsd()
+        return lhs.toCents() < rhs.toCents()
     }
     
     static func + (left: Price, right: Price) -> Price {
@@ -55,6 +55,10 @@ enum Price: Codable, Equatable, Hashable, Comparable {
         }
     }
     
+    static func += (left: inout Price, right: Price) {
+        left = left + right
+    }
+    
     static func - (left: Price, right: Price) -> Price {
         switch left {
         case .Cents(let l):
@@ -65,6 +69,10 @@ enum Price: Codable, Equatable, Hashable, Comparable {
         }
     }
     
+    static func -= (left: inout Price, right: Price) {
+        left = left - right
+    }
+    
     static func * (left: Price, right: Double) -> Price {
         switch left {
         case .Cents(let l):
@@ -72,10 +80,18 @@ enum Price: Codable, Equatable, Hashable, Comparable {
         }
     }
     
+    static func *= (left: inout Price, right: Double) {
+        left = left * right
+    }
+    
     static func / (left: Price, right: Double) -> Price {
         switch left {
         case .Cents(let l):
             return .Cents(Int(round(Double(l) / right)))
         }
+    }
+    
+    static func /= (left: inout Price, right: Double) {
+        left = left / right
     }
 }
