@@ -1,0 +1,56 @@
+{
+  "fill" : {
+    "linear-gradient" : [
+      "display-p3:1.00000,0.92224,0.98376,1.00000",
+      "display-p3:1.00000,0.64846,0.90838,1.00000"
+    ],
+    "orientation" : {
+      "start" : {
+        "x" : 0.5,
+        "y" : 0
+      },
+      "stop" : {
+        "x" : 0.5,
+        "y" : 0.7
+      }
+    }
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "fill" : {
+            "linear-gradient" : [
+              "display-p3:1.00000,0.20596,0.26557,1.00000",
+              "display-p3:0.52936,0.33062,1.00000,1.00000"
+            ]
+          },
+          "glass" : true,
+          "image-name" : "dollar-svgrepo-com.png",
+          "name" : "dollar-svgrepo-com",
+          "position" : {
+            "scale" : 1.14,
+            "translation-in-points" : [
+              -12.2734375,
+              10.078125
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
