@@ -45,6 +45,14 @@ extension Date {
         components.day = day
         return Calendar.current.date(from: components)!
     }
+    
+    func addMonths(_ months: Int) -> Date? {
+        return Calendar.current.date(byAdding: .month, value: months, to: self)
+    }
+    
+    func addYears(_ years: Int) -> Date? {
+        return Calendar.current.date(byAdding: .year, value: years, to: self)
+    }
 }
 
 extension DateInterval {

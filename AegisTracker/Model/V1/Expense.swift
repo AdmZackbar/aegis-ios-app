@@ -105,6 +105,8 @@ extension SchemaV1 {
         
         @Relationship(inverse: \Expense.tags)
         var expenses: [Expense]! = []
+        @Relationship(inverse: \FinancedExpense.tags)
+        var financedExpenses: [FinancedExpense]! = []
         
         init(name: String = "", creationDate: Date = Date()) {
             self.name = name

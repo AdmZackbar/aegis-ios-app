@@ -112,10 +112,22 @@ struct MainView: View {
             }
         case .view(let expense):
             ExpenseView(expense: expense)
+        case .viewFinanced(let expense):
+            FinancedExpenseView(expense: expense)
+        case .viewSub(let subscription):
+            SubscriptionView(subscription: subscription)
         case .add(let initial):
             ExpenseEditView(expense: initial, mode: .Add)
+        case .addFinanced(let initial):
+            FinancedExpenseEditView(expense: initial, mode: .Add)
+        case .addSub(let initial):
+            SubscriptionEditView(subscription: initial, mode: .Add)
         case .edit(let expense):
             ExpenseEditView(expense: expense, mode: .Edit)
+        case .editFinanced(let expense):
+            FinancedExpenseEditView(expense: expense, mode: .Edit)
+        case .editSub(let subscription):
+            SubscriptionEditView(subscription: subscription, mode: .Edit)
         case .list(let title, let expenses):
             Form {
                 Section("Expenses") {
@@ -156,8 +168,14 @@ enum ExpenseViewType: Hashable {
     case byMonth(year: Int, month: Int)
     case byPayee(name: String? = nil)
     case view(expense: Expense)
+    case viewFinanced(expense: FinancedExpense)
+    case viewSub(subscription: Subscription)
     case add(initial: Expense? = nil)
+    case addFinanced(initial: FinancedExpense? = nil)
+    case addSub(initial: Subscription? = nil)
     case edit(expense: Expense)
+    case editFinanced(expense: FinancedExpense)
+    case editSub(subscription: Subscription)
     case list(title: String, expenses: [Expense])
 }
 

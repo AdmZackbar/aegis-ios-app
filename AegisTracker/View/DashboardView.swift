@@ -12,6 +12,7 @@ struct DashboardView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
     @Query(filter: #Predicate<BudgetCategory> { $0.name == "Main Budget" }) var budgets: [BudgetCategory]
     @Query(sort: \Expense.date) var expenses: [Expense]
+    @Query(sort: \FinancedExpense.date) var financedExpenses: [FinancedExpense]
     @Query var assets: [Asset]
     
     var body: some View {
@@ -45,9 +46,9 @@ struct DashboardView: View {
     private func moveDay(_ date: Date) -> Date {
         switch navigationStore.dashboardConfig.dateRangeType {
         case .month:
-            return .from(year: date.year, month: date.month + 1, day: date.day)
+            return date.addMonths(1)!
         case .ytd, .year:
-            return .from(year: date.year + 1, month: date.month, day: date.day)
+            return date.addYears(1)!
         }
     }
     
@@ -168,8 +169,17 @@ private struct DashboardContentView: View {
                     } label: {
                         Label("Copy Expense", systemImage: "bag")
                     }
-                    Button {
-                        navigationStore.push(ExpenseViewType.add())
+                    Menu {
+                        Button("Subscription") {
+                            navigationStore.push(ExpenseViewType.addSub())
+                        }
+                        Button("Financed") {
+                            navigationStore.push(ExpenseViewType.addFinanced())
+                        }
+                        Button("Standard") {
+                            navigationStore.push(ExpenseViewType.add())
+                        }
+                        
                     } label: {
                         Label("New Expense", systemImage: "bag.badge.plus")
                     }

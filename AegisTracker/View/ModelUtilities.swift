@@ -5,6 +5,8 @@
 //  Created by Zach Wassynger on 12/16/24.
 //
 
+import Foundation
+
 extension Price {
     static let zero: Price = .Cents(0)
 }
@@ -118,7 +120,102 @@ extension [Expense] {
 
 extension ExpenseTag {
     var totalAmount: Price {
-        expenses.map({ $0.amount }).reduce(.zero, +)
+        expenses.total + financedExpenses.total
+    }
+}
+
+extension FinancedExpense {
+    var interest: Price {
+        switch paymentPlan {
+        case .acmi(_):
+            return .zero
+        }
+    }
+    
+    var total: Price {
+        amount + interest
+    }
+    
+    var dates: [Date] {
+        switch paymentPlan {
+        case .acmi(let numMonths):
+            return (0..<numMonths).map({ self.date.addMonths($0)! })
+        }
+    }
+    
+    func getTotal(date: Date) -> Price {
+        switch paymentPlan {
+        case .acmi(let numMonths):
+            return amount / Double(numMonths)
+        }
+    }
+    
+    var toFinanceData: [FinanceData] {
+        return dates.map({ FinanceData(date: $0, amount: getTotal(date: $0).toUsd(), category: .expense) })
+    }
+}
+
+extension [FinancedExpense] {
+    var total: Price {
+        self.map({ $0.total }).reduce(.zero, +)
+    }
+}
+
+extension Subscription {
+    var periodDateMap: [Period : [Date]] {
+        Dictionary.init(uniqueKeysWithValues: periods.map({ ($0, getDates(period: $0)) }))
+    }
+    
+    var datePeriodMap: [Date : Period] {
+        var dict: [Date : Period] = [:]
+        for period in self.periods {
+            getDates(period: period).forEach({ dict[$0] = period })
+        }
+        return dict
+    }
+    
+    var latestPeriod: Period? {
+        if let latestOpen = periods.filter({ $0.endDate == nil }).max(by: { $0.startDate < $1.startDate }) {
+            return latestOpen
+        }
+        return periods.filter({ $0.endDate != nil }).max(by: { $0.endDate! < $1.endDate! })
+    }
+    
+    func getDates(period: Subscription.Period) -> [Date] {
+        period.toDates(startDate: period.startDate, endDate: period.endDate ?? .now)
+    }
+}
+
+extension Subscription.Period {
+    func toDates(startDate: Date, endDate: Date) -> [Date] {
+        var dates: [Date] = []
+        var currentDate = startDate
+        while currentDate <= endDate {
+            dates.append(currentDate)
+            guard let nextDate = type.nextDate(currentDate) else {
+                break
+            }
+            currentDate = nextDate
+        }
+        return dates
+    }
+}
+
+extension Subscription.PeriodType {
+    var text: String {
+        switch self {
+        case .monthly: "Monthly"
+        case .yearly: "Yearly"
+        }
+    }
+    
+    func nextDate(_ date: Date) -> Date? {
+        switch self {
+        case .monthly:
+            return date.addMonths(1)
+        case .yearly:
+            return date.addYears(1)
+        }
     }
 }
 
