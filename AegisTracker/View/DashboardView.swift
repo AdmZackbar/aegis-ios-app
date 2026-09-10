@@ -316,6 +316,11 @@ private struct DashboardContentView: View {
                     }
                     Divider()
                     Button {
+                        navigationStore.push(ExpenseViewType.listSub)
+                    } label: {
+                        Label("Subscriptions", systemImage: "dollarsign.arrow.trianglehead.counterclockwise.rotate.90")
+                    }
+                    Button {
                         navigationStore.push(ExpenseViewType.byDate)
                     } label: {
                         Label("By Date", systemImage: "calendar")

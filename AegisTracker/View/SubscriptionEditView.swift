@@ -62,6 +62,11 @@ struct SubscriptionEditView: View {
                 TextField("Notes", text: $notes, axis: .vertical)
                     .lineLimit(3...9)
                     .textInputAutocapitalization(.sentences)
+                Button {
+                    periods.append(.init())
+                } label: {
+                    Label("Add Period", systemImage: "plus")
+                }
             }
             periodsView()
         }.navigationTitle(mode.getTitle())
@@ -120,11 +125,6 @@ struct SubscriptionEditView: View {
     
     @ViewBuilder
     func periodsView() -> some View {
-        Button {
-            periods.append(.init())
-        } label: {
-            Label("Add Period", systemImage: "plus")
-        }
         ForEach($periods.reversed()) { $period in
             Section {
                 DatePicker(selection: $period.start, displayedComponents: .date) {
@@ -159,7 +159,23 @@ struct SubscriptionEditView: View {
                     .lineLimit(1...6)
                     .textInputAutocapitalization(.sentences)
             } header: {
-                Toggle("Active", isOn: $period.active)
+                HStack {
+                    Toggle("Active", isOn: $period.active)
+                    Picker("Type:", selection: $period.type) {
+                        Text("Monthly").tag(Subscription.PeriodType.monthly)
+                        Text("Yearly").tag(Subscription.PeriodType.yearly)
+                    }.pickerStyle(.segmented)
+                    Menu {
+                        Button("Delete?") {
+                            periods.removeAll(where: { $0 == period })
+                        }
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                            .frame(width: 32, height: 32)
+                            .labelStyle(.iconOnly)
+                            .clipShape(Circle())
+                    }
+                }
             }
         }
     }

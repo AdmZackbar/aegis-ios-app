@@ -134,6 +134,10 @@ struct MainView: View {
                     ExpenseListView(expenses: expenses, omitted: [.Category])
                 }.headerProminence(.increased)
             }.navigationTitle(title)
+        case .listSub:
+            SubscriptionListView()
+        case .merge:
+            MergeExpenseView()
         }
     }
     
@@ -177,6 +181,8 @@ enum ExpenseViewType: Hashable {
     case editFinanced(expense: FinancedExpense)
     case editSub(subscription: Subscription)
     case list(title: String, expenses: [Expense])
+    case listSub
+    case merge
 }
 
 enum RevenueViewType: Hashable {

@@ -46,6 +46,10 @@ extension Date {
         return Calendar.current.date(from: components)!
     }
     
+    func addDays(_ days: Int) -> Date? {
+        return Calendar.current.date(byAdding: .day, value: days, to: self)
+    }
+    
     func addMonths(_ months: Int) -> Date? {
         return Calendar.current.date(byAdding: .month, value: months, to: self)
     }

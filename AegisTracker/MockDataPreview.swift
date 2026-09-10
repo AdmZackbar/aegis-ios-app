@@ -52,12 +52,38 @@ struct MockDataPreviewModifier: PreviewModifier {
                     .init(name: "Apples", brand: "Publix", quantity: .Discrete(6), total: .Cents(190)),
                     .init(name: "Root beer", brand: "IBC", quantity: .Discrete(1), total: .Cents(699))
                   ]))),
-            .init(date: Calendar.current.date(byAdding: .month, value: -4, to: .now)!,
+            .init(date: .now.addMonths(-4)!,
                   payee: "Chick-Fil-A",
                   amount: .Cents(1345),
                   category: "Fast Food"),
+            .init(date: .now.addMonths(-5)!,
+                  payee: "Spotify",
+                  amount: .Cents(1244),
+                  category: "Music"),
+            .init(date: .now.addMonths(-4)!,
+                  payee: "Spotify",
+                  amount: .Cents(1244),
+                  category: "Music"),
+            .init(date: .now.addMonths(-3)!,
+                  payee: "Spotify",
+                  amount: .Cents(1244),
+                  category: "Music"),
+            .init(date: .now.addMonths(-2)!,
+                  payee: "Spotify",
+                  amount: .Cents(1401),
+                  category: "Music"),
+            .init(date: .now.addMonths(-1)!,
+                  payee: "Spotify",
+                  amount: .Cents(1401),
+                  category: "Music"),
         ]
         expenses.forEach({ container.mainContext.insert($0) })
+        let subscriptions: [Subscription] = [
+            .init(payee: "Verizon", category: "Phone Plan", periods: [
+                .init(startDate: .now.addYears(-1)!, amount: .Cents(7160), notes: "Current plan")
+            ])
+        ]
+        subscriptions.forEach({ container.mainContext.insert($0) })
         let revenues: [Revenue] = [
             .init(payer: "RMCI", amount: .Cents(233412), category: "Paycheck"),
             .init(payer: "Ruth Wassynger", amount: .Cents(2341), category: "Gift", notes: "Birthday"),

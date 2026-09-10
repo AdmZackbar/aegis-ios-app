@@ -21,6 +21,8 @@
 		E8346C563052F5B5009AB9C6 /* FinancedExpenseEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8346C553052F5B5009AB9C6 /* FinancedExpenseEditView.swift */; };
 		E8346C583052FF6A009AB9C6 /* SubscriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8346C573052FF6A009AB9C6 /* SubscriptionView.swift */; };
 		E8346C5A305307FA009AB9C6 /* SubscriptionEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8346C59305307FA009AB9C6 /* SubscriptionEditView.swift */; };
+		E8346C5C30531609009AB9C6 /* MergeExpenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8346C5B30531609009AB9C6 /* MergeExpenseView.swift */; };
+		E8346C5E3053317E009AB9C6 /* SubscriptionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8346C5D3053317E009AB9C6 /* SubscriptionListView.swift */; };
 		E85AE3D12D09483C00CA9D0C /* Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85AE3D02D09483C00CA9D0C /* Asset.swift */; };
 		E85AE3D32D0B77E200CA9D0C /* ExpenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85AE3D22D0B77E200CA9D0C /* ExpenseView.swift */; };
 		E86CB3412D0D1CE100DE38FF /* ExpenseEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86CB3402D0D1CE100DE38FF /* ExpenseEntryView.swift */; };
@@ -100,6 +102,8 @@
 		E8346C553052F5B5009AB9C6 /* FinancedExpenseEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinancedExpenseEditView.swift; sourceTree = "<group>"; };
 		E8346C573052FF6A009AB9C6 /* SubscriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionView.swift; sourceTree = "<group>"; };
 		E8346C59305307FA009AB9C6 /* SubscriptionEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionEditView.swift; sourceTree = "<group>"; };
+		E8346C5B30531609009AB9C6 /* MergeExpenseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergeExpenseView.swift; sourceTree = "<group>"; };
+		E8346C5D3053317E009AB9C6 /* SubscriptionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionListView.swift; sourceTree = "<group>"; };
 		E85AE3CE2D0808BE00CA9D0C /* AegisTracker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AegisTracker.entitlements; sourceTree = "<group>"; };
 		E85AE3CF2D0808DE00CA9D0C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E85AE3D02D09483C00CA9D0C /* Asset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Asset.swift; sourceTree = "<group>"; };
@@ -309,6 +313,7 @@
 				E8346C533052F0A9009AB9C6 /* FinancedExpenseView.swift */,
 				E8346C573052FF6A009AB9C6 /* SubscriptionView.swift */,
 				E88769852CE91E5800D989E1 /* ExpenseListView.swift */,
+				E8346C5D3053317E009AB9C6 /* SubscriptionListView.swift */,
 				E86CB3402D0D1CE100DE38FF /* ExpenseEntryView.swift */,
 				E80E2B492FA9044B006FAC4A /* ExpenseItemEntryView.swift */,
 				E8346C4F3052DC5F009AB9C6 /* FinancedExpenseEntryView.swift */,
@@ -329,6 +334,7 @@
 				E881647A2D114ADA005C572E /* AssetEditView.swift */,
 				E80E2B3D2F9E581C006FAC4A /* CopyExpenseSheetView.swift */,
 				E80E2B3F2F9E60D5006FAC4A /* CopyRevenueSheetView.swift */,
+				E8346C5B30531609009AB9C6 /* MergeExpenseView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -480,6 +486,7 @@
 				E88164732D11139E005C572E /* ModelUtilities.swift in Sources */,
 				E8E7023F2D1B2FC100FB7013 /* CategoryData.swift in Sources */,
 				E881646B2D0F90D4005C572E /* NavigationStore.swift in Sources */,
+				E8346C5C30531609009AB9C6 /* MergeExpenseView.swift in Sources */,
 				E881647B2D114AE3005C572E /* AssetEditView.swift in Sources */,
 				E8E7023C2D1B0DC600FB7013 /* DashboardView.swift in Sources */,
 				E80E2B4A2FA90453006FAC4A /* ExpenseItemEntryView.swift in Sources */,
@@ -514,6 +521,7 @@
 				E88164942D1768A3005C572E /* FinanceData.swift in Sources */,
 				E887699B2CFA4CF800D989E1 /* CurrencyField.swift in Sources */,
 				E8F863FD2D066E8600A3EBCC /* ExpenseEditView.swift in Sources */,
+				E8346C5E3053317E009AB9C6 /* SubscriptionListView.swift in Sources */,
 				E88164852D164003005C572E /* RevenueDateView.swift in Sources */,
 				E8346C503052DC5F009AB9C6 /* FinancedExpenseEntryView.swift in Sources */,
 			);

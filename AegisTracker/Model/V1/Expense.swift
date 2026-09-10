@@ -38,7 +38,7 @@ extension SchemaV1 {
             self.details = details
         }
         
-        enum Details: Codable {
+        enum Details: Codable, Hashable, Equatable {
             case Tip(amount: Price)
             case Items(list: ItemList)
             case Bill(details: BillDetails)
