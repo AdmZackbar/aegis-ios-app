@@ -64,6 +64,7 @@ struct DashboardView: View {
 struct DashboardCategoryView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
     @Query(sort: \Expense.date) var expenses: [Expense]
+    @Query(sort: \FinancedExpense.date) var financedExpenses: [FinancedExpense]
     @Query var assets: [Asset]
     
     let category: BudgetCategory

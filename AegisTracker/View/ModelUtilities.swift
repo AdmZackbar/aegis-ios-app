@@ -150,7 +150,7 @@ extension FinancedExpense {
         }
     }
     
-    var toFinanceData: [FinanceData] {
+    var financeData: [FinanceData] {
         return dates.map({ FinanceData(date: $0, amount: getTotal(date: $0).toUsd(), category: .expense) })
     }
 }
@@ -163,13 +163,13 @@ extension [FinancedExpense] {
 
 extension Subscription {
     var periodDateMap: [Period : [Date]] {
-        Dictionary.init(uniqueKeysWithValues: periods.map({ ($0, getDates(period: $0)) }))
+        Dictionary.init(uniqueKeysWithValues: periods.map({ ($0, $0.dates) }))
     }
     
     var datePeriodMap: [Date : Period] {
         var dict: [Date : Period] = [:]
         for period in self.periods {
-            getDates(period: period).forEach({ dict[$0] = period })
+            period.dates.forEach({ dict[$0] = period })
         }
         return dict
     }
@@ -181,16 +181,20 @@ extension Subscription {
         return periods.filter({ $0.endDate != nil }).max(by: { $0.endDate! < $1.endDate! })
     }
     
-    func getDates(period: Subscription.Period) -> [Date] {
-        period.toDates(startDate: period.startDate, endDate: period.endDate ?? .now)
+    var financeData: [FinanceData] {
+        return datePeriodMap.map({ FinanceData(date: $0.key, amount: $0.value.amount.toUsd(), category: .expense) })
     }
 }
 
 extension Subscription.Period {
-    func toDates(startDate: Date, endDate: Date) -> [Date] {
+    var total: Price {
+        amount * Double(dates.count)
+    }
+    
+    var dates: [Date] {
         var dates: [Date] = []
         var currentDate = startDate
-        while currentDate <= endDate {
+        while currentDate <= (endDate ?? .now) {
             dates.append(currentDate)
             guard let nextDate = type.nextDate(currentDate) else {
                 break

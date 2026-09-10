@@ -38,26 +38,35 @@ struct SubscriptionView: View {
     
     @ViewBuilder
     private func headerView() -> some View {
-        if let latestPeriod = subscription.latestPeriod {
+        if let latestPeriod = subscription.latestPeriod, latestPeriod.endDate == nil {
             Text(latestPeriod.amount.toString())
                 .font(.system(size: 48, weight: .bold, design: .rounded))
             Text(latestPeriod.type.text)
                 .font(.title3)
                 .fontWeight(.semibold)
+            Text("\(latestPeriod.startDate.formatted(date: .abbreviated, time: .omitted)) - Present")
+                .italic()
+            if !latestPeriod.notes.isEmpty {
+                Text(latestPeriod.notes)
+                    .font(.subheadline)
+                    .lineLimit(5)
+            }
         }
         VStack(alignment: .leading, spacing: 6) {
-            categoryHeaderView()
-            HStack(alignment: .bottom) {
-                Text(subscription.payee)
-                    .font(.title2)
-                    .multilineTextAlignment(.leading)
-                    .bold()
+            HStack {
+                Text(subscription.category)
                 Spacer()
-            }
-            if let latestPeriod = subscription.latestPeriod {
-                Text("\(latestPeriod.startDate.formatted(date: .abbreviated, time: .omitted)) - \(latestPeriod.endDate?.formatted(date: .abbreviated, time: .omitted) ?? "Present")")
-                    .italic()
-            }
+                Text("All Time")
+            }.textCase(.uppercase)
+                .font(.caption)
+                .fontWeight(.light)
+            HStack {
+                Text(subscription.payee)
+                    .multilineTextAlignment(.leading)
+                Spacer()
+                Text(subscription.periods.map({ $0.total }).reduce(.zero, +).toString())
+            }.font(.title2)
+                .bold()
             if !subscription.notes.isEmpty {
                 Text(subscription.notes)
                     .font(.subheadline)
@@ -69,32 +78,39 @@ struct SubscriptionView: View {
     }
     
     @ViewBuilder
-    private func categoryHeaderView() -> some View {
-        Text(subscription.category)
-            .textCase(.uppercase)
-            .font(.caption)
-            .fontWeight(.light)
-    }
-    
-    @ViewBuilder
     func detailView() -> some View {
-        let otherPeriods = subscription.periods.filter({ $0 != subscription.latestPeriod }).sorted(by: { $0.startDate > $1.startDate })
-        if !otherPeriods.isEmpty {
-            Section("Previous Periods") {
-                ForEach(otherPeriods, id: \.hashValue) { period in
+        let sorted = subscription.periods.sorted(by: { $0.startDate > $1.startDate })
+        let periods = subscription.latestPeriod?.endDate == nil ? sorted.filter({ $0 != subscription.latestPeriod }) : sorted
+        ForEach(periods, id: \.hashValue) { period in
+            Section {
+                VStack(alignment: .leading) {
                     HStack(alignment: .top) {
                         VStack(alignment: .leading) {
-                            Text(period.startDate.formatted(date: .abbreviated, time: .omitted))
-                            if let endDate = period.endDate {
-                                Text(endDate.formatted(date: .abbreviated, time: .omitted))
-                            }
+                            Text(period.type.text)
+                                .font(.subheadline)
+                                .italic()
+                            Text(period.amount.toString())
+                                .bold()
                         }
                         Spacer()
                         VStack(alignment: .trailing) {
-                            Text((period.amount * 3).toString())
-                            Text("\(period.amount.toString()) \(period.type.text)")
+                            Text("Total")
+                                .font(.subheadline)
+                                .italic()
+                            Text(period.total.toString())
+                                .bold()
                         }
                     }
+                    if !period.notes.isEmpty {
+                        Text(period.notes)
+                            .font(.subheadline)
+                    }
+                }
+            } header: {
+                HStack {
+                    Text(period.startDate.formatted(date: .abbreviated, time: .omitted))
+                    Spacer()
+                    Text(period.endDate?.formatted(date: .abbreviated, time: .omitted) ?? "Present")
                 }
             }
         }
