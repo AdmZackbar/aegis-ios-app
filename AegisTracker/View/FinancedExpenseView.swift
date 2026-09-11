@@ -94,6 +94,17 @@ struct FinancedExpenseView: View {
     @ViewBuilder
     func detailView() -> some View {
         Section {
+            Gauge(value: expense.amountPaid.toUsd(), in: 0...expense.total.toUsd()) {
+                
+            }.gaugeStyle(.linearCapacity)
+        } header: {
+            HStack {
+                Text("\(expense.paidDates.count) payment(s)")
+                Spacer()
+                Text(expense.amountPaid.toString())
+            }.fontWeight(.semibold)
+        }
+        Section {
             ForEach(expense.dates.sorted(), id: \.self) { date in
                 FinancedExpenseEntryView(expense: expense, date: date, omitted: [.Notes, .Category, .Payee])
             }

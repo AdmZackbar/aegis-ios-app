@@ -11,6 +11,12 @@ extension Price {
     static let zero: Price = .Cents(0)
 }
 
+extension Price? {
+    var orZero: Price {
+        self ?? .zero
+    }
+}
+
 extension [Price] {
     func sum() -> Price {
         self.reduce(.zero, +)
@@ -74,21 +80,21 @@ extension Expense {
             if !hasCategory(category: category) {
                 switch details {
                 case .Items(let list):
-                    return list.items.filter({ $0.category != nil && category.contains($0.category!) }).map({ $0.discount ?? .zero }).sum()
+                    return list.items.filter({ $0.category != nil && category.contains($0.category!) }).map({ $0.discount.orZero }).sum()
                 default:
                     return .zero
                 }
             }
             switch details {
             case .Items(let list):
-                return list.items.filter({ $0.category == nil || category.contains($0.category!) }).map({ $0.discount ?? .zero }).sum()
+                return list.items.filter({ $0.category == nil || category.contains($0.category!) }).map({ $0.discount.orZero }).sum()
             default:
                 return .zero
             }
         }
         switch details {
         case .Items(let list):
-            return list.items.map({ $0.discount ?? .zero }).sum()
+            return list.items.map({ $0.discount.orZero }).sum()
         default:
             return .zero
         }
@@ -130,7 +136,7 @@ extension GenericExpense.Item {
     }
     var fullCost: Price {
         get {
-            return total + (discount ?? .zero)
+            return total + discount.orZero
         }
     }
 }
@@ -194,6 +200,10 @@ extension FinancedExpense {
         }
     }
     
+    var amountPaid: Price {
+        paidDates.map(getTotal).sum()
+    }
+    
     var total: Price {
         amount + interest
     }
@@ -203,6 +213,10 @@ extension FinancedExpense {
         case .acmi(let numMonths):
             return (0..<numMonths).map({ self.date.addMonths($0)! })
         }
+    }
+    
+    var paidDates: [Date] {
+        dates.filter({ $0 <= .now })
     }
     
     var allExpenses: [Expense] {

@@ -25,11 +25,13 @@ struct FinancedExpenseEntryView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(alignment: .top) {
-                Text(getTitle()).bold()
+                Text(getTitle())
                 Spacer()
-                componentText(.Total).bold()
-            }
-            componentText(.Notes).font(.caption)
+                componentText(.Total)
+            }.italic(date > .now)
+                .fontWeight(date > .now ? .regular : .bold)
+            componentText(.Notes)
+                .font(.subheadline)
         }
     }
     
