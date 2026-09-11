@@ -17,7 +17,7 @@ extension [SubscriptionEditView.Period] {
 struct SubscriptionEditView: View {
     @Environment(\.modelContext) var modelContext
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
+    @Query(sort: \GenericExpense.date, order: .reverse) var expenses: [GenericExpense]
     
     private let subscription: Subscription
     private let mode: Mode

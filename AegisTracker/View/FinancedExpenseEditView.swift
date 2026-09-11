@@ -11,7 +11,7 @@ import SwiftUI
 struct FinancedExpenseEditView: View {
     @Environment(\.modelContext) var modelContext
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
+    @Query(sort: \GenericExpense.date, order: .reverse) var expenses: [GenericExpense]
     @Query(sort: \ExpenseTag.name) var existingTags: [ExpenseTag]
     
     private let expense: FinancedExpense

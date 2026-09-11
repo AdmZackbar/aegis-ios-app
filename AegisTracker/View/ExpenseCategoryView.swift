@@ -12,13 +12,13 @@ import SwiftUI
 // Lists all categories
 struct ExpenseCategoryListView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
+    @Query(sort: \GenericExpense.date, order: .reverse) var expenses: [GenericExpense]
     
     @State private var searchText: String = ""
     
     var body: some View {
-        let map: [String : [Expense]] = {
-            var map: [String : [Expense]] = [:]
+        let map: [String : [GenericExpense]] = {
+            var map: [String : [GenericExpense]] = [:]
             expenses.forEach({ map[$0.category, default: []].append($0) })
             return map
         }()
@@ -33,7 +33,7 @@ struct ExpenseCategoryListView: View {
     }
     
     @ViewBuilder
-    private func createButton(_ map: [String: [Expense]], category: String) -> some View {
+    private func createButton(_ map: [String: [GenericExpense]], category: String) -> some View {
         Button {
             navigationStore.push(ExpenseViewType.byCategory(name: category))
         } label: {
@@ -57,7 +57,7 @@ struct ExpenseCategoryListView: View {
 struct ExpenseCategoryView: View {
     @Environment(\.modelContext) var modelContext
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
+    @Query(sort: \GenericExpense.date, order: .reverse) var expenses: [GenericExpense]
     
     private var category: BudgetCategory
     
@@ -72,8 +72,8 @@ struct ExpenseCategoryView: View {
     }
     
     var body: some View {
-        let yearMap: [Int : [Expense]] = {
-            var map: [Int : [Expense]] = [:]
+        let yearMap: [Int : [GenericExpense]] = {
+            var map: [Int : [GenericExpense]] = [:]
             expenses.filter({ $0.hasCategory(category: category) && isFiltered($0) })
                 .forEach({ map[$0.date.year, default: []].append($0) })
             return map
@@ -121,7 +121,7 @@ struct ExpenseCategoryView: View {
     }
     
     @ViewBuilder
-    private func sectionView(expenses: [Expense], year: Int?) -> some View {
+    private func sectionView(expenses: [GenericExpense], year: Int?) -> some View {
         Form {
             Section {
                 if expenses.isEmpty {
@@ -154,12 +154,12 @@ struct ExpenseCategoryView: View {
         }.scrollContentBackground(.hidden)
     }
     
-    func toFinanceData(_ expense: Expense) -> FinanceData {
+    func toFinanceData(_ expense: GenericExpense) -> FinanceData {
         .init(date: expense.date, amount: expense.getAmount(category: category).toUsd(), category: .expense)
     }
     
     @ViewBuilder
-    private func chartHeader(_ expenses: [Expense]) -> some View {
+    private func chartHeader(_ expenses: [GenericExpense]) -> some View {
         HStack(alignment: .bottom) {
             Text(expenses.getTotal(category: category).toString())
                 .font(.title)
@@ -186,22 +186,22 @@ struct ExpenseCategoryView: View {
         return "All"
     }
     
-    private func computeMonthAmount(_ expenses: [Expense], month: Int) -> Price {
+    private func computeMonthAmount(_ expenses: [GenericExpense], month: Int) -> Price {
         return expenses.filter({ month == $0.date.month }).getTotal(category: category)
     }
     
-    private func computeYearAmount(_ expenses: [Expense], year: Int) -> Price {
+    private func computeYearAmount(_ expenses: [GenericExpense], year: Int) -> Price {
         return expenses.filter({ year == $0.date.year }).getTotal(category: category)
     }
     
-    private func isFiltered(_ expense: Expense) -> Bool {
+    private func isFiltered(_ expense: GenericExpense) -> Bool {
         searchText.isEmpty ||
         isFiltered(expense.payee) ||
         isFiltered(expense.notes) ||
         isDetailFiltered(expense.details)
     }
     
-    private func isDetailFiltered(_ details: Expense.Details?) -> Bool {
+    private func isDetailFiltered(_ details: GenericExpense.Details?) -> Bool {
         switch details {
         case .Items(let list):
             return list.items.contains(where: { isFiltered($0.name) ||

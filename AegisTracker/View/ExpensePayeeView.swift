@@ -12,13 +12,13 @@ import SwiftUI
 // Lists all payees
 struct ExpensePayeeListView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
+    @Query(sort: \GenericExpense.date, order: .reverse) var expenses: [GenericExpense]
     
     @State private var searchText: String = ""
     
     var body: some View {
-        let map: [String : [Expense]] = {
-            var map: [String : [Expense]] = [:]
+        let map: [String : [GenericExpense]] = {
+            var map: [String : [GenericExpense]] = [:]
             expenses.forEach({ map[$0.payee, default: []].append($0) })
             return map
         }()
@@ -33,7 +33,7 @@ struct ExpensePayeeListView: View {
     }
     
     @ViewBuilder
-    private func createButton(_ map: [String: [Expense]], payee: String) -> some View {
+    private func createButton(_ map: [String: [GenericExpense]], payee: String) -> some View {
         Button {
             navigationStore.push(ExpenseViewType.byPayee(name: payee))
         } label: {
@@ -57,7 +57,7 @@ struct ExpensePayeeListView: View {
 struct ExpensePayeeView: View {
     @Environment(\.modelContext) var modelContext
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
+    @Query(sort: \GenericExpense.date, order: .reverse) var expenses: [GenericExpense]
     
     private var payee: String
     
@@ -72,8 +72,8 @@ struct ExpensePayeeView: View {
     }
     
     var body: some View {
-        let yearMap: [Int : [Expense]] = {
-            var map: [Int : [Expense]] = [:]
+        let yearMap: [Int : [GenericExpense]] = {
+            var map: [Int : [GenericExpense]] = [:]
             expenses.filter({ $0.payee == payee && isFiltered($0) })
                 .forEach({ map[$0.date.year, default: []].append($0) })
             return map
@@ -121,7 +121,7 @@ struct ExpensePayeeView: View {
     }
     
     @ViewBuilder
-    private func sectionView(expenses: [Expense], year: Int?) -> some View {
+    private func sectionView(expenses: [GenericExpense], year: Int?) -> some View {
         Form {
             Section {
                 if expenses.isEmpty {
@@ -132,10 +132,10 @@ struct ExpensePayeeView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         chartHeader(expenses)
                         if let year {
-                            FinanceYearChart(data: expenses.map(Expense.toFinanceData), year: year, selection: $chartSelection)
+                            FinanceYearChart(data: expenses.map(GenericExpense.toFinanceData), year: year, selection: $chartSelection)
                                 .frame(height: 100)
                         } else {
-                            FinanceMultiYearChart(data: expenses.map(Expense.toFinanceData), selection: $chartSelection)
+                            FinanceMultiYearChart(data: expenses.map(GenericExpense.toFinanceData), selection: $chartSelection)
                                 .frame(height: 100)
                         }
                     }
@@ -155,7 +155,7 @@ struct ExpensePayeeView: View {
     }
     
     @ViewBuilder
-    private func chartHeader(_ expenses: [Expense]) -> some View {
+    private func chartHeader(_ expenses: [GenericExpense]) -> some View {
         HStack(alignment: .bottom) {
             Text(expenses.total.toString())
                 .font(.title)
@@ -182,26 +182,26 @@ struct ExpensePayeeView: View {
         return "All"
     }
     
-    private func computeMonthAmount(_ expenses: [Expense], month: Int) -> Price {
+    private func computeMonthAmount(_ expenses: [GenericExpense], month: Int) -> Price {
         return expenses.filter({ month == $0.date.month })
             .map({ $0.amount })
             .reduce(.Cents(0), +)
     }
     
-    private func computeYearAmount(_ expenses: [Expense], year: Int) -> Price {
+    private func computeYearAmount(_ expenses: [GenericExpense], year: Int) -> Price {
         return expenses.filter({ year == $0.date.year })
             .map({ $0.amount })
             .reduce(.Cents(0), +)
     }
     
-    private func isFiltered(_ expense: Expense) -> Bool {
+    private func isFiltered(_ expense: GenericExpense) -> Bool {
         searchText.isEmpty ||
         isFiltered(expense.payee) ||
         isFiltered(expense.notes) ||
         isDetailFiltered(expense.details)
     }
     
-    private func isDetailFiltered(_ details: Expense.Details?) -> Bool {
+    private func isDetailFiltered(_ details: GenericExpense.Details?) -> Bool {
         switch details {
         case .Items(let list):
             return list.items.contains(where: { isFiltered($0.name) ||

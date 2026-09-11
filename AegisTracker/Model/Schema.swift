@@ -15,6 +15,6 @@ enum SchemaV1: VersionedSchema {
     }
 
     static var models: [any PersistentModel.Type] {
-        [Expense.self, FinancedExpense.self, Subscription.self, Revenue.self, Asset.self, BudgetCategory.self]
+        [GenericExpense.self, FinancedExpense.self, Subscription.self, Revenue.self, Asset.self, BudgetCategory.self]
     }
 }

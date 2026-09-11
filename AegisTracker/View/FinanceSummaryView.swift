@@ -11,7 +11,7 @@ import SwiftUI
 
 struct FinanceSummaryView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
+    @Query(sort: \GenericExpense.date, order: .reverse) var expenses: [GenericExpense]
     @Query(sort: \Revenue.date, order: .reverse) var revenues: [Revenue]
     @Query(sort: \Asset.purchaseDate, order: .reverse) var assets: [Asset]
     

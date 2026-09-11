@@ -23,7 +23,7 @@ private enum SheetType: String, Identifiable {
 struct ExpenseEditView: View {
     @Environment(\.modelContext) var modelContext
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
+    @Query(sort: \GenericExpense.date, order: .reverse) var expenses: [GenericExpense]
     @Query(sort: \ExpenseTag.name) var existingTags: [ExpenseTag]
     
     static let BillNames: [String] = ["Electric", "Water", "Sewer", "Trash", "Internet", "Other"]
@@ -35,7 +35,7 @@ struct ExpenseEditView: View {
         return map
     }()
     
-    private let expense: Expense
+    private let expense: GenericExpense
     private let mode: Mode
     
     // Main
@@ -52,19 +52,19 @@ struct ExpenseEditView: View {
     // Tip
     @State private var tip: Int = 0
     // Items
-    @State private var items: [Expense.Item] = []
+    @State private var items: [GenericExpense.Item] = []
     @State private var item: EditItemView.Item = .init()
     @State private var itemIndex: Int = -1
     @State private var recentItemFilter: String = ""
     @State private var recentItemSearchShowing: Bool = false
     // Bill
-    @State private var bills: [Expense.BillDetails.Bill] = []
+    @State private var bills: [GenericExpense.BillDetails.Bill] = []
     @State private var bill: EditBillView.Bill = .init()
     @State private var billIndex: Int = -1
     // Fuel
-    @State private var fuel: Expense.FuelDetails = .init(amount: 0.0, rate: 0.0, user: "")
+    @State private var fuel: GenericExpense.FuelDetails = .init(amount: 0.0, rate: 0.0, user: "")
     
-    init(expense: Expense? = nil, mode: Mode? = nil) {
+    init(expense: GenericExpense? = nil, mode: Mode? = nil) {
         self.expense = expense ?? .init()
         self.mode = mode ?? (expense == nil ? .Add : .Edit)
     }
@@ -74,8 +74,8 @@ struct ExpenseEditView: View {
         let categories = Set(MainView.MainExpenseCategories + expenses.map({ $0.category })).sorted()
         let names = Set(expenses.map(getItemNames).flatMap({ $0 })).sorted()
         let brands = Set(expenses.map(getItemBrands).flatMap({ $0 })).sorted()
-        let recentItems: [Expense.Item] = {
-            var map: [String : Expense.Item] = [:]
+        let recentItems: [GenericExpense.Item] = {
+            var map: [String : GenericExpense.Item] = [:]
             expenses.map(getItems)
                 .flatMap({ $0 })
                 .filter({ isItemFiltered($0) })
@@ -189,14 +189,14 @@ struct ExpenseEditView: View {
             }
     }
     
-    private func isItemFiltered(_ item: Expense.Item) -> Bool {
+    private func isItemFiltered(_ item: GenericExpense.Item) -> Bool {
         if recentItemFilter.isEmpty {
             return true
         }
         return item.name.localizedCaseInsensitiveContains(recentItemFilter) || item.brand.localizedCaseInsensitiveContains(recentItemFilter)
     }
     
-    private func getItems(_ expense: Expense) -> [Expense.Item] {
+    private func getItems(_ expense: GenericExpense) -> [GenericExpense.Item] {
         switch expense.details {
         case .Items(let list):
             return list.items
@@ -205,7 +205,7 @@ struct ExpenseEditView: View {
         }
     }
     
-    private func getItemNames(_ expense: Expense) -> [String] {
+    private func getItemNames(_ expense: GenericExpense) -> [String] {
         switch expense.details {
         case .Items(let list):
             return list.items.map({ $0.name })
@@ -214,7 +214,7 @@ struct ExpenseEditView: View {
         }
     }
     
-    private func getItemBrands(_ expense: Expense) -> [String] {
+    private func getItemBrands(_ expense: GenericExpense) -> [String] {
         switch expense.details {
         case .Items(let list):
             return list.items.map({ $0.brand })
@@ -499,7 +499,7 @@ struct ExpenseEditView: View {
     }
     
     @ViewBuilder
-    private func recentItemSheetView(recentItems: [Expense.Item]) -> some View {
+    private func recentItemSheetView(recentItems: [GenericExpense.Item]) -> some View {
         Form {
             if !recentItems.isEmpty {
                 ForEach(recentItems, id: \.hashValue) { i in
@@ -887,7 +887,7 @@ struct ExpenseEditView: View {
                 self.category = category
             }
             
-            static func fromExpenseItem(_ item: Expense.Item) -> Item {
+            static func fromExpenseItem(_ item: GenericExpense.Item) -> Item {
                 switch item.quantity {
                 case .Discrete(let num):
                     return .init(name: item.name, brand: item.brand, quantityType: .Discrete, discrete: num, totalPrice: item.total.toCents(), sale: item.discount != nil, salePrice: item.discount?.toCents() ?? 0, category: item.category ?? "")
@@ -896,8 +896,8 @@ struct ExpenseEditView: View {
                 }
             }
             
-            func toExpenseItem() -> Expense.Item {
-                var quantity: Expense.Item.Amount {
+            func toExpenseItem() -> GenericExpense.Item {
+                var quantity: GenericExpense.Item.Amount {
                     switch quantityType {
                     case .Discrete:
                         return .Discrete(discrete)
@@ -989,7 +989,7 @@ struct ExpenseEditView: View {
                 self.rate = rate
             }
             
-            static func fromExpenseBill(_ bill: Expense.BillDetails.Bill) -> Bill {
+            static func fromExpenseBill(_ bill: GenericExpense.BillDetails.Bill) -> Bill {
                 switch bill {
                 case .Flat(let name, let base):
                     return .init(type: .Flat, name: name, base: base.toCents())
@@ -998,7 +998,7 @@ struct ExpenseEditView: View {
                 }
             }
             
-            func toExpenseBill() -> Expense.BillDetails.Bill {
+            func toExpenseBill() -> GenericExpense.BillDetails.Bill {
                 switch type {
                 case .Flat:
                     return .Flat(name: name, base: .Cents(base))

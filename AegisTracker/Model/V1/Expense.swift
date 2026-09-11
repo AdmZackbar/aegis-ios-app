@@ -8,7 +8,8 @@
 import Foundation
 import SwiftData
 
-typealias Expense = SchemaV1.Expense
+typealias GenericExpense = SchemaV1.Expense
+typealias ExpenseItem = GenericExpense.Item
 typealias ExpenseTag = SchemaV1.ExpenseTag
 
 extension SchemaV1 {

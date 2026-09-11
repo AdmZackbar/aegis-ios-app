@@ -11,7 +11,7 @@ import SwiftUI
 
 struct ExpenseDateView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
+    @Query(sort: \GenericExpense.date, order: .reverse) var expenses: [GenericExpense]
     
     @State private var dateType: DateType = .Year
     @State private var monthSelection: DateTag? = nil
@@ -63,8 +63,8 @@ struct ExpenseDateView: View {
     
     @ViewBuilder
     private func byMonthView() -> some View {
-        let map: [Int : [Int : [Expense]]] = {
-            var map: [Int : [Int : [Expense]]] = [:]
+        let map: [Int : [Int : [GenericExpense]]] = {
+            var map: [Int : [Int : [GenericExpense]]] = [:]
             expenses.forEach({ map[$0.date.year, default: [:]][$0.date.month, default: []].append($0) })
             return map
         }()
@@ -77,7 +77,7 @@ struct ExpenseDateView: View {
     }
     
     @ViewBuilder
-    private func monthView(year: Int, month: Int, monthExpenses: [Expense]) -> some View {
+    private func monthView(year: Int, month: Int, monthExpenses: [GenericExpense]) -> some View {
         Form {
             Section {
                 VStack(alignment: .leading, spacing: 12) {
@@ -90,7 +90,7 @@ struct ExpenseDateView: View {
                             .fontWeight(.bold)
                             .fontDesign(.rounded)
                     }
-                    FinanceMonthLineChart(data: monthExpenses.map(Expense.toFinanceData), year: year, month: month)
+                    FinanceMonthLineChart(data: monthExpenses.map(GenericExpense.toFinanceData), year: year, month: month)
                         .frame(height: 140)
                 }
             } header: {
@@ -98,8 +98,8 @@ struct ExpenseDateView: View {
                     .font(.title)
                     .bold()
             }.headerProminence(.increased)
-            let dayMap: [Int : [Expense]] = {
-                var map: [Int : [Expense]] = [:]
+            let dayMap: [Int : [GenericExpense]] = {
+                var map: [Int : [GenericExpense]] = [:]
                 monthExpenses.forEach({ map[$0.date.day, default: []].append($0) })
                 return map
             }()
@@ -113,8 +113,8 @@ struct ExpenseDateView: View {
     
     @ViewBuilder
     private func byYearView() -> some View {
-        let map: [Int : [Expense]] = {
-            var map: [Int : [Expense]] = [:]
+        let map: [Int : [GenericExpense]] = {
+            var map: [Int : [GenericExpense]] = [:]
             expenses.forEach({ map[$0.date.year, default: []].append($0) })
             return map
         }()
@@ -131,7 +131,7 @@ struct ExpenseDateView: View {
                                 .fontWeight(.bold)
                                 .fontDesign(.rounded)
                         }
-                        FinanceYearChart(data: yearExpenses.map(Expense.toFinanceData), year: year, selection: $chartSelection)
+                        FinanceYearChart(data: yearExpenses.map(GenericExpense.toFinanceData), year: year, selection: $chartSelection)
                             .frame(height: 140)
                     }
                 } header: {
@@ -139,8 +139,8 @@ struct ExpenseDateView: View {
                         .font(.title)
                         .bold()
                 }.headerProminence(.increased)
-                let monthMap: [Int : [Expense]] = {
-                    var map: [Int : [Expense]] = [:]
+                let monthMap: [Int : [GenericExpense]] = {
+                    var map: [Int : [GenericExpense]] = [:]
                     yearExpenses.forEach({ map[$0.date.month, default: []].append($0) })
                     return map
                 }()
@@ -155,7 +155,7 @@ struct ExpenseDateView: View {
     }
     
     @ViewBuilder
-    private func monthButton(year: Int, month: Int, expenses: [Expense]) -> some View {
+    private func monthButton(year: Int, month: Int, expenses: [GenericExpense]) -> some View {
         let m = DateFormatter().monthSymbols[month - 1]
         Button {
             navigationStore.push(ExpenseViewType.byMonth(year: year, month: month))
@@ -195,7 +195,7 @@ struct ExpenseDateView: View {
 
 struct ExpenseMonthView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
+    @Query(sort: \GenericExpense.date, order: .reverse) var expenses: [GenericExpense]
     
     @State private var chartSelection: Date? = nil
     
@@ -209,8 +209,8 @@ struct ExpenseMonthView: View {
     
     var body: some View {
         let expenses = expenses.filter({ $0.date.month == month && $0.date.year == year })
-        let map: [Date : [Expense]] = {
-            var map: [Date : [Expense]] = [:]
+        let map: [Date : [GenericExpense]] = {
+            var map: [Date : [GenericExpense]] = [:]
             expenses.sorted(by: { $0.category < $1.category })
                 .sorted(by: { $0.date > $1.date })
                 .forEach({ map[Calendar.current.startOfDay(for: $0.date), default: []].append($0) })
@@ -233,7 +233,7 @@ struct ExpenseMonthView: View {
                             .fontWeight(.bold)
                             .fontDesign(.rounded)
                     }
-                    FinanceMonthChart(data: expenses.map(Expense.toFinanceData), year: year, month: month)
+                    FinanceMonthChart(data: expenses.map(GenericExpense.toFinanceData), year: year, month: month)
                         .frame(height: 140)
                 }
             }

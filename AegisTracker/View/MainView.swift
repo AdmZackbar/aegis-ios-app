@@ -128,12 +128,6 @@ struct MainView: View {
             FinancedExpenseEditView(expense: expense, mode: .Edit)
         case .editSub(let subscription):
             SubscriptionEditView(subscription: subscription, mode: .Edit)
-        case .list(let title, let expenses):
-            Form {
-                Section("Expenses") {
-                    ExpenseListView(expenses: expenses, omitted: [.Category])
-                }.headerProminence(.increased)
-            }.navigationTitle(title)
         case .listSub:
             SubscriptionListView()
         case .merge:
@@ -171,16 +165,15 @@ enum ExpenseViewType: Hashable {
     case byDate
     case byMonth(year: Int, month: Int)
     case byPayee(name: String? = nil)
-    case view(expense: Expense)
+    case view(expense: GenericExpense)
     case viewFinanced(expense: FinancedExpense)
     case viewSub(subscription: Subscription)
-    case add(initial: Expense? = nil)
+    case add(initial: GenericExpense? = nil)
     case addFinanced(initial: FinancedExpense? = nil)
     case addSub(initial: Subscription? = nil)
-    case edit(expense: Expense)
+    case edit(expense: GenericExpense)
     case editFinanced(expense: FinancedExpense)
     case editSub(subscription: Subscription)
-    case list(title: String, expenses: [Expense])
     case listSub
     case merge
 }

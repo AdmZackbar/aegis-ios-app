@@ -11,11 +11,11 @@ import SwiftUI
 struct MergeExpenseView: View {
     @Environment(\.modelContext) var modelContext
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(sort: \Expense.date) var expenses: [Expense]
+    @Query(sort: \GenericExpense.date) var expenses: [GenericExpense]
     @Query(sort: \Subscription.payee) var subs: [Subscription]
     
     @State private var loading: Bool = false
-    @State private var data: [Key : [Expense]] = [:]
+    @State private var data: [Key : [GenericExpense]] = [:]
     @State private var mergeKey: Key? = nil
     
     var body: some View {
@@ -72,7 +72,7 @@ struct MergeExpenseView: View {
         loading = false
     }
     
-    func merge(key: Key, expenses: [Expense]) {
+    func merge(key: Key, expenses: [GenericExpense]) {
         guard !expenses.isEmpty else { return }
         var periods: [Subscription.Period] = []
         var period: Subscription.Period? = nil
@@ -106,9 +106,9 @@ struct MergeExpenseView: View {
         var payee: String
         var category: String
         var notes: String
-        var details: Expense.Details?
+        var details: GenericExpense.Details?
         
-        init(payee: String, category: String, notes: String, details: Expense.Details?) {
+        init(payee: String, category: String, notes: String, details: GenericExpense.Details?) {
             self.payee = payee
             self.category = category
             self.notes = notes

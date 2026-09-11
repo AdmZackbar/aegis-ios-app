@@ -11,10 +11,48 @@ extension Price {
     static let zero: Price = .Cents(0)
 }
 
+extension [Price] {
+    func sum() -> Price {
+        self.reduce(.zero, +)
+    }
+}
+
+protocol Expense {
+    var date: Date { get }
+    var payee: String { get }
+    var amount: Price { get }
+    var category: String { get }
+    var notes: String { get }
+    var details: GenericExpense.Details? { get }
+}
+
 extension Expense {
+    func getAmount(category: BudgetCategory? = nil) -> Price {
+        if let category {
+            var total = categoryPriceMap[category.name, default: .zero]
+            if let children = category.children {
+                total += children.map(getAmount).sum()
+            }
+            return total
+        }
+        return amount
+    }
+    
+    func hasCategory(category: BudgetCategory) -> Bool {
+        if (category.contains(self.category)) {
+            return true
+        }
+        switch details {
+        case .Items(let list):
+            return list.items.contains(where: { $0.category != nil && category.contains($0.category!) })
+        default:
+            return false
+        }
+    }
+    
     var categoryPriceMap: [String : Price] {
         var map: [String : Price] = [:]
-        map[self.category] = self.amount
+        map[category] = amount
         switch details {
         case .Items(let list):
             for item in list.items {
@@ -31,37 +69,26 @@ extension Expense {
         return map
     }
     
-    func getAmount(category: BudgetCategory? = nil) -> Price {
-        if let category {
-            var total = categoryPriceMap[category.name, default: .zero]
-            if let children = category.children {
-                total += children.map(getAmount).reduce(.zero, +)
-            }
-            return total
-        }
-        return amount
-    }
-    
     func getDiscount(category: BudgetCategory? = nil) -> Price {
         if let category {
             if !hasCategory(category: category) {
                 switch details {
                 case .Items(let list):
-                    return list.items.filter({ $0.category != nil && category.contains($0.category!) }).map({ $0.discount ?? .zero }).reduce(.zero, +)
+                    return list.items.filter({ $0.category != nil && category.contains($0.category!) }).map({ $0.discount ?? .zero }).sum()
                 default:
                     return .zero
                 }
             }
             switch details {
             case .Items(let list):
-                return list.items.filter({ $0.category == nil || category.contains($0.category!) }).map({ $0.discount ?? .zero }).reduce(.zero, +)
+                return list.items.filter({ $0.category == nil || category.contains($0.category!) }).map({ $0.discount ?? .zero }).sum()
             default:
                 return .zero
             }
         }
         switch details {
         case .Items(let list):
-            return list.items.map({ $0.discount ?? .zero }).reduce(.zero, +)
+            return list.items.map({ $0.discount ?? .zero }).sum()
         default:
             return .zero
         }
@@ -77,20 +104,20 @@ extension Expense {
         }
     }
     
-    func hasCategory(category: BudgetCategory) -> Bool {
-        if (category.contains(self.category)) {
-            return true
-        }
-        switch details {
-        case .Items(let list):
-            return list.items.contains(where: { $0.category != nil && category.contains($0.category!) })
-        default:
-            return false
-        }
+    func toCategoryData() -> [CategoryData] {
+        categoryPriceMap.map(CategoryData.init)
+    }
+    
+    func toFinanceData() -> FinanceData {
+        .init(date: self.date, amount: self.amount.toUsd(), category: .expense)
     }
 }
 
-extension Expense.Item {
+extension GenericExpense: Expense {
+    // TODO
+}
+
+extension GenericExpense.Item {
     var unitCost: Price {
         get {
             switch quantity {
@@ -110,17 +137,52 @@ extension Expense.Item {
 
 extension [Expense] {
     var total: Price {
-        return self.map({ $0.amount }).reduce(.zero, +)
+        return self.map({ $0.amount }).sum()
     }
     
     func getTotal(category: BudgetCategory) -> Price {
-        return self.map({ $0.getAmount(category: category) }).reduce(.zero, +)
+        return self.map({ $0.getAmount(category: category) }).sum()
+    }
+}
+extension [GenericExpense] {
+    var total: Price {
+        return self.map({ $0.amount }).sum()
+    }
+    
+    func getTotal(category: BudgetCategory) -> Price {
+        return self.map({ $0.getAmount(category: category) }).sum()
     }
 }
 
 extension ExpenseTag {
     var totalAmount: Price {
         expenses.total + financedExpenses.total
+    }
+}
+
+struct FinancedExpenseInstance: Expense {
+    let expense: FinancedExpense
+    let date: Date
+    
+    init(expense: FinancedExpense, date: Date) {
+        self.expense = expense
+        self.date = date
+    }
+    
+    var payee: String {
+        expense.payee
+    }
+    var amount: Price {
+        expense.getTotal(date: date)
+    }
+    var category: String {
+        expense.category
+    }
+    var notes: String {
+        expense.notes
+    }
+    var details: GenericExpense.Details? {
+        nil
     }
 }
 
@@ -143,6 +205,14 @@ extension FinancedExpense {
         }
     }
     
+    var allExpenses: [Expense] {
+        dates.map(toExpense)
+    }
+    
+    func toExpense(date: Date) -> Expense {
+        return FinancedExpenseInstance(expense: self, date: date)
+    }
+    
     func getTotal(date: Date) -> Price {
         switch paymentPlan {
         case .acmi(let numMonths):
@@ -157,7 +227,33 @@ extension FinancedExpense {
 
 extension [FinancedExpense] {
     var total: Price {
-        self.map({ $0.total }).reduce(.zero, +)
+        self.map({ $0.total }).sum()
+    }
+}
+
+struct SubscriptionExpense: Expense {
+    let subscription: Subscription
+    let date: Date
+    
+    init(subscription: Subscription, date: Date) {
+        self.subscription = subscription
+        self.date = date
+    }
+    
+    var payee: String {
+        subscription.payee
+    }
+    var amount: Price {
+        subscription.datePeriodMap[date]?.amount ?? .zero
+    }
+    var category: String {
+        subscription.category
+    }
+    var notes: String {
+        subscription.notes
+    }
+    var details: GenericExpense.Details? {
+        nil
     }
 }
 
@@ -183,6 +279,14 @@ extension Subscription {
     
     var financeData: [FinanceData] {
         return datePeriodMap.map({ FinanceData(date: $0.key, amount: $0.value.amount.toUsd(), category: .expense) })
+    }
+    
+    var allExpenses: [Expense] {
+        periods.flatMap({ $0.dates.map(toExpense) })
+    }
+    
+    func toExpense(date: Date) -> Expense {
+        return SubscriptionExpense(subscription: self, date: date)
     }
 }
 
@@ -223,16 +327,34 @@ extension Subscription.PeriodType {
     }
 }
 
+extension Revenue {
+    func toCategoryData() -> CategoryData {
+        return .init(category: self.category, amount: self.amount)
+    }
+}
+
 extension [Revenue] {
     var total: Price {
-        return self.map({ $0.amount }).reduce(.zero, +)
+        return self.map({ $0.amount }).sum()
+    }
+}
+
+extension Asset {
+    func toCategoryData(_ payments: [Loan.Payment]? = nil) -> [CategoryData] {
+        if let payments {
+            return payments.map({ .init(category: self.metaData.category, amount: $0.amount - $0.principal) })
+        }
+        if let loan {
+            return loan.payments.map({ .init(category: self.metaData.category, amount: $0.amount - $0.principal) })
+        }
+        return []
     }
 }
 
 extension [BudgetCategory] {
     var total: Price? {
         let amounts = self.filter({ $0.monthlyBudget != nil }).map({ $0.monthlyBudget! })
-        return amounts.isEmpty ? nil : amounts.reduce(.Cents(0), +)
+        return amounts.isEmpty ? nil : amounts.sum()
     }
     
     func find(_ name: String) -> BudgetCategory? {

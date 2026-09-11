@@ -28,7 +28,7 @@ struct ExpenseListView: View {
     }
     
     var body: some View {
-        ForEach(expenses, id: \.hashValue) { expense in
+        ForEach(expenses.enumerated().sorted(by: { $0.offset < $1.offset }), id: \.offset) { offset, expense in
             expenseEntry(expense)
                 .swipeActions {
                     if allowSwipeActions {
@@ -57,9 +57,9 @@ struct ExpenseListView: View {
                 }
         }.alert("Delete Expense?", isPresented: $deleteShowing) {
             Button("Delete", role: .destructive) {
-                if let item = deleteItem {
+                if let generic = deleteItem as? GenericExpense {
                     withAnimation {
-                        modelContext.delete(item)
+                        modelContext.delete(generic)
                     }
                 }
             }
@@ -68,7 +68,13 @@ struct ExpenseListView: View {
     
     private func editButton(_ expense: Expense) -> some View {
         Button {
-            navigationStore.push(ExpenseViewType.edit(expense: expense))
+            if let generic = expense as? GenericExpense {
+                navigationStore.push(ExpenseViewType.edit(expense: generic))
+            } else if let financed = expense as? FinancedExpenseInstance {
+                navigationStore.push(ExpenseViewType.editFinanced(expense: financed.expense))
+            } else if let sub = expense as? SubscriptionExpense {
+                navigationStore.push(ExpenseViewType.editSub(subscription: sub.subscription))
+            }
         } label: {
             Label("Edit", systemImage: "pencil.circle").tint(.blue)
         }
@@ -86,7 +92,13 @@ struct ExpenseListView: View {
     @ViewBuilder
     private func expenseEntry(_ expense: Expense) -> some View {
         Button {
-            navigationStore.push(ExpenseViewType.view(expense: expense))
+            if let generic = expense as? GenericExpense {
+                navigationStore.push(ExpenseViewType.view(expense: generic))
+            } else if let financed = expense as? FinancedExpenseInstance {
+                navigationStore.push(ExpenseViewType.viewFinanced(expense: financed.expense))
+            } else if let sub = expense as? SubscriptionExpense {
+                navigationStore.push(ExpenseViewType.viewSub(subscription: sub.subscription))
+            }
         } label: {
             ExpenseEntryView(expense: expense, omitted: omitted, category: category)
                 .contentShape(Rectangle())
@@ -98,7 +110,7 @@ struct ExpenseListView: View {
     @Previewable @StateObject var navigationStore = NavigationStore()
     return NavigationStack(path: $navigationStore.path) {
         Form {
-            ExpenseListView(expenses: [.init(payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Test run", details: .Items(list: .init(items: [
+            ExpenseListView(expenses: [GenericExpense(payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Test run", details: .Items(list: .init(items: [
                 .init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541)),
                 .init(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300)),
                 .init(name: "Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))

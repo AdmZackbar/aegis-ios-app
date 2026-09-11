@@ -11,13 +11,13 @@ import SwiftUI
 struct ExpenseView: View {
     @Environment(\.modelContext) var modelContext
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
+    @Query(sort: \GenericExpense.date, order: .reverse) var expenses: [GenericExpense]
     
-    let expense: Expense
+    let expense: GenericExpense
    
     @State private var showDelete: Bool = false
     
-    init(expense: Expense) {
+    init(expense: GenericExpense) {
         self.expense = expense
     }
     
@@ -120,7 +120,7 @@ struct ExpenseView: View {
     }
     
     @ViewBuilder
-    private func itemDetailView(_ list: Expense.ItemList) -> some View {
+    private func itemDetailView(_ list: GenericExpense.ItemList) -> some View {
         if !list.items.isEmpty {
             let map = Dictionary(grouping: list.items, by: \.category)
             ForEach(map.keys.sorted { ($0 ?? "") < ($1 ?? "") }, id: \.?.hashValue) { header in
@@ -138,7 +138,7 @@ struct ExpenseView: View {
     }
     
     @ViewBuilder
-    private func billDetailView(_ details: Expense.BillDetails) -> some View {
+    private func billDetailView(_ details: GenericExpense.BillDetails) -> some View {
         if !details.bills.isEmpty {
             Section("Bills") {
                 ForEach(details.bills, id: \.hashValue, content: ExpenseBillEntryView.init)
@@ -147,7 +147,7 @@ struct ExpenseView: View {
     }
     
     @ViewBuilder
-    private func payeeExpenseList(_ expenses: [Expense]) -> some View {
+    private func payeeExpenseList(_ expenses: [GenericExpense]) -> some View {
         Section("Similar Expenses") {
             ForEach(expenses.prefix(12), id: \.hashValue) { e in
                 Button {
@@ -194,7 +194,7 @@ struct ExpenseView: View {
 
 #Preview(traits: .modifier(MockDataPreviewModifier())) {
     @Previewable @StateObject var navigationStore = NavigationStore()
-    let expense = Expense(payee: "Publix", amount: .Cents(34189), category: "Groceries", notes: "November grocery run", tags: [.init(name: "Binge Shopping 2026"), .init(name: "Costco Runs")], details: .Items(list: .init(items: [
+    let expense = GenericExpense(payee: "Publix", amount: .Cents(34189), category: "Groceries", notes: "November grocery run", tags: [.init(name: "Binge Shopping 2026"), .init(name: "Costco Runs")], details: .Items(list: .init(items: [
         .init(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541)),
         .init(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300)),
         .init(name: "Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))

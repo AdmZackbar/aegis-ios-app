@@ -95,7 +95,7 @@ struct ExpenseEntryView: View {
     }
     
     @ViewBuilder
-    private func itemListView(_ items: [Expense.Item]) -> some View {
+    private func itemListView(_ items: [ExpenseItem]) -> some View {
         let itemText = itemsText(items)
         let subtitle = getSubtitle()
         let discount = expense.fullPriceText(category: category)
@@ -125,7 +125,7 @@ struct ExpenseEntryView: View {
         }
     }
     
-    private func itemsText(_ items: [Expense.Item]) -> String? {
+    private func itemsText(_ items: [ExpenseItem]) -> String? {
         if items.isEmpty {
             return nil
         } else if items.count > 1 {
@@ -194,7 +194,7 @@ struct ExpenseEntryView: View {
     }
 }
 
-extension Expense.Item.Amount {
+extension ExpenseItem.Amount {
     var summary: String {
         get {
             switch self {
@@ -211,7 +211,7 @@ extension Expense.Item.Amount {
 }
 
 struct ExpenseBillEntryView: View {
-    let bill: Expense.BillDetails.Bill
+    let bill: GenericExpense.BillDetails.Bill
     
     var body: some View {
         switch bill {
@@ -241,22 +241,22 @@ struct ExpenseBillEntryView: View {
 }
 
 #Preview {
-    let chicken = Expense.Item(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541))
-    let hotChoc = Expense.Item(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300))
-    let chunks = Expense.Item(name: "Lightly Breaded Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
-    let card = Expense.Item(name: "Mother's Day Card", brand: "Hallmark", quantity: .Discrete(1), total: .Cents(599), category: "Gift")
+    let chicken = GenericExpense.Item(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541))
+    let hotChoc = GenericExpense.Item(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300))
+    let chunks = GenericExpense.Item(name: "Lightly Breaded Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
+    let card = GenericExpense.Item(name: "Mother's Day Card", brand: "Hallmark", quantity: .Discrete(1), total: .Cents(599), category: "Gift")
     return Form {
-        ExpenseEntryView(expense: .init(payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Just another run", details: .Items(list: .init(items: [
+        ExpenseEntryView(expense: GenericExpense(payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Just another run", details: .Items(list: .init(items: [
             chicken, hotChoc, chunks
         ]))), omitted: [])
-        ExpenseEntryView(expense: .init(payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Just another run", details: .Items(list: .init(items: [
+        ExpenseEntryView(expense: GenericExpense(payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Just another run", details: .Items(list: .init(items: [
             chicken, hotChoc, chunks
         ]))))
-        ExpenseEntryView(expense: .init(payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Just another run", details: .Items(list: .init(items: [
+        ExpenseEntryView(expense: GenericExpense(payee: "Costco", amount: .Cents(34156), category: "Groceries", notes: "Just another run", details: .Items(list: .init(items: [
             chicken, chunks
         ]))), omitted: [.Payee, .Category])
-        ExpenseEntryView(expense: .init(payee: "Greasy Hands", amount: .Cents(4510), category: "Haircut", notes: "With Ryle - Middle Part", details: .Tip(amount: .Cents(1000))))
-        ExpenseEntryView(expense: .init(payee: "Valve", amount: .Cents(499), category: "Video Games"), omitted: [.Date])
+        ExpenseEntryView(expense: GenericExpense(payee: "Greasy Hands", amount: .Cents(4510), category: "Haircut", notes: "With Ryle - Middle Part", details: .Tip(amount: .Cents(1000))))
+        ExpenseEntryView(expense: GenericExpense(payee: "Valve", amount: .Cents(499), category: "Video Games"), omitted: [.Date])
         ExpenseBillEntryView(bill: .Variable(name: "Electric", base: .Cents(1402), amount: 5125.1, rate: 0.00234))
         ExpenseBillEntryView(bill: .Flat(name: "Internet", base: .Cents(4109)))
     }

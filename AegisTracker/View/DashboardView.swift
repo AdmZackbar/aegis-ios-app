@@ -11,13 +11,18 @@ import SwiftUI
 struct DashboardView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
     @Query(filter: #Predicate<BudgetCategory> { $0.name == "Main Budget" }) var budgets: [BudgetCategory]
-    @Query(sort: \Expense.date) var expenses: [Expense]
+    @Query(sort: \GenericExpense.date) var expenses: [GenericExpense]
     @Query(sort: \FinancedExpense.date) var financedExpenses: [FinancedExpense]
+    @Query(sort: \Subscription.payee) var subscriptions: [Subscription]
     @Query var assets: [Asset]
     
     var body: some View {
-        let currentExpenses = expenses.filter({ navigationStore.dashboardConfig.contains($0.date) })
-        let oldExpenses = expenses.filter({ navigationStore.dashboardConfig.contains(moveDay($0.date)) })
+        let allExpenses = (expenses + financedExpenses.flatMap({ $0.allExpenses }) + subscriptions.flatMap({ $0.allExpenses }))
+            .sorted(by: { $0.date > $1.date })
+        let currentExpenses = allExpenses
+            .filter({ navigationStore.dashboardConfig.contains($0.date) })
+        let oldExpenses = allExpenses
+            .filter({ navigationStore.dashboardConfig.contains(moveDay($0.date)) })
         if let mainBudget = budgets.first {
             var assetData: [CategoryData] = []
             let payments: [Asset.Loan.Payment] = {
@@ -37,8 +42,8 @@ struct DashboardView: View {
                 }
                 return payments
             }()
-            let categoryData = currentExpenses.flatMap(Expense.toCategoryData) + assetData
-            let financeData = currentExpenses.map(Expense.toFinanceData) + oldExpenses.map(toOldFinanceData) + payments.map(Asset.toFinanceData) + oldPayments.map(toOldFinanceData)
+            let categoryData = currentExpenses.flatMap({ $0.toCategoryData() }) + assetData
+            let financeData = currentExpenses.map(GenericExpense.toFinanceData) + oldExpenses.map(toOldFinanceData) + payments.map(Asset.toFinanceData) + oldPayments.map(toOldFinanceData)
             DashboardContentView(category: mainBudget, expenses: currentExpenses, financeData: financeData, categoryData: categoryData)
         }
     }
@@ -63,15 +68,18 @@ struct DashboardView: View {
 
 struct DashboardCategoryView: View {
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(sort: \Expense.date) var expenses: [Expense]
+    @Query(sort: \GenericExpense.date) var expenses: [GenericExpense]
     @Query(sort: \FinancedExpense.date) var financedExpenses: [FinancedExpense]
+    @Query(sort: \Subscription.payee) var subscriptions: [Subscription]
     @Query var assets: [Asset]
     
     let category: BudgetCategory
     
     var body: some View {
-        let currentExpenses = expenses.filter(isFiltered)
-        let oldExpenses = expenses.filter(isFilteredForNext)
+        let allExpenses = (expenses + financedExpenses.flatMap({ $0.allExpenses }) + subscriptions.flatMap({ $0.allExpenses }))
+            .sorted(by: { $0.date > $1.date })
+        let currentExpenses = allExpenses.filter(isFiltered)
+        let oldExpenses = allExpenses.filter(isFilteredForNext)
         var assetData: [CategoryData] = []
         let payments: [Asset.Loan.Payment] = {
             var payments: [Asset.Loan.Payment] = []
@@ -90,8 +98,15 @@ struct DashboardCategoryView: View {
             }
             return payments
         }()
-        let categoryData = currentExpenses.flatMap(Expense.toCategoryData) + assetData
-        let financeData = currentExpenses.map(Expense.toFinanceData) + oldExpenses.map(toOldFinanceData) + payments.map(Asset.toFinanceData) + oldPayments.map(toOldFinanceData)
+        let categoryData = currentExpenses.flatMap({ $0.toCategoryData() }) + assetData
+        let financeData: [FinanceData] = {
+            var data: [FinanceData] = []
+            data += currentExpenses.map({ $0.toFinanceData() })
+            data += oldExpenses.map(toOldFinanceData)
+            data += payments.map(Asset.toFinanceData)
+            data += oldPayments.map(toOldFinanceData)
+            return data
+        }()
         DashboardContentView(category: category, expenses: currentExpenses, financeData: financeData, categoryData: categoryData.filter({ category.contains($0.category) }))
     }
     
@@ -509,7 +524,8 @@ private struct BudgetCategoryView: View {
                         .padding([.top, .bottom], 8)
                     let otherCategory = BudgetCategory(name: "Other")
                     Button {
-                        navigationStore.push(ExpenseViewType.list(title: DashboardContentView.computeTitle(category: otherCategory, dashboardConfig: navigationStore.dashboardConfig, includeCategory: true), expenses: otherExpenses))
+                        // TODO
+//                        navigationStore.push(ExpenseViewType.list(title: DashboardContentView.computeTitle(category: otherCategory, dashboardConfig: navigationStore.dashboardConfig, includeCategory: true), expenses: otherExpenses))
                     } label: {
                         subcategoryEntryView(otherCategory, actual: otherExpenses.total)
                     }.buttonStyle(.plain)

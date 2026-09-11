@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ExpenseItemEntryView: View {
-    let item: Expense.Item
+    let item: ExpenseItem
     
     var body: some View {
         HStack(alignment: .top) {
@@ -47,10 +47,10 @@ struct ExpenseItemEntryView: View {
 }
 
 #Preview {
-    let chicken = Expense.Item(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541))
-    let hotChoc = Expense.Item(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300))
-    let chunks = Expense.Item(name: "Lightly Breaded Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
-    let card = Expense.Item(name: "Mother's Day Card", brand: "Hallmark", quantity: .Discrete(1), total: .Cents(599), category: "Gift")
+    let chicken = ExpenseItem(name: "Chicken Thighs", brand: "Kirkland Signature", quantity: .Unit(num: 4.51, unit: "lb"), total: .Cents(3541))
+    let hotChoc = ExpenseItem(name: "Hot Chocolate", brand: "Swiss Miss", quantity: .Discrete(1), total: .Cents(799), discount: .Cents(300))
+    let chunks = ExpenseItem(name: "Lightly Breaded Chicken Chunks", brand: "Just Bare", quantity: .Discrete(2), total: .Cents(1499))
+    let card = ExpenseItem(name: "Mother's Day Card", brand: "Hallmark", quantity: .Discrete(1), total: .Cents(599), category: "Gift")
     return Form {
         ExpenseItemEntryView(item: chicken)
         ExpenseItemEntryView(item: hotChoc)

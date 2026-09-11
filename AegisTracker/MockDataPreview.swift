@@ -22,7 +22,7 @@ struct MockDataPreviewModifier: PreviewModifier {
     }
     
     static func populateContainer(_ container: ModelContainer) {
-        let expenses: [Expense] = [
+        let expenses: [GenericExpense] = [
             .init(payee: "Costco",
                   amount: .Cents(3541),
                   category: "Gas",

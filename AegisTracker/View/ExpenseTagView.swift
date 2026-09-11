@@ -32,7 +32,7 @@ extension ExpenseTag {
 struct ExpenseTagView: View {
     @Environment(\.modelContext) var modelContext
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
+    @Query(sort: \GenericExpense.date, order: .reverse) var expenses: [GenericExpense]
     
     let tag: ExpenseTag
     
@@ -40,7 +40,7 @@ struct ExpenseTagView: View {
     @State private var filter = ""
     @State private var showFilter = true
     @State private var deleteShowing = false
-    @State private var deleteItem: Expense? = nil
+    @State private var deleteItem: GenericExpense? = nil
     
     var body: some View {
         VStack {
@@ -176,7 +176,7 @@ struct ExpenseTagView: View {
         }
     }
     
-    private func deleteButton(_ expense: Expense) -> some View {
+    private func deleteButton(_ expense: GenericExpense) -> some View {
         Button {
             deleteItem = expense
             deleteShowing = true
@@ -186,7 +186,7 @@ struct ExpenseTagView: View {
     }
     
     @ViewBuilder
-    private func expenseEntry(_ expense: Expense) -> some View {
+    private func expenseEntry(_ expense: GenericExpense) -> some View {
         Button {
             navigationStore.push(ExpenseViewType.view(expense: expense))
         } label: {
@@ -197,7 +197,7 @@ struct ExpenseTagView: View {
     
     @ViewBuilder
     private func suggestedExpenses() -> some View {
-        var list: [Expense] {
+        var list: [GenericExpense] {
             if tag.expenses.isEmpty {
                 expenses.filter({ !$0.tags.contains(tag) })
             } else {

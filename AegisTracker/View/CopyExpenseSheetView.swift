@@ -11,7 +11,7 @@ import SwiftUI
 struct CopyExpenseSheetView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var navigationStore: NavigationStore
-    @Query(sort: \Expense.date, order: .reverse) var expenses: [Expense]
+    @Query(sort: \GenericExpense.date, order: .reverse) var expenses: [GenericExpense]
     
     @State private var filter: String = ""
     
@@ -20,7 +20,7 @@ struct CopyExpenseSheetView: View {
             List(expenses.filter(filter).prefix(50)) { expense in
                 Button {
                     dismiss()
-                    let copy = Expense(date: .now, payee: expense.payee, amount: expense.amount, category: expense.category, notes: expense.notes, tags: expense.tags, details: expense.details)
+                    let copy = GenericExpense(date: .now, payee: expense.payee, amount: expense.amount, category: expense.category, notes: expense.notes, tags: expense.tags, details: expense.details)
                     navigationStore.push(ExpenseViewType.add(initial: copy))
                 } label: {
                     ExpenseEntryView(expense: expense)
